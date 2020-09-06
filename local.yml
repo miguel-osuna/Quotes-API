@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  application:
+    build:
+      context: .
+      dockerfile: ./compose/local/application/Dockerfile
+    image: quotes_api_local
+    container_name: quotes_api
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+    env_files:
+      - ./.envs/.local/.application
+      - ./.envs/.local/.mongo
+    ports:
+      - "8000:8000"
+    command: /start
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - local_mongo_data:/data/db
+    env_files:
+      - ./.envs/.local/.mongo
+    ports:
+      - "27017:27017"
+
+volumes:
+  local_mongo_data:

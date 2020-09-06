@@ -1,0 +1,11 @@
+.flaskenv
+!.env
+.DS_Store
+.dockerignore
+**/.vscode/
+.git/
+.gitignore
+README.rst
+README.md
+*.pyc
+__pycache__

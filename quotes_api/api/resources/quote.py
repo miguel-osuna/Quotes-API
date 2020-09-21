@@ -13,6 +13,7 @@ class QuoteResource(Resource):
 
     def get(self, quote_id):
         """ Get quote. """
+        # quote = Quote.objects.get_or_404(_id=quote_id)
         pass
 
     def put(self, quote_id):
@@ -29,7 +30,8 @@ class QuoteListResource(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    def get(self):
+    def get(self, page, per_page):
+        # paginated_quotes = Quotes.objects.paginate(page=page, per_page=per_page)
         """ Get list of quotes. """
         pass
 

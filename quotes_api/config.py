@@ -8,34 +8,40 @@ import os
 class Config(object):
     """ Configuration base class. """
 
-    # FLask Configuration
+    # Flask Configuration
     DEBUG = False
     TESTING = False
-
-    # Mongoengine Configuration
-    DATABASE_URI = os.getenv("DATABASE_URI")  # Remove it?
-    MONGO_INITDB_ROOT_USERNAME = os.getenv("MONGO_INITDB_ROOT_USERNAME")  # Remove it?
-    MONGO_INITDB_ROOT_PASSWORD = os.getenv("MONGO_INITDB_ROOT_PASSWORD")  # Remove it?
-    MONGO_INITDB_DATABASE = os.getenv("MONGO_INIDB_DATABASE")  # Remove it?
 
 
 class ProductionConfig(Config):
     """ Production environment configuration class. """
 
+    # Flask Configuration
     ENV = "production"
-    DATABASE_URI = ""
 
+    # Mongoengine Configuration
+    MONGODB_DB = os.getenv("MONGODB_DB")
+    MONGODB_HOST = os.getenv("MONGODB_HOST")
 
 class DevelopmentConfig(Config):
     """ Development environment configuration class. """
 
+    # Flask Configuration
     ENV = "development"
     DEBUG = True
+
+    # Mongoengine Configuration
+    MONGODB_DB = os.getenv("MONGODB_DB")
+    MONGODB_HOST = os.getenv("MONGODB_HOST")
+    MONGODB_PORT = os.getenv("MONGODB_PORT")
+    MONGODB_USERNAME = os.getenv("MONGODB_USERNAME")
+    MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD")
 
 
 class TestingConfig(Config):
     """ Testing environment configuration class. """
 
+    # Flask Configuration
     ENV = "development"
     TESTING = True
 

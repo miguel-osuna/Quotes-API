@@ -11,6 +11,7 @@ class Config(object):
     # Flask Configuration
     DEBUG = False
     TESTING = False
+    SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 class ProductionConfig(Config):
@@ -22,6 +23,7 @@ class ProductionConfig(Config):
     # Mongoengine Configuration
     MONGODB_DB = os.getenv("MONGODB_DB")
     MONGODB_HOST = os.getenv("MONGODB_HOST")
+
 
 class DevelopmentConfig(Config):
     """ Development environment configuration class. """

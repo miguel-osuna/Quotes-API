@@ -11,19 +11,18 @@ services:
       - mongo
     volumes:
       - .:/app
-    env_files:
+    env_file:
       - ./.envs/.local/.application
       - ./.envs/.local/.mongo
     ports:
       - "8000:8000"
-    command: /start
 
   mongo:
     image: mongo:latest
     container_name: mongo
     volumes:
       - local_mongo_data:/data/db
-    env_files:
+    env_file:
       - ./.envs/.local/.mongo
     ports:
       - "27017:27017"

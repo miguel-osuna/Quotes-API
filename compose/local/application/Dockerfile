@@ -12,9 +12,13 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /code 
 
 # Install dependencies
-COPY Pipfile Pipfile.lock /code/
+COPY Pipfile /code/
+
 # 'system' flag will avoid pipenv to look for a virtual environment
-RUN pip install pipenv && pipenv install --system && pipenv install --def --system
+RUN pip install pipenv
+
+# Install dependencies
+RUN pipenv install --skip-lock --system && pipenv install --skip-lock --system --dev
 
 # COPY project 
 COPY . /code/

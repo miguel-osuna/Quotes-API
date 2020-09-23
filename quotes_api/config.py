@@ -25,6 +25,17 @@ class ProductionConfig(Config):
     MONGODB_HOST = os.getenv("MONGODB_HOST")
 
 
+class StagingConfig(Config):
+    """ Staging environment configuration class. """
+
+    # Flask Configuration
+    ENV = "production"
+
+    # Mongoengine Configuration
+    MONGODB_DB = os.getenv("MONGODB_DB")
+    MONGODB_HOST = os.getenv("MONGODB_HOST")
+
+
 class DevelopmentConfig(Config):
     """ Development environment configuration class. """
 
@@ -35,7 +46,7 @@ class DevelopmentConfig(Config):
     # Mongoengine Configuration
     MONGODB_DB = os.getenv("MONGODB_DB")
     MONGODB_HOST = os.getenv("MONGODB_HOST")
-    MONGODB_PORT = os.getenv("MONGODB_PORT")
+    MONGODB_PORT = int(os.getenv("MONGODB_PORT"))
     MONGODB_USERNAME = os.getenv("MONGODB_USERNAME")
     MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD")
 
@@ -45,5 +56,6 @@ class TestingConfig(Config):
 
     # Flask Configuration
     ENV = "development"
+    DEBUG = True
     TESTING = True
 

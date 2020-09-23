@@ -8,4 +8,4 @@ blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(blueprint)
 
 api.add_resource(QuoteResource, "/quotes/<int:quote_id>", endpoint="quote_by_id")
-api.add_resource(QuoteListResource, "/quotes", endponit="quotes")
+api.add_resource(QuoteListResource, "/quotes", endpoint="quotes")

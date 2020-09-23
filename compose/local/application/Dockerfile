@@ -20,5 +20,10 @@ RUN pip install pipenv
 # Install dependencies
 RUN pipenv install --skip-lock --system && pipenv install --skip-lock --system --dev
 
+# Copy start bash script ahd change permissions
+COPY ./compose/local/application/start /start
+RUN sed -i 's/\r$//g' /start 
+RUN chmod +x /start 
+
 # COPY project 
 COPY . /code/

@@ -4,3 +4,4 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+flask run -h 0.0.0.0 -p 8000

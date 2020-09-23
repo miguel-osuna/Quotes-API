@@ -16,6 +16,7 @@ services:
       - ./.envs/.local/.mongo
     ports:
       - "8000:8000"
+    command: /start
 
   mongo:
     image: mongo:latest

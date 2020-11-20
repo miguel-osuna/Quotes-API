@@ -11,11 +11,17 @@ def create_app(configuration="ProductionConfig"):
     # Create Flaks application
     app = Flask("quotes_api")
 
-    # Users a configuration object as the app's settings
+    # print("Class: ", os.getenv("APP_CONFIGURATION"))
+    # print("Application File: ", configuration)
+    # print("Initial App Configuration: ", app.config)
+
+    # Uses a configuration object as the app's settings
     settings = "quotes_api.config.{}".format(configuration)
 
     # Setup app configuration from configuration object
     app.config.from_object(settings)
+
+    # print("Final App Configuration: ", app.config)
 
     configure_extensions(app)
     register_blueprints(app)

@@ -111,7 +111,7 @@ class QuoteListResource(Resource):
                 quote_items.append(quote_object)
 
             self_link = url_for(
-                request.endpoint,
+                "api.quotes",
                 page=pagination.page,
                 per_page=pagination.per_page,
                 _external=True,
@@ -119,7 +119,7 @@ class QuoteListResource(Resource):
 
             next_link = (
                 url_for(
-                    request.endpoint,
+                    "api.quotes",
                     page=pagination.next_num,
                     per_page=pagination.per_page,
                     _external=True,
@@ -130,7 +130,7 @@ class QuoteListResource(Resource):
 
             previous_link = (
                 url_for(
-                    request.endpoint,
+                    "api.quotes",
                     page=pagination.prev_num,
                     per_page=pagination.per_page,
                     _external=True,

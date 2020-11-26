@@ -16,18 +16,21 @@ class QuoteResource(Resource):
         """ Get quote. """
         try:
             quote = Quote.objects.get(id=quote_id)
-        except:
+        except Exception as e:
             return (
-                {"error": "The requested URL was not found on the server."},
+                {
+                    "error": "The requested URL was not found on the server.",
+                    "detail": str(e),
+                },
                 HttpStatus.not_found_404.value,
             )
 
         response_body = {
             "quote": {
                 "id": str(quote.id),
-                "quote_content": quote.quote_content,
-                "author_name": quote.author_name,
-                "author_image": quote.author_image,
+                "quoteText": quote.quoteText,
+                "authorName": quote.authorName,
+                "authorImage": quote.authorImage,
                 "tags": quote.tags,
             }
         }
@@ -76,36 +79,34 @@ class QuoteResource(Resource):
             )
 
 
-class QuoteListResource(Resource):
-    """ Quote object list resource. """
+class QuoteList(Resource):
+    """ Quote object list. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
     def get(self):
-        # paginated_quotes = Quotes.objects.paginate(page=page, per_page=per_page)
         """ Get list of quotes. """
-        try:
-            args = request.args
-            print(args)
 
-            page = int(args["page"])
-            per_page = int(args["per_page"])
-        except:
-            return {"error": "Missing data."}, HttpStatus.bad_request_400.value
+        args = request.args
+        print(args)
+
+        page = int(args.get("page", 1))
+        limit = int(args.get("limit", 5))
 
         try:
             # Generating pagination of quotes
-            pagination = Quote.objects.paginate(page=page, per_page=per_page)
+            pagination = Quote.objects.paginate(page=page, per_page=limit)
 
             # Creating list of quotes
             quote_items = []
             for quote in pagination.items:
+                print(quote)
                 quote_object = {
                     "id": str(quote.id),
-                    "quote_content": quote.quote_content,
-                    "author_name": quote.author_name,
-                    "author_image": quote.author_image,
+                    "quoteText": quote.quoteText,
+                    "authorName": quote.authorName,
+                    "authorImage": quote.authorImage,
                     "tags": quote.tags,
                 }
                 quote_items.append(quote_object)

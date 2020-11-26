@@ -2,9 +2,9 @@ from quotes_api.extensions import odm
 
 
 class Quote(odm.Document):
-    quote_content = odm.StringField(required=True, null=False, unique=True)
-    author_name = odm.StringField(required=True, null=False)
-    author_image = odm.StringField(required=False, null=False)
+    quoteText = odm.StringField(required=True, null=False, unique=True)
+    authorName = odm.StringField(required=True, null=False)
+    authorImage = odm.StringField(required=False, null=False)
     tags = odm.ListField(
         odm.StringField(required=True, null=False),
         required=True,

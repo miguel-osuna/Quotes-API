@@ -16,12 +16,9 @@ class QuoteResource(Resource):
         """ Get quote. """
         try:
             quote = Quote.objects.get(id=quote_id)
-        except Exception as e:
+        except:
             return (
-                {
-                    "error": "The requested URL was not found on the server.",
-                    "detail": str(e),
-                },
+                {"error": "The requested URL was not found on the server."},
                 HttpStatus.not_found_404.value,
             )
 
@@ -38,6 +35,26 @@ class QuoteResource(Resource):
         return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
     def put(self, quote_id):
+        """ Replace entire quote. """
+        try:
+            quote = Quote.objects.get_or_404(id=quote_id)
+        except:
+            return {"error": "The requested URL was not found on the server."}
+
+        try:
+            data = request.get_json()
+            quote.update(**data)
+            quote.save()
+
+            return "", HttpStatus.no_content_204.value
+
+        except Exception as e:
+            return (
+                {"error": "Missing data.", "detail": str(e)},
+                HttpStatus.bad_request_400.value,
+            )
+
+    def patch(self, quote_id):
         """ Update quote fields. """
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
@@ -92,11 +109,11 @@ class QuoteList(Resource):
         print(args)
 
         page = int(args.get("page", 1))
-        limit = int(args.get("limit", 5))
+        per_page = int(args.get("per_page", 5))
 
         try:
             # Generating pagination of quotes
-            pagination = Quote.objects.paginate(page=page, per_page=limit)
+            pagination = Quote.objects.paginate(page=page, per_page=per_page)
 
             # Creating list of quotes
             quote_items = []
@@ -156,9 +173,9 @@ class QuoteList(Resource):
             }
             return make_response(jsonify(body_response), HttpStatus.ok_200.value)
 
-        except Exception as e:
+        except:
             return (
-                {"error": "Couldn't retrieve quotes.", "detail": str(e)},
+                {"error": "Couldn't retrieve quotes."},
                 HttpStatus.internal_server_error_500.value,
             )
 

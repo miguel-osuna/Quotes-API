@@ -44,5 +44,24 @@ class AuthorQuoteRandom(Resource):
     method_decorators = []
 
     def get(self, author_name):
-        return {"message": f"Random quote from {author_name}"}, HttpStatus.ok_200.value
+        # Bypassing mongoengine to use pymongo (driver)
+        quote_collection = Quote._get_collection()
+
+        # Defining the pipeline for the aggregate
+        pipeline = [{"$match": {"authorName": author_name}}, {"$sample": {"size": 1}}]
+
+        # Converting CommandCursor class iterator into a list and the getting the only item in it
+        random_author_quote = [quote for quote in quote_collection.aggregate(pipeline)][
+            0
+        ]
+
+        response_body = {
+            "id": str(random_author_quote["_id"]),
+            "quoteText": random_author_quote["quoteText"],
+            "authorName": random_author_quote["authorName"],
+            "authorImage": random_author_quote["authorImage"],
+            "tags": random_author_quote["tags"],
+        }
+
+        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 

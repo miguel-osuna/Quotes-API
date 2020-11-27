@@ -48,9 +48,9 @@ class QuoteResource(Resource):
 
             return "", HttpStatus.no_content_204.value
 
-        except Exception as e:
+        except:
             return (
-                {"error": "Missing data.", "detail": str(e)},
+                {"error": "Missing data."},
                 HttpStatus.bad_request_400.value,
             )
 
@@ -157,24 +157,31 @@ class QuoteRandom(Resource):
 
     def get(self):
 
-        # Bypassing mongoengine to use pymongo (driver)
-        quote_collection = Quote._get_collection()
+        try:
+            # Bypassing mongoengine to use pymongo (driver)
+            quote_collection = Quote._get_collection()
 
-        # Defining the pipeline for the aggregate
-        pipeline = [{"$sample": {"size": 1}}]
+            # Defining the pipeline for the aggregate
+            pipeline = [{"$sample": {"size": 1}}]
 
-        # Converting CommandCursor class iterator into a list and then getting the only item in it
-        random_quote = [quote for quote in quote_collection.aggregate(pipeline)][0]
+            # Converting CommandCursor class iterator into a list and then getting the only item in it
+            random_quote = [quote for quote in quote_collection.aggregate(pipeline)][0]
 
-        response_body = {
-            "id": str(random_quote["_id"]),
-            "quoteText": random_quote["quoteText"],
-            "authorName": random_quote["authorName"],
-            "authorImage": random_quote["authorImage"],
-            "tags": random_quote["tags"],
-        }
+            response_body = {
+                "id": str(random_quote["_id"]),
+                "quoteText": random_quote["quoteText"],
+                "authorName": random_quote["authorName"],
+                "authorImage": random_quote["authorImage"],
+                "tags": random_quote["tags"],
+            }
 
-        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+
+        except:
+            return (
+                {"error": "Couldn't retrieve quote."},
+                HttpStatus.internal_server_error_500.value,
+            )
 
 
 class QuoteSearch(Resource):
@@ -186,19 +193,30 @@ class QuoteSearch(Resource):
     def get(self):
         args = request.args
 
-        query = str(args.get("query"))
-        page = int(args.get("page", 1))
-        per_page = int(args.get("per_page", 5))
+        try:
+            query = str(args["query"])
+            page = int(args.get("page", 1))
+            per_page = int(args.get("per_page", 5))
 
-        # Get the documents that match the text search and order them by score
-        # After that, create a paginator with the results
-        pagination = (
-            Quote.objects.search_text(query)
-            .order_by("$text_score")
-            .paginate(page=page, per_page=per_page)
-        )
+        except:
+            {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-        response_body = quote_paginator(pagination, "api.quote_search")
+        try:
 
-        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+            # Get the documents that match the text search and order them by score
+            # After that, create a paginator with the results
+            pagination = (
+                Quote.objects.search_text(query)
+                .order_by("$text_score")
+                .paginate(page=page, per_page=per_page)
+            )
 
+            response_body = quote_paginator(pagination, "api.quote_search")
+
+            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+
+        except:
+            return (
+                {"error": "Couldn't retrieve quotes."},
+                HttpStatus.internal_server_error_500.value,
+            )

@@ -114,9 +114,9 @@ class QuoteList(Resource):
             # Generating pagination of quotes
             pagination = Quote.objects.paginate(page=page, per_page=per_page)
 
-            body_response = quote_paginator(pagination, "api.quotes")
+            response_body = quote_paginator(pagination, "api.quotes")
 
-            return make_response(jsonify(body_response), HttpStatus.ok_200.value)
+            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
         except:
             return (
@@ -147,3 +147,55 @@ class QuoteList(Resource):
                 {"error": "Couldn't create quote entry."},
                 HttpStatus.internal_server_error_500.value,
             )
+
+
+class QuoteRandom(Resource):
+    """ Random quote object. """
+
+    # Decorators applied to all class methods
+    method_decorators = []
+
+    def get(self):
+
+        # Bypassing mongoengine to use pymongo (driver)
+        quote_collection = Quote._get_collection()
+
+        print("Quote collection:", quote_collection)
+
+        # Getting sample from quote collection
+        # random_quote_list = [
+        #     s for s in quote_collection.aggregate([{"$sample": {"size": 1}}])
+        # ]
+
+        random_quote = [
+            quote for quote in quote_collection.aggregate([{"$sample": {"size": 1}}])
+        ][0]
+
+        print(random_quote)
+
+        response_body = {
+            "id": str(random_quote["_id"]),
+            "quoteText": random_quote["quoteText"],
+            "authorName": random_quote["authorName"],
+            "authorImage": random_quote["authorImage"],
+            "tags": random_quote["tags"],
+        }
+
+        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+
+
+class QuoteSearch(Resource):
+    """ Query search for quote object. """
+
+    # Decorators applied to all class methods
+    method_decorators = []
+
+    def get(self):
+        args = request.args
+
+        query = str(args.get("query"))
+        page = int(args.get("page", 1))
+        per_page = int(args.get("per_page", 5))
+
+        return {"message": f"Your query was {query}"}, HttpStatus.ok_200.value
+

@@ -4,9 +4,13 @@ from flask_restful import Api
 from quotes_api.api.resources import (
     QuoteResource,
     QuoteList,
+    QuoteRandom,
+    QuoteSearch,
     AuthorQuoteList,
+    AuthorQuoteRandom,
     CategoryList,
     CategoryQuoteList,
+    CategoryQuoteRandom,
 )
 from quotes_api.common.http_status import HttpStatus
 
@@ -17,16 +21,17 @@ api = Api(blueprint)
 # Quotes
 api.add_resource(QuoteResource, "/quotes/<quote_id>", endpoint="quote_by_id")
 api.add_resource(QuoteList, "/quotes", endpoint="quotes")
-
-# Pending
-# api.add_resource(, "/quotes/random", endpoint="quote_random")
-# api.add_resource(, "/quotes/search/<string:quote_fragment>", endpoint="quote_search")
+api.add_resource(QuoteRandom, "/quotes/random", endpoint="quote_random")
+api.add_resource(
+    QuoteSearch, "/quotes/search", endpoint="quote_search"
+)
 
 api.add_resource(
     AuthorQuoteList, "/authors/<string:author_name>", endpoint="quotes_by_author"
 )
-# Pending
-# api.add_resource(, "/authors/random, endpoint="author_random)
+api.add_resource(
+    AuthorQuoteRandom, "/authors/<string:author_name>/random", endpoint="author_random"
+)
 
 api.add_resource(CategoryList, "/categories", endpoint="categories")
 api.add_resource(
@@ -34,5 +39,8 @@ api.add_resource(
     "/categories/<string:category_name>",
     endpoint="quotes_by_category",
 )
-# Pending
-# api.add_resource(, "/categories/random", endpoint="category_random")
+api.add_resource(
+    CategoryQuoteRandom,
+    "/categories/<string:category_name>/random",
+    endpoint="category_random",
+)

@@ -7,7 +7,7 @@ from quotes_api.common import HttpStatus, quote_paginator
 
 
 class AuthorQuoteList(Resource):
-    """ Author quote object list. """
+    """ Quote object list filtered by author. """
 
     # Decorators applied to all class methods
     method_decorators = []
@@ -25,14 +25,24 @@ class AuthorQuoteList(Resource):
                 page=page, per_page=per_page
             )
 
-            body_response = quote_paginator(
+            response_body = quote_paginator(
                 pagination, "api.quotes_by_author", author_name=author_name
             )
 
-            return make_response(jsonify(body_response, HttpStatus.ok_200.value))
+            return make_response(jsonify(response_body, HttpStatus.ok_200.value))
 
         except:
             {
                 "error": "Couldn't retrieve quotes"
             }, HttpStatus.internal_server_error_500.value
+
+
+class AuthorQuoteRandom(Resource):
+    """ Random quote object filtered by author. """
+
+    # Decorators applied to all class methods
+    method_decorators = []
+
+    def get(self, author_name):
+        return {"message": f"Random quote from {author_name}"}, HttpStatus.ok_200.value
 

@@ -56,7 +56,7 @@ class CategoryList(Resource):
 
 
 class CategoryQuoteList(Resource):
-    """ Category quote object list. """
+    """ Quote object list filtered by category. """
 
     # Decorators applied to all class methods
     method_decorators = []
@@ -75,11 +75,11 @@ class CategoryQuoteList(Resource):
                 page=page, per_page=per_page
             )
 
-            body_response = quote_paginator(
+            response_body = quote_paginator(
                 pagination, "api.quotes_by_category", category_name=category_name
             )
 
-            return make_response(jsonify(body_response), HttpStatus.ok_200.value)
+            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
         except:
             return (
@@ -87,3 +87,16 @@ class CategoryQuoteList(Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
+
+class CategoryQuoteRandom(Resource):
+    """ Random quote object filtered by category. """
+
+    # Decorators applied to all class methods
+    method_decorators = []
+
+    def get(self, category_name):
+
+        return (
+            {"message": f"Random quote from category {category_name}"},
+            HttpStatus.ok_200.value,
+        )

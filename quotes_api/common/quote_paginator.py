@@ -48,7 +48,7 @@ def quote_paginator(pagination, endpoint, **kwargs):
         else None
     )
 
-    body_response = {
+    response_body = {
         "meta": {
             "page_number": pagination.page,
             "page_size": pagination.per_page,
@@ -59,5 +59,5 @@ def quote_paginator(pagination, endpoint, **kwargs):
         "records": quote_items,
     }
 
-    return body_response
+    return response_body
 

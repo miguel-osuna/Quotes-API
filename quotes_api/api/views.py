@@ -22,10 +22,9 @@ api = Api(blueprint)
 api.add_resource(QuoteResource, "/quotes/<quote_id>", endpoint="quote_by_id")
 api.add_resource(QuoteList, "/quotes", endpoint="quotes")
 api.add_resource(QuoteRandom, "/quotes/random", endpoint="quote_random")
-api.add_resource(
-    QuoteSearch, "/quotes/search", endpoint="quote_search"
-)
+api.add_resource(QuoteSearch, "/quotes/search", endpoint="quote_search")
 
+# Authors
 api.add_resource(
     AuthorQuoteList, "/authors/<string:author_name>", endpoint="quotes_by_author"
 )
@@ -33,6 +32,7 @@ api.add_resource(
     AuthorQuoteRandom, "/authors/<string:author_name>/random", endpoint="author_random"
 )
 
+# Categories
 api.add_resource(CategoryList, "/categories", endpoint="categories")
 api.add_resource(
     CategoryQuoteList,

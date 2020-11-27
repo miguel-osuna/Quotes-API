@@ -190,5 +190,15 @@ class QuoteSearch(Resource):
         page = int(args.get("page", 1))
         per_page = int(args.get("per_page", 5))
 
-        return {"message": f"Your query was {query}"}, HttpStatus.ok_200.value
+        # Get the documents that match the text search and order them by score
+        # After that, create a paginator with the results
+        pagination = (
+            Quote.objects.search_text(query)
+            .order_by("$text_score")
+            .paginate(page=page, per_page=per_page)
+        )
+
+        response_body = quote_paginator(pagination, "api.quote_search")
+
+        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 

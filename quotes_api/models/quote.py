@@ -11,3 +11,14 @@ class Quote(odm.Document):
         null=False,
         default=["other"],
     )
+
+    meta = {
+        "indexes": [
+            {
+                "fields": ["$quoteText"],
+                "default_language": "english",
+                "weights": {"quoteText": 1},
+            }
+        ]
+    }
+

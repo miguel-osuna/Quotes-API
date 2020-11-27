@@ -160,18 +160,11 @@ class QuoteRandom(Resource):
         # Bypassing mongoengine to use pymongo (driver)
         quote_collection = Quote._get_collection()
 
-        print("Quote collection:", quote_collection)
+        # Defining the pipeline for the aggregate
+        pipeline = [{"$sample": {"size": 1}}]
 
-        # Getting sample from quote collection
-        # random_quote_list = [
-        #     s for s in quote_collection.aggregate([{"$sample": {"size": 1}}])
-        # ]
-
-        random_quote = [
-            quote for quote in quote_collection.aggregate([{"$sample": {"size": 1}}])
-        ][0]
-
-        print(random_quote)
+        # Converting CommandCursor class iterator into a list and then getting the only item in it
+        random_quote = [quote for quote in quote_collection.aggregate(pipeline)][0]
 
         response_body = {
             "id": str(random_quote["_id"]),

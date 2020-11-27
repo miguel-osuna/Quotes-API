@@ -96,7 +96,26 @@ class CategoryQuoteRandom(Resource):
 
     def get(self, category_name):
 
-        return (
-            {"message": f"Random quote from category {category_name}"},
-            HttpStatus.ok_200.value,
-        )
+        # Bypassing mongoengine to use pymongo (driver)
+        quote_collection = Quote._get_collection()
+
+        # Defining the pipeline for the aggregate
+        pipeline = [
+            {"$match": {"tags": {"$elemMatch": {"$eq": category_name}}}},
+            {"$sample": {"size": 1}},
+        ]
+
+        # Converting CommandCursor class iterator into a list and then getting the only item in it
+        random_category_quote = [
+            quote for quote in quote_collection.aggregate(pipeline)
+        ][0]
+
+        response_body = {
+            "id": str(random_category_quote["_id"]),
+            "quoteText": random_category_quote["quoteText"],
+            "authorName": random_category_quote["authorName"],
+            "authorImage": random_category_quote["authorImage"],
+            "tags": random_category_quote["tags"],
+        }
+
+        return make_response(jsonify(response_body), HttpStatus.ok_200.value)

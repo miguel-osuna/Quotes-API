@@ -50,7 +50,7 @@ class AuthorQuoteRandom(Resource):
         # Defining the pipeline for the aggregate
         pipeline = [{"$match": {"authorName": author_name}}, {"$sample": {"size": 1}}]
 
-        # Converting CommandCursor class iterator into a list and the getting the only item in it
+        # Converting CommandCursor class iterator into a list and then getting the only item in it
         random_author_quote = [quote for quote in quote_collection.aggregate(pipeline)][
             0
         ]

@@ -10,6 +10,7 @@ class User(odm.Document):
     active = odm.BooleanField(default=True)
 
     def __init__(self, **kwargs):
+        """ User initialization with password encryption. """
         super().__init__(**kwargs)
         self.password = pwd_context.hash(self.password)
 

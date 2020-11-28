@@ -15,6 +15,8 @@ class Config(object):
 
     # Fask JWT Extended Confifuration
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+    JWT_ACCESS_TOKEN_EXPIRES = 15 * 60  # 15 minutes in seconds
+    JWT_REFRESH_TOKEN_EXPIRES = 30 * 24 * 60 * 60  # 30 days in seconds
 
 
 class ProductionConfig(Config):

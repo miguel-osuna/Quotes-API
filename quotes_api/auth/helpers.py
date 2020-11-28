@@ -10,9 +10,12 @@ from quotes_api.models import TokenBlacklist, User
 
 def add_token_to_database(encoded_token, identity_claim):
     """ Adds a new token to the database. It is not revoked when it's added. """
-    decoded_token = decode_token(encoded_token)
-    print("Decoded token:", decoded_token)
+    # Decode token to get its contents
+    decoded_token = decode_token(encoded_token, allow_expired=False)
 
+    # Unused variables: "iat", "nbf"
+
+    # Decoded token variables
     jti = decoded_token["jti"]
     token_type = decoded_token["type"]
     expires = datetime.fromtimestamp(decoded_token["exp"])
@@ -20,7 +23,7 @@ def add_token_to_database(encoded_token, identity_claim):
     user_identity = decoded_token[identity_claim]
 
     # Get user document to add to the token blacklist
-    user = User.objects.first(id=user_identity)
+    user = User.objects.get(id=user_identity)
 
     db_token = TokenBlacklist(
         jti=jti, tokenType=token_type, user=user, expires=expires, revoked=revoked
@@ -38,7 +41,7 @@ def is_token_revoked(decoded_token):
     jti = decoded_token["jti"]
 
     try:
-        token = TokenBlacklist.first(jti=jti)
+        token = TokenBlacklist.get(jti=jti)
         return token.revoked
     except:
         return True
@@ -52,13 +55,13 @@ def revoke_token(token_jti, user_identity):
     """
     try:
         # Get user by its id
-        user = User.objects.first(id=user_identity)
+        user = User.objects.get(id=user_identity)
 
     except:
         raise Exception("Could not find user with id {}".format(user_identity))
 
     try:
-        token = TokenBlacklist.objects.first(jti=token_jti, user=user)
+        token = TokenBlacklist.objects.get(jti=token_jti, user=user)
         token.revoked = True
         token.save()
 

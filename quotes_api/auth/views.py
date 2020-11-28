@@ -8,6 +8,7 @@ from flask_jwt_extended import (
     jwt_refresh_token_required,
     get_jwt_identity,
     get_raw_jwt,
+    decode_token,
 )
 
 from quotes_api.models import User
@@ -33,19 +34,15 @@ def login():
         username = data["username"]
         password = data["password"]
 
-        print("Username:", username)
-        print("Password:", password)
-
         try:
             # Check if there's a match for the user in the database
-            user = User.objects.first(username=username)
-            print("User:", user)
+            user = User.objects.get(username=username)
 
             # Check the passwords match
             if not pwd_context.verify(password, user.password):
                 raise Exception
 
-            # Create an access token and refresh token
+            # Create an access token and refresh token. Default expiration
             access_token = create_access_token(identity=str(user.id))
             refresh_token = create_refresh_token(identity=str(user.id))
 
@@ -56,8 +53,11 @@ def login():
             response_body = {"accessToken": access_token, "refreshToken": refresh_token}
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
-        except:
-            return {"error": "Wrong credentials"}, HttpStatus.unauthorized_401.value
+        except Exception as e:
+            return (
+                {"error": "Wrong credentials", "detail": str(e)},
+                HttpStatus.unauthorized_401.value,
+            )
 
     except:
         return {"error": "Missing data."}, HttpStatus.bad_request_400.value
@@ -68,15 +68,22 @@ def login():
 def refresh():
     """ Get an access token from a refresh token. """
 
-    # Get the current user ID from the access token
-    current_user = get_jwt_identity()
-    access_token = create_access_token(identity=current_user)
+    try:
+        # Get the current user ID from the access token
+        current_user = get_jwt_identity()
+        access_token = create_access_token(identity=str(current_user))
 
-    # Add new access token to the database
-    add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
+        # Add new access token to the database
+        add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
 
-    response_body = {"accessToken": access_token}
-    return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+        response_body = {"accessToken": access_token}
+        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+
+    except:
+        return (
+            {"error": "Missing valid refresh token"},
+            HttpStatus.bad_request_400.value,
+        )
 
 
 @blueprint.route("/revoke_access", methods=["DELETE"])
@@ -85,11 +92,13 @@ def revoke_access_token():
     """ Revoke an access token. """
 
     # Get the JWT ID and the User ID respectively
-    jti = get_raw_jwt()["jti"]
+    raw_jwt = get_raw_jwt()
+    print("Raw jwt", raw_jwt)
+    jti = raw_jwt["jti"]
     user_identity = get_jwt_identity()
 
     revoke_token(jti, user_identity)
-    return {"message": "Token revoked."}, HttpStatus.ok_200.value
+    return "", HttpStatus.no_content_204.value
 
 
 @blueprint.route("revoke_refresh", methods=["DELETE"])
@@ -98,11 +107,13 @@ def revoke_refresh_token():
     """ Revoke a refresh token, used mainly for logout. """
 
     # Get the JWT ID and the User ID respectively
-    jti = get_raw_jwt()["jti"]
+    raw_jwt = get_raw_jwt()
+    print("Raw jwt", raw_jwt)
+    jti = raw_jwt["jti"]
     user_identity = get_jwt_identity()
 
     revoke_token(jti, user_identity)
-    return {"message": "Token revoked."}, HttpStatus.ok_200.value
+    return "", HttpStatus.no_content_204.value
 
 
 @blueprint.route("/create_dev_token", methods=["POST"])
@@ -123,7 +134,7 @@ def create_api_token():
     """ Creates a permanent api token. """
     user_identity = get_jwt_identity()
     expires = False
-    token = create_access_token(user_identity, expires)
+    token = create_access_token(user_identity, expires_delta=expires)
 
     response_body = {"token": token}
     return make_response(jsonify(response_body), HttpStatus.created_201.value)
@@ -132,7 +143,7 @@ def create_api_token():
 @jwt.user_loader_callback_loader
 def user_loader_callback(identity):
     """ JWT callback function that is called to load a user object using the id from the token. """
-    return User.objects.first(id=identity)
+    return User.objects.get(id=identity)
 
 
 @jwt.token_in_blacklist_loader

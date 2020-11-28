@@ -13,6 +13,9 @@ class Config(object):
     TESTING = False
     SECRET_KEY = os.getenv("SECRET_KEY")
 
+    # Fask JWT Extended Confifuration
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+
 
 class ProductionConfig(Config):
     """ Production environment configuration class. """
@@ -48,6 +51,10 @@ class DevelopmentConfig(Config):
     MONGODB_DB = os.getenv("MONGODB_DB")
     MONGODB_HOST = os.getenv("MONGODB_HOST")
     MONGODB_PORT = int(os.getenv("MONGODB_PORT"))
+
+    # Flask JWT Extended Configuration
+    JWT_BLACKLIST_ENABLED = True
+    JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
 
 
 class TestingConfig(Config):

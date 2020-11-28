@@ -22,3 +22,11 @@ class Quote(odm.Document):
         ]
     }
 
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "quoteText": self.quoteText,
+            "authorName": self.authorName,
+            "authorImage": self.authorImage,
+            "tags": self.tags,
+        }

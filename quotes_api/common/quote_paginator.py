@@ -7,14 +7,7 @@ def quote_paginator(pagination, endpoint, **kwargs):
 
     quote_items = []
     for quote in pagination.items:
-        quote_object = {
-            "id": str(quote.id),
-            "quoteText": quote.quoteText,
-            "authorName": quote.authorName,
-            "authorImage": quote.authorImage,
-            "tags": quote.tags,
-        }
-        quote_items.append(quote_object)
+        quote_items.append(quote.to_dict())
 
     self_link = url_for(
         endpoint=endpoint,

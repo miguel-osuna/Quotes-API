@@ -1,8 +1,8 @@
 import os
 from flask import Flask
 
-from quotes_api import api
-from quotes_api.extensions import odm
+from quotes_api import api, auth
+from quotes_api.extensions import odm, jwt
 
 
 def create_app(configuration="ProductionConfig"):
@@ -32,9 +32,11 @@ def create_app(configuration="ProductionConfig"):
 def configure_extensions(app):
     """ Configure flask extensions. """
     odm.init_app(app)
+    jwt.init_app(app)
 
 
 def register_blueprints(app):
     """ Register all blueprints for an application. """
     app.register_blueprint(api.views.blueprint)
+    app.register_blueprint(auth.views.blueprint)
 

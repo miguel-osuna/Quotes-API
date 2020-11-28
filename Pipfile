@@ -20,7 +20,9 @@ ptvsd = "*"
 flask = "*"
 flask-restful = "*"
 flask-mongoengine = "*"
+flask-jwt-extended = "*"
 python-dotenv = "*"
+passlib = "*"
 
 [script]
 

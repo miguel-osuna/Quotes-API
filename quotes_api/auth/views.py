@@ -115,23 +115,23 @@ def logout():
     pass
 
 
-# Provide a way for a user to look at their tokens
-@blueprint.route("/tokens", method=["POST"])
-@jwt_required
-def get_tokens():
+# # Provide a way for a user to look at their tokens
+# @blueprint.route("/tokens", method=["POST"])
+# @jwt_required
+# def get_tokens():
+#     """ Get all the tokens from the user identity stored in the jwt. """
+#     try:
+#         user_identity = get_jwt_identity()
+#         all_tokens = get_user_tokens(user_identity)
+#         response_body = {"tokens": [token.to_dict() for token in all_tokens]}
 
-    try:
-        user_identity = get_jwt_identity()
-        all_tokens = get_user_tokens(user_identity)
-        response_body = {"tokens": [token.to_dict() for token in all_tokens]}
+#         return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
-        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
-
-    except:
-        return (
-            {"error": "Could not get tokens"},
-            HttpStatus.internal_server_error_500.value,
-        )
+#     except:
+#         return (
+#             {"error": "Could not get tokens"},
+#             HttpStatus.internal_server_error_500.value,
+#         )
 
 
 # Revoked refresh tokens will not be able to access this endpoint
@@ -227,9 +227,8 @@ def create_api_token():
     """ Creates a permanent api token. This token is not added to the blacklist. """
 
     user_identity = get_jwt_identity()
-    expires = False
     token = create_access_token(
-        identity=str(user_identity), expires_delta=expires, fresh=False
+        identity=str(user_identity), expires_delta=False, fresh=False
     )
 
     # Add new tokens to the database

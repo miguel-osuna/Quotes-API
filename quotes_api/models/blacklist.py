@@ -10,7 +10,7 @@ class TokenBlacklist(odm.Document):
     tokenType = odm.StringField(max_length=10, null=False)
     user = odm.ReferenceField(User, null=False, reverse_delete_rule=mongoengine.CASCADE)
     revoked = odm.BooleanField(null=False)
-    expires = odm.DateTimeField(null=False)
+    expires = odm.DateTimeField(null=True)
 
     def __str__(self):
         return (

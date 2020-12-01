@@ -15,10 +15,16 @@ def add_token_to_database(encoded_token, identity_claim):
     decoded_token = decode_token(encoded_token)
 
     # Decoded token variables
-    jti = decoded_token["jti"]
-    token_type = decoded_token["type"]
-    user_identity = decoded_token[identity_claim]
-    expires = datetime.fromtimestamp(decoded_token["exp"])
+    jti = decoded_token.get("jti")
+    token_type = decoded_token.get("type")
+    user_identity = decoded_token.get(identity_claim)
+
+    exp = decoded_token.get("exp", None)
+    if exp != None:
+        expires = datetime.fromtimestamp(exp)
+    else:
+        expires = None
+
     revoked = False
 
     # Get user document to add to the token blacklist
@@ -48,6 +54,7 @@ def is_token_revoked(decoded_token):
 
 
 def get_user_tokens(user_identity):
+    """ Gets all the revoked and unrevoked tokens from a user. """
     try:
         pass
         user = User.objects.get(id=str(user_identity))

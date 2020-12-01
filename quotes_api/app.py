@@ -16,7 +16,7 @@ def create_app(configuration="ProductionConfig"):
     # print("Initial App Configuration: ", app.config)
 
     # Uses a configuration object as the app's settings
-    settings = f"quotes_api.config.{configuration}"
+    settings = "quotes_api.config.{}".format(configuration)
 
     # Setup app configuration from configuration object
     app.config.from_object(settings)

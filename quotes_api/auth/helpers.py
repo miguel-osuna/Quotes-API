@@ -31,33 +31,43 @@ def add_token_to_database(encoded_token, identity_claim):
 
 
 def is_token_revoked(decoded_token):
+    """ Checks if the given token is revoked or not. 
+
+    Because we are adding all the tokens (access and refresh), if the token is not present
+    in the database, automatically it's going to be considered as "revoked", as we don't know
+    its origin (where it was created).
     """
-    Checks if the given token is revoked or not. Because we are adding all the
-    tokens that we create into this database, if the token is not present in the
-    database, we are going to consider it revoked, as we don't know where it was
-    created.
-    """
-    jti = decoded_token["jti"]
+
+    jti = str(decoded_token["jti"])
 
     try:
-        token = TokenBlacklist.get(jti=jti)
+        token = TokenBlacklist.objects.get(jti=jti)
         return token.revoked
     except:
         return True
 
 
+def get_user_tokens(user_identity):
+    try:
+        pass
+        user = User.objects.get(id=str(user_identity))
+        tokens = TokenBlacklist.objects.filter(user=user)
+        return tokens
+    except:
+        raise Exception(f"Could not find tokens for user with id {user_identity}")
+
+
 def revoke_token(token_jti, user_identity):
     """ Revokes the given token.
 
-    Since we use it only on logout that already requires a valid access token, 
-    if token is not found we raise an exception.
+    If no token is found we raise an exception.
     """
     try:
         # Get user by its id
         user = User.objects.get(id=user_identity)
 
     except:
-        raise Exception("Could not find user with id {}".format(user_identity))
+        raise Exception(f"Could not find user with id {user_identity}")
 
     try:
         token = TokenBlacklist.objects.get(jti=token_jti, user=user)
@@ -65,7 +75,28 @@ def revoke_token(token_jti, user_identity):
         token.save()
 
     except:
-        raise Exception("Couldn't find token with jti {}".format(token_jti))
+        raise Exception(f"Could not find token with jti {token_jti}")
+
+
+def unrevoke_token(token_jti, user_identity):
+    """ Unrevokes the given token. 
+
+    If no token is found, we raise an exception.
+    """
+    try:
+        # Get user by its id
+        user = User.objects.get(id=user_identity)
+
+    except:
+        raise Exception(f"Could not find user with id {user_identity}")
+
+    try:
+        token = TokenBlacklist.objects.get(jti=token_jti, user=user)
+        token.revoked = False
+        token.save()
+
+    except:
+        raise Exception(f"Could not find token with jti {token_jti}")
 
 
 def prune_database():

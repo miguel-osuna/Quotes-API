@@ -12,6 +12,18 @@ class TokenBlacklist(odm.Document):
     revoked = odm.BooleanField(null=False)
     expires = odm.DateTimeField(null=False)
 
+    def __str__(self):
+        return (
+            f"JTI: {self.jti}\n"
+            f"Token Type: {self.tokenType}\n"
+            f"User ID: {self.user.id}\n"
+            f"Revoked: {self.revoked}\n"
+            f"Expires: {self.expires}\n"
+        )
+
+    def __repr__(self):
+        return f"<Token {str(self.id)}>"
+
     def to_dict(self):
         return {
             "id": str(self.id),

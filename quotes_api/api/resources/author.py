@@ -7,6 +7,17 @@ from quotes_api.extensions import odm
 from quotes_api.common import HttpStatus, quote_paginator
 
 
+class AuthorList(Resource):
+    """ List of quote authors. """
+
+    # Decorators applied to all class methods
+    method_decorators = [jwt_required]
+
+    def get(self):
+        """ Get quote authors by alphabetical order. """
+        pass
+
+
 class AuthorQuoteList(Resource):
     """ Quote object list filtered by author. """
 

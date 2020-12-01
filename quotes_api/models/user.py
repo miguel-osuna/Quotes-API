@@ -12,7 +12,7 @@ class User(odm.Document):
         odm.StringField(required=True, null=False),
         required=True,
         null=False,
-        default=["user"],
+        default=["basic"],
     )
 
     def __init__(self, **kwargs):
@@ -20,8 +20,17 @@ class User(odm.Document):
         super().__init__(**kwargs)
         self.password = pwd_context.hash(self.password)
 
+    def __str__(self):
+        return (
+            f"Username: {self.username}\n"
+            f"Email: {self.email}\n"
+            f"Password: {self.password}\n"
+            f"Active: {self.active}\n"
+            f"Roles: {self.roles}\n"
+        )
+
     def __repr__(self):
-        return "<User {}>".format(self.username)
+        return f"<User {str(self.id)}>"
 
     def to_dict(self):
         return {

@@ -12,6 +12,17 @@ class Quote(odm.Document):
         default=["other"],
     )
 
+    def __str__(self):
+        return (
+            f"Quote: {self.quoteText}\n"
+            f"Author: {self.authorName}\n"
+            f"Image: {self.authorImage}\n"
+            f"tags: {self.tags}\n"
+        )
+
+    def __repr__(self):
+        return f"<Quote {str(self.id)}>"
+
     meta = {
         "indexes": [
             {

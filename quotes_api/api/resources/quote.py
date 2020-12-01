@@ -17,6 +17,7 @@ class QuoteResource(Resource):
         """ Get quote. """
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
+
         except:
             return (
                 {"error": "The requested URL was not found on the server."},

@@ -1,5 +1,6 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 
 from quotes_api.models import Quote
 from quotes_api.extensions import odm
@@ -10,7 +11,7 @@ class QuoteResource(Resource):
     """ Single quote object resource. """
 
     # Decorators applied to all class methods
-    method_decorators = []
+    method_decorators = [jwt_required]
 
     def get(self, quote_id):
         """ Get quote. """
@@ -100,7 +101,7 @@ class QuoteList(Resource):
     """ Quote object list. """
 
     # Decorators applied to all class methods
-    method_decorators = []
+    method_decorators = [jwt_required]
 
     def get(self):
         """ Get list of quotes. """
@@ -153,7 +154,7 @@ class QuoteRandom(Resource):
     """ Random quote object. """
 
     # Decorators applied to all class methods
-    method_decorators = []
+    method_decorators = [jwt_required]
 
     def get(self):
 
@@ -188,7 +189,7 @@ class QuoteSearch(Resource):
     """ Query search for quote object. """
 
     # Decorators applied to all class methods
-    method_decorators = []
+    method_decorators = [jwt_required]
 
     def get(self):
         args = request.args

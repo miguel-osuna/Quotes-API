@@ -1,5 +1,6 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 
 from quotes_api.models import Quote
 from quotes_api.extensions import odm
@@ -10,7 +11,7 @@ class AuthorQuoteList(Resource):
     """ Quote object list filtered by author. """
 
     # Decorators applied to all class methods
-    method_decorators = []
+    method_decorators = [jwt_required]
 
     def get(self, author_name):
         """ Get list of author quotes. """
@@ -41,7 +42,7 @@ class AuthorQuoteRandom(Resource):
     """ Random quote object filtered by author. """
 
     # Decorators applied to all class methods
-    method_decorators = []
+    method_decorators = [jwt_required]
 
     def get(self, author_name):
 

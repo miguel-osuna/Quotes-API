@@ -10,17 +10,16 @@ from quotes_api.models import TokenBlacklist, User
 
 def add_token_to_database(encoded_token, identity_claim):
     """ Adds a new token to the database. It is not revoked when it's added. """
-    # Decode token to get its contents
-    decoded_token = decode_token(encoded_token, allow_expired=False)
 
-    # Unused variables: "iat", "nbf"
+    # Decode token to get its contents
+    decoded_token = decode_token(encoded_token)
 
     # Decoded token variables
     jti = decoded_token["jti"]
     token_type = decoded_token["type"]
+    user_identity = decoded_token[identity_claim]
     expires = datetime.fromtimestamp(decoded_token["exp"])
     revoked = False
-    user_identity = decoded_token[identity_claim]
 
     # Get user document to add to the token blacklist
     user = User.objects.get(id=user_identity)

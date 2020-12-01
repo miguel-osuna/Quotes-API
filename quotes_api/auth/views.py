@@ -23,6 +23,33 @@ from quotes_api.common import HttpStatus
 blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
 
+@blueprint.route("/signup", methods=["POST"])
+def register():
+    """ User registration to the database. """
+    try:
+        # Get data from request
+        data = request.get_json()
+
+        username = data["username"]
+        email = data["email"]
+        password = data["password"]
+
+        try:
+            user = User(username=username, email=email, password=password)
+            user.save()
+
+            return {"message": "Successful sign up."}, HttpStatus.created_201.value
+
+        except:
+            return (
+                {"error": "Could not sign up user."},
+                HttpStatus.internal_server_error_500.value,
+            )
+
+    except:
+        return {"error": "Missing data"}, HttpStatus.bad_request_400.value
+
+
 @blueprint.route("/login", methods=["POST"])
 def login():
     """ Authenticate a user and return tokens. """
@@ -42,8 +69,9 @@ def login():
             if not pwd_context.verify(password, user.password):
                 raise Exception
 
-            # Create an access token and refresh token. Default expiration
-            access_token = create_access_token(identity=str(user.id))
+            # Create an access token and refresh token. Default expiration.
+            # Generate a fresh access token because of the login
+            access_token = create_access_token(identity=str(user.id), fresh=True)
             refresh_token = create_refresh_token(identity=str(user.id))
 
             # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
@@ -71,7 +99,7 @@ def refresh():
     try:
         # Get the current user ID from the access token
         current_user = get_jwt_identity()
-        access_token = create_access_token(identity=str(current_user))
+        access_token = create_access_token(identity=str(current_user), fresh=False)
 
         # Add new access token to the database
         add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
@@ -93,7 +121,6 @@ def revoke_access_token():
 
     # Get the JWT ID and the User ID respectively
     raw_jwt = get_raw_jwt()
-    print("Raw jwt", raw_jwt)
     jti = raw_jwt["jti"]
     user_identity = get_jwt_identity()
 
@@ -108,7 +135,6 @@ def revoke_refresh_token():
 
     # Get the JWT ID and the User ID respectively
     raw_jwt = get_raw_jwt()
-    print("Raw jwt", raw_jwt)
     jti = raw_jwt["jti"]
     user_identity = get_jwt_identity()
 
@@ -119,10 +145,12 @@ def revoke_refresh_token():
 @blueprint.route("/create_dev_token", methods=["POST"])
 @jwt_required
 def create_dev_token():
-    """ Creates a trial development token. """
+    """ Creates a trial development token. This token is not added to the blacklist. """
     user_identity = get_jwt_identity()
     expires = timedelta(days=365)
-    token = create_access_token(user_identity, expires_delta=expires)
+    token = create_access_token(
+        identit=str(user_identity), expires_delta=expires, fresh=False
+    )
 
     response_body = {"token": token}
     return make_response(jsonify(response_body), HttpStatus.created_201.value)
@@ -131,23 +159,28 @@ def create_dev_token():
 @blueprint.route("/create_api_token", methods=["POST"])
 @jwt_required
 def create_api_token():
-    """ Creates a permanent api token. """
+    """ Creates a permanent api token. This token is not added to the blacklist. """
     user_identity = get_jwt_identity()
     expires = False
-    token = create_access_token(user_identity, expires_delta=expires)
+    token = create_access_token(
+        identity=str(user_identity), expires_delta=expires, fresh=False
+    )
 
     response_body = {"token": token}
     return make_response(jsonify(response_body), HttpStatus.created_201.value)
 
 
-@jwt.user_loader_callback_loader
-def user_loader_callback(identity):
-    """ JWT callback function that is called to load a user object using the id from the token. """
-    return User.objects.get(id=identity)
+""" Loader functions. These are callback functions invoked when an event happens. """
 
 
 @jwt.token_in_blacklist_loader
 def check_if_token_revoked(decoded_token):
-    """ JWT callback function that is called to check if the JWT has been revoked. """
+    """ Callback function that is called to check if the JWT has been revoked. """
     return is_token_revoked(decoded_token)
+
+
+@jwt.user_loader_callback_loader
+def user_loader_callback(identity):
+    """ Callback function that is called to load a user object using the id from the token. """
+    return User.objects.get(id=str(identity))
 

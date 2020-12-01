@@ -8,6 +8,12 @@ class User(odm.Document):
     email = odm.StringField(max_lenght=80, unique=True, null=False)
     password = odm.StringField(max_lenght=255, null=False)
     active = odm.BooleanField(default=True)
+    roles = odm.ListField(
+        odm.StringField(required=True, null=False),
+        required=True,
+        null=False,
+        default=["user"],
+    )
 
     def __init__(self, **kwargs):
         """ User initialization with password encryption. """
@@ -24,5 +30,6 @@ class User(odm.Document):
             "email": self.email,
             "password": self.password,
             "active": self.active,
+            "roles": self.roles,
         }
 

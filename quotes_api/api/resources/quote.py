@@ -15,7 +15,7 @@ class QuoteResource(Resource):
 
     @user_required
     def get(self, quote_id):
-        """ Get quote. """
+        """ Get quote by id. """
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
 
@@ -97,7 +97,7 @@ class QuoteResource(Resource):
 
         except:
             return (
-                {"error": "Couldn't delete quote."},
+                {"error": "Could not delete quote."},
                 HttpStatus.internal_server_error_500.value,
             )
 

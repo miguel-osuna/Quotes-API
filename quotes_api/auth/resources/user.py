@@ -1,7 +1,6 @@
 from flask import request, jsonify, make_response, current_app as app
 from flask_restful import Resource
 
-
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -124,12 +123,91 @@ class UserResource(Resource):
     method_decorators = []
 
     @admin_required
-    def get(self):
-        pass
+    def get(self, user_id):
+        " Get user by id. "
+        try:
+            user = User.objects.get_or_404(id=user_id)
+
+        except:
+            return (
+                {"error": "The requested URL was not found on the server."},
+                HttpStatus.not_found_404.value,
+            )
+
+        response_body = {
+            "user": {
+                "id": str(user.id),
+                "username": user.username,
+                "password": user.password,
+                "active": user.active,
+                "roles": user.roles,
+            }
+        }
+
+        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+
+    @admin_required
+    def put(self, user_id):
+        """ Replace entire user. """
+        try:
+            user = User.objects.get_or_404(id=user_id)
+        except:
+            return {"error": "The requested URL was not found on the server."}
+
+        try:
+            data = request.get_json()
+            user.update(**data)
+            user.save()
+
+            return "", HttpStatus.no_content_204.value
+
+        except:
+            return {"error": "Missing data."}, HttpStatus.bad_request_400.value
+
+    @admin_required
+    def patch(self, user_id):
+        """ Update user fields. """
+        try:
+            user = User.objects.get_or_404(id=user_id)
+
+        except:
+            return (
+                {"error": "The requested URL was not found on the server."},
+                HttpStatus.not_found_404.value,
+            )
+
+        try:
+            data = request.get_json()
+            user.update(**data)
+            user.save()
+
+            return "", HttpStatus.no_content_204.value
+
+        except:
+            return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
     @admin_required
     def delete(self, user_id):
-        pass
+        """ Delete user from the database. """
+
+        try:
+            user = User.objects.get_or_404(id=user_id)
+        except:
+
+            return (
+                {"error": "The requested URL was not found on the server."},
+                HttpStatus.not_found_404.value,
+            )
+
+        try:
+            user.delete()
+            return "", HttpStatus.no_content_204.value
+
+        except:
+            return (
+                {"error": "Could not delete user"},
+                HttpStatus.internal_server_error_500.value,
+            )
 
 
 class UserList(Resource):

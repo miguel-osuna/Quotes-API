@@ -5,6 +5,8 @@ from quotes_api.auth.resources.user import (
     UserResource,
     UserList,
     UserTokens,
+)
+from quotes_api.auth.resources.token import (
     TokenRefresh,
     AccessTokenRevoke,
     RefreshTokenRevoke,

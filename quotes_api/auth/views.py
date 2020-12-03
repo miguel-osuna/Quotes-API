@@ -42,9 +42,9 @@ api.add_resource(
 api.add_resource(
     RefreshTokenRevoke, "/revoke_refresh_token", endpoint="revoke_refresh_token"
 )
-api.add_resource(TrialToken, "/generate_trial_token", endpoint="trial_token")
+api.add_resource(TrialToken, "/generate_trial_key", endpoint="trial_token")
 api.add_resource(
-    PermanentToken, "/generate_permanent_token", endpoint="permanent_token"
+    PermanentToken, "/generate_permanent_key", endpoint="permanent_token"
 )
 
 

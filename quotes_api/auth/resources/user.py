@@ -243,28 +243,12 @@ class UserTokens(Resource):
 
     @user_required
     def get(self):
-        """ Get all the tokens from the user identity stored in the jwt. """
-        try:
-            user_identity = get_jwt_identity()
-            all_tokens = get_user_tokens(user_identity)
-            response_body = {"tokens": [token.to_dict() for token in all_tokens]}
-
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
-
-        except Exception as e:
-            return (
-                {"error": "Could not get tokens", "detail": str(e)},
-                HttpStatus.internal_server_error_500.value,
-            )
-
-    @user_required
-    def get(self):
         """ Gets all the revoked and unrevoked tokens from a user. """
 
         args = request.args
 
         page = int(args.get("page", 1))
-        per_page = int(args.get("per_page"), 5)
+        per_page = int(args.get("per_page", 5))
 
         try:
             # Generating pagination of tokens

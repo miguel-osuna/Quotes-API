@@ -3,7 +3,7 @@ from flask_restful import Resource
 
 from quotes_api.models import Quote
 from quotes_api.extensions import odm
-from quotes_api.common import HttpStatus, quote_paginator
+from quotes_api.common import HttpStatus, multipurpose_paginator
 from quotes_api.auth.decorators import user_required, admin_required
 
 
@@ -78,7 +78,7 @@ class CategoryQuoteList(Resource):
                 page=page, per_page=per_page
             )
 
-            response_body = quote_paginator(
+            response_body = multipurpose_paginator(
                 pagination, "api.quotes_by_category", category_name=category_name
             )
 

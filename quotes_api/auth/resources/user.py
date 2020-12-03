@@ -15,7 +15,7 @@ from quotes_api.auth.helpers import (
     add_token_to_database,
 )
 from quotes_api.auth.decorators import user_required, admin_required
-from quotes_api.common import HttpStatus
+from quotes_api.common import HttpStatus, multipurpose_paginator
 
 
 class UserSignup(Resource):
@@ -218,7 +218,17 @@ class UserList(Resource):
 
     @admin_required
     def get(self):
-        pass
+        
+        args = request.args 
+
+        page = int(args.get("page", 1))
+        per_page = int(args.get("per_page", 5))
+
+        try:
+            # Generating pagination of quotes 
+            pagination = User.objects.paginate(page=page, per_page=per_page)
+
+            response_body = multipurpose_paginator(pagination, "")
 
 
 class UserTokens(Resource):

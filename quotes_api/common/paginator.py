@@ -1,13 +1,13 @@
 from flask import url_for
 
 
-def quote_paginator(pagination, endpoint, **kwargs):
+def multipurpose_paginator(pagination, endpoint, **kwargs):
+    """ Paginator for supported models. """
 
-    # Creating list of quotes
-
-    quote_items = []
-    for quote in pagination.items:
-        quote_items.append(quote.to_dict())
+    # Creating list of items
+    items = []
+    for item in pagination.items:
+        items.append(item.to_dict())
 
     self_link = url_for(
         endpoint=endpoint,
@@ -49,7 +49,7 @@ def quote_paginator(pagination, endpoint, **kwargs):
             "total_records": pagination.total,
             "links": {"self": self_link, "prev": previous_link, "next": next_link},
         },
-        "records": quote_items,
+        "records": items,
     }
 
     return response_body

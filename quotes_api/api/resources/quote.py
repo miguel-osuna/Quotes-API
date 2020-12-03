@@ -3,7 +3,7 @@ from flask_restful import Resource
 
 from quotes_api.models import Quote
 from quotes_api.extensions import odm
-from quotes_api.common import HttpStatus, quote_paginator
+from quotes_api.common import HttpStatus, multipurpose_paginator
 from quotes_api.auth.decorators import user_required, admin_required
 
 
@@ -121,7 +121,7 @@ class QuoteList(Resource):
             # Generating pagination of quotes
             pagination = Quote.objects.paginate(page=page, per_page=per_page)
 
-            response_body = quote_paginator(pagination, "api.quotes")
+            response_body = multipurpose_paginator(pagination, "api.quotes")
 
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
@@ -221,7 +221,7 @@ class QuoteSearch(Resource):
                 .paginate(page=page, per_page=per_page)
             )
 
-            response_body = quote_paginator(pagination, "api.quote_search")
+            response_body = multipurpose_paginator(pagination, "api.quote_search")
 
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 

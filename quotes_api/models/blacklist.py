@@ -27,7 +27,7 @@ class TokenBlacklist(odm.Document):
     def to_dict(self):
         return {
             "id": str(self.id),
-            "jit": self.jit,
+            "jti": self.jti,
             "tokenType": self.tokenType,
             "user": str(self.user.id),
             "revoked": self.revoked,

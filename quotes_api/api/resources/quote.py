@@ -1,18 +1,19 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required
 
 from quotes_api.models import Quote
 from quotes_api.extensions import odm
 from quotes_api.common import HttpStatus, quote_paginator
+from quotes_api.auth.decorators import user_required, admin_required
 
 
 class QuoteResource(Resource):
     """ Single quote object resource. """
 
     # Decorators applied to all class methods
-    method_decorators = [jwt_required]
+    method_decorators = []
 
+    @user_required
     def get(self, quote_id):
         """ Get quote. """
         try:
@@ -36,6 +37,7 @@ class QuoteResource(Resource):
 
         return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
+    @admin_required
     def put(self, quote_id):
         """ Replace entire quote. """
         try:
@@ -56,6 +58,7 @@ class QuoteResource(Resource):
                 HttpStatus.bad_request_400.value,
             )
 
+    @admin_required
     def patch(self, quote_id):
         """ Update quote fields. """
         try:
@@ -76,6 +79,7 @@ class QuoteResource(Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
+    @admin_required
     def delete(self, quote_id):
         """ Delete quote. """
 
@@ -102,8 +106,9 @@ class QuoteList(Resource):
     """ Quote object list. """
 
     # Decorators applied to all class methods
-    method_decorators = [jwt_required]
+    method_decorators = []
 
+    @user_required
     def get(self):
         """ Get list of quotes. """
 
@@ -126,6 +131,7 @@ class QuoteList(Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
+    @admin_required
     def post(self):
         """ Create new quote. """
         try:
@@ -155,8 +161,9 @@ class QuoteRandom(Resource):
     """ Random quote object. """
 
     # Decorators applied to all class methods
-    method_decorators = [jwt_required]
+    method_decorators = []
 
+    @user_required
     def get(self):
 
         try:
@@ -190,8 +197,9 @@ class QuoteSearch(Resource):
     """ Query search for quote object. """
 
     # Decorators applied to all class methods
-    method_decorators = [jwt_required]
+    method_decorators = []
 
+    @user_required
     def get(self):
         args = request.args
 

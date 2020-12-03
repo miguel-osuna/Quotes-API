@@ -1,6 +1,5 @@
 from datetime import timedelta
 from flask import make_response, request, jsonify, Blueprint, current_app as app
-
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -24,21 +23,54 @@ from quotes_api.common import HttpStatus
 
 blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
-""" Loader functions. These are callback functions invoked when an event happens. """
-
-
+# CALLBACK FUNCTIONS
 @jwt.token_in_blacklist_loader
 def check_if_token_revoked(decoded_token):
-    """ Callback function that is called to check if the JWT has been revoked. """
+    """ 
+    Callback function that is called when a protected endpoint is accessed, 
+    and checks if the JWT has been revoked. 
+    """
     return is_token_revoked(decoded_token)
 
-
+# It might be unnecessary
 @jwt.user_loader_callback_loader
 def user_loader_callback(identity):
-    """ Callback function that is called to load a user object using the id from the token. """
-    return User.objects.get(id=str(identity))
+    """    
+    Callback function that will be called to automatically load an object when a protected endpoint
+    is accessed. 
+    """
+    try:
+        return User.objects.get(username=identity)
+    except:
+        return None
 
 
+@jwt.user_claims_loader
+def add_claims_to_access_token(user):
+    """ 
+    Callback function that is called whenever "create_access_token" is used.
+    
+    Adds custom user claims to the access token, and takes a User instance object as an argument.
+    Because we have a "User" instance, and not just an ID, it's not necessary to query the database.
+    """
+
+    # Dictionary accessible with function "get_jwt_claims"
+    return {"roles": user.roles}
+
+
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+    """ 
+    Callback function for getting a JSON serializable identity out of a "User" object passed into
+    "create_access_token" or "create_refresh_token".
+
+    We can define what the identity of the token will be like. We want it to be a string representing
+    the username.
+    """
+    return user.username
+
+
+# ROUTING
 @blueprint.route("/signup", methods=["POST"])
 def register():
     """ User registration to the database. """
@@ -79,7 +111,7 @@ def login():
 
         try:
             # Check if there's a match for the user in the database
-            user = User.objects.get(username=username)
+            user = User.objects(username=str(username)).first()
 
             # Check the passwords match
             if not pwd_context.verify(password, user.password):
@@ -88,8 +120,12 @@ def login():
                 raise Exception("Wrong password")
 
             # Store tokens in our database with a status of currently not revoked
-            access_token = create_access_token(identity=str(user.id), fresh=True)
-            refresh_token = create_refresh_token(identity=str(user.id))
+
+            # We pass the user instance as the "identity" for the tokens.  With this,
+            # callback function have access to the complete object, avoiding
+            # queries to the database.
+            access_token = create_access_token(identity=user, fresh=True)
+            refresh_token = create_refresh_token(identity=user)
 
             # Add new tokens to the database
             # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
@@ -99,9 +135,9 @@ def login():
             response_body = {"accessToken": access_token, "refreshToken": refresh_token}
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
-        except Exception as e:
+        except:
             return (
-                {"error": "Wrong credentials", "detail": str(e)},
+                {"error": "Wrong credentials"},
                 HttpStatus.unauthorized_401.value,
             )
 
@@ -115,23 +151,23 @@ def logout():
     pass
 
 
-# # Provide a way for a user to look at their tokens
-# @blueprint.route("/tokens", method=["POST"])
-# @jwt_required
-# def get_tokens():
-#     """ Get all the tokens from the user identity stored in the jwt. """
-#     try:
-#         user_identity = get_jwt_identity()
-#         all_tokens = get_user_tokens(user_identity)
-#         response_body = {"tokens": [token.to_dict() for token in all_tokens]}
+# Provide a way for a user to look at their tokens
+@blueprint.route("/tokens", methods=["GET"])
+@jwt_required
+def get_tokens():
+    """ Get all the tokens from the user identity stored in the jwt. """
+    try:
+        user_identity = get_jwt_identity()
+        all_tokens = get_user_tokens(user_identity)
+        response_body = {"tokens": [token.to_dict() for token in all_tokens]}
 
-#         return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
-#     except:
-#         return (
-#             {"error": "Could not get tokens"},
-#             HttpStatus.internal_server_error_500.value,
-#         )
+    except Exception as e:
+        return (
+            {"error": "Could not get tokens", "detail": str(e)},
+            HttpStatus.internal_server_error_500.value,
+        )
 
 
 # Revoked refresh tokens will not be able to access this endpoint
@@ -141,9 +177,13 @@ def refresh():
     """ Get an access token from a refresh token. """
 
     try:
-        # Get the current user ID from the access token
-        current_user = get_jwt_identity()
-        access_token = create_access_token(identity=str(current_user), fresh=False)
+        # Get the current user id from the access token to retrieve
+        # the user from the database
+        user_identity = get_jwt_identity()
+        current_user = User.objects.get(username=user_identity)
+
+        # We pass the "current_user" User instance as the token identity.
+        access_token = create_access_token(identity=current_user, fresh=False)
 
         # Add new access token to the database
         # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
@@ -166,9 +206,8 @@ def revoke_access_token():
     """ Revoke an access token. """
 
     try:
-        # Get the JWT ID and the User ID respectively
-        raw_jwt = get_raw_jwt()
-        jti = raw_jwt["jti"]
+        # Get the JWT ID and the user identity respectively
+        jti = get_raw_jwt()["jti"]
         user_identity = get_jwt_identity()
 
         revoke_token(jti, user_identity)
@@ -187,9 +226,8 @@ def revoke_refresh_token():
     """ Revoke a refresh token, used mainly for logout. """
 
     try:
-        # Get the JWT ID and the User ID respectively
-        raw_jwt = get_raw_jwt()
-        jti = raw_jwt["jti"]
+        # Get the JWT ID and the user identity respectively
+        jti = get_raw_jwt()["jti"]
         user_identity = get_jwt_identity()
 
         revoke_token(jti, user_identity)
@@ -207,18 +245,30 @@ def revoke_refresh_token():
 def create_dev_token():
     """ Creates a trial development token. This token is not added to the blacklist. """
 
-    user_identity = get_jwt_identity()
-    expires = timedelta(days=365)
-    token = create_access_token(
-        identity=str(user_identity), expires_delta=expires, fresh=False
-    )
+    try:
+        # Get the current identity from the access token to retrieve
+        # the user from the database
+        user_identity = get_jwt_identity()
+        expires = timedelta(days=365)
+        current_user = User.objects.get(username=user_identity)
 
-    # Add new tokens to the database
-    # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
-    add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
+        # We pass the "current_user" User instance as the token identity.
+        token = create_access_token(
+            identity=current_user, expires_delta=expires, fresh=False
+        )
 
-    response_body = {"token": token}
-    return make_response(jsonify(response_body), HttpStatus.created_201.value)
+        # Add new tokens to the database
+        # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
+        add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
+
+        response_body = {"token": token}
+        return make_response(jsonify(response_body), HttpStatus.created_201.value)
+
+    except:
+        return (
+            {"error": "Missing valid refresh token"},
+            HttpStatus.bad_request_400.value,
+        )
 
 
 @blueprint.route("/create_api_token", methods=["POST"])
@@ -226,15 +276,28 @@ def create_dev_token():
 def create_api_token():
     """ Creates a permanent api token. This token is not added to the blacklist. """
 
-    user_identity = get_jwt_identity()
-    token = create_access_token(
-        identity=str(user_identity), expires_delta=False, fresh=False
-    )
+    try:
+        # Get the current user id from the access token to retrieve
+        # the user from the database
+        user_identity = get_jwt_identity()
+        expires = False
 
-    # Add new tokens to the database
-    # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
-    add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
+        # We pass the "current_user" User instance as the token identity.
+        current_user = User.objects.get(username=user_identity)
+        token = create_access_token(
+            identity=current_user, expires_delta=expires, fresh=False
+        )
 
-    response_body = {"token": token}
-    return make_response(jsonify(response_body), HttpStatus.created_201.value)
+        # Add new tokens to the database
+        # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
+        add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
+
+        response_body = {"token": token}
+        return make_response(jsonify(response_body), HttpStatus.created_201.value)
+
+    except:
+        return (
+            {"error": "Missing valid refresh token"},
+            HttpStatus.bad_request_400.value,
+        )
 

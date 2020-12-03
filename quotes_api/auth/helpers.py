@@ -28,7 +28,7 @@ def add_token_to_database(encoded_token, identity_claim):
     revoked = False
 
     # Get user document to add to the token blacklist
-    user = User.objects.get(id=user_identity)
+    user = User.objects.get(username=user_identity)
 
     db_token = TokenBlacklist(
         jti=jti, tokenType=token_type, user=user, expires=expires, revoked=revoked
@@ -56,12 +56,14 @@ def is_token_revoked(decoded_token):
 def get_user_tokens(user_identity):
     """ Gets all the revoked and unrevoked tokens from a user. """
     try:
-        pass
-        user = User.objects.get(id=str(user_identity))
+        # Get user by its username
+        user = User.objects.get(username=user_identity)
         tokens = TokenBlacklist.objects.filter(user=user)
         return tokens
     except:
-        raise Exception(f"Could not find tokens for user with id {user_identity}")
+        raise Exception(
+            f"Could not find tokens for user with username '{user_identity}'"
+        )
 
 
 def revoke_token(token_jti, user_identity):
@@ -70,11 +72,11 @@ def revoke_token(token_jti, user_identity):
     If no token is found we raise an exception.
     """
     try:
-        # Get user by its id
-        user = User.objects.get(id=user_identity)
+        # Get user by its username
+        user = User.objects.get(username=user_identity)
 
     except:
-        raise Exception(f"Could not find user with id {user_identity}")
+        raise Exception(f"Could not find user with username '{user_identity}'")
 
     try:
         token = TokenBlacklist.objects.get(jti=token_jti, user=user)
@@ -82,7 +84,7 @@ def revoke_token(token_jti, user_identity):
         token.save()
 
     except:
-        raise Exception(f"Could not find token with jti {token_jti}")
+        raise Exception(f"Could not find token with jti '{token_jti}'")
 
 
 def unrevoke_token(token_jti, user_identity):
@@ -92,10 +94,10 @@ def unrevoke_token(token_jti, user_identity):
     """
     try:
         # Get user by its id
-        user = User.objects.get(id=user_identity)
+        user = User.objects.get(username=user_identity)
 
     except:
-        raise Exception(f"Could not find user with id {user_identity}")
+        raise Exception(f"Could not find user with username '{user_identity}'")
 
     try:
         token = TokenBlacklist.objects.get(jti=token_jti, user=user)

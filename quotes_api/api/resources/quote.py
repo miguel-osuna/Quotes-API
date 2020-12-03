@@ -3,7 +3,7 @@ from flask_restful import Resource
 
 from quotes_api.models import Quote
 from quotes_api.extensions import odm
-from quotes_api.common import HttpStatus, multipurpose_paginator
+from quotes_api.common import HttpStatus, paginator
 from quotes_api.auth.decorators import user_required, admin_required
 
 
@@ -25,15 +25,7 @@ class QuoteResource(Resource):
                 HttpStatus.not_found_404.value,
             )
 
-        response_body = {
-            "quote": {
-                "id": str(quote.id),
-                "quoteText": quote.quoteText,
-                "authorName": quote.authorName,
-                "authorImage": quote.authorImage,
-                "tags": quote.tags,
-            }
-        }
+        response_body = {"quote": quote.to_dict()}
 
         return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
@@ -121,13 +113,13 @@ class QuoteList(Resource):
             # Generating pagination of quotes
             pagination = Quote.objects.paginate(page=page, per_page=per_page)
 
-            response_body = multipurpose_paginator(pagination, "api.quotes")
+            response_body = paginator(pagination, "api.quotes")
 
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
         except:
             return (
-                {"error": "Couldn't retrieve quotes."},
+                {"error": "Could not retrieve quotes."},
                 HttpStatus.internal_server_error_500.value,
             )
 
@@ -152,7 +144,7 @@ class QuoteList(Resource):
         except:
             # Error creating quote entry
             return (
-                {"error": "Couldn't create quote entry."},
+                {"error": "Could not create quote entry."},
                 HttpStatus.internal_server_error_500.value,
             )
 
@@ -188,7 +180,7 @@ class QuoteRandom(Resource):
 
         except:
             return (
-                {"error": "Couldn't retrieve quote."},
+                {"error": "Could not retrieve quote."},
                 HttpStatus.internal_server_error_500.value,
             )
 
@@ -201,6 +193,7 @@ class QuoteSearch(Resource):
 
     @user_required
     def get(self):
+        """ Get quote by doing a query search. """
         args = request.args
 
         try:
@@ -221,12 +214,12 @@ class QuoteSearch(Resource):
                 .paginate(page=page, per_page=per_page)
             )
 
-            response_body = multipurpose_paginator(pagination, "api.quote_search")
+            response_body = paginator(pagination, "api.quote_search")
 
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
         except:
             return (
-                {"error": "Couldn't retrieve quotes."},
+                {"error": "Could not retrieve quotes."},
                 HttpStatus.internal_server_error_500.value,
             )

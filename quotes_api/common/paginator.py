@@ -1,7 +1,7 @@
 from flask import url_for
 
 
-def multipurpose_paginator(pagination, endpoint, **kwargs):
+def paginator(pagination, endpoint, **kwargs):
     """ Paginator for supported models. """
 
     # Creating list of items

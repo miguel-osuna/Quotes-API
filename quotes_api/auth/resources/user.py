@@ -8,14 +8,14 @@ from flask_jwt_extended import (
     get_jwt_identity,
 )
 
-from quotes_api.models import User
+from quotes_api.models import User, TokenBlacklist
 from quotes_api.extensions import pwd_context, jwt
 from quotes_api.auth.helpers import (
     get_user_tokens,
     add_token_to_database,
 )
 from quotes_api.auth.decorators import user_required, admin_required
-from quotes_api.common import HttpStatus, multipurpose_paginator
+from quotes_api.common import HttpStatus, paginator
 
 
 class UserSignup(Resource):
@@ -134,15 +134,7 @@ class UserResource(Resource):
                 HttpStatus.not_found_404.value,
             )
 
-        response_body = {
-            "user": {
-                "id": str(user.id),
-                "username": user.username,
-                "password": user.password,
-                "active": user.active,
-                "roles": user.roles,
-            }
-        }
+        response_body = {"user": user.to_dict()}
 
         return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
@@ -218,17 +210,25 @@ class UserList(Resource):
 
     @admin_required
     def get(self):
-        
-        args = request.args 
+
+        args = request.args
 
         page = int(args.get("page", 1))
         per_page = int(args.get("per_page", 5))
 
         try:
-            # Generating pagination of quotes 
+            # Generating pagination of quotes
             pagination = User.objects.paginate(page=page, per_page=per_page)
 
-            response_body = multipurpose_paginator(pagination, "")
+            response_body = paginator(pagination, "auth.users")
+
+            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+
+        except:
+            return (
+                {"error": "Could not retrieve quotes"},
+                HttpStatus.internal_server_error_500.value,
+            )
 
 
 class UserTokens(Resource):
@@ -254,6 +254,33 @@ class UserTokens(Resource):
         except Exception as e:
             return (
                 {"error": "Could not get tokens", "detail": str(e)},
+                HttpStatus.internal_server_error_500.value,
+            )
+
+    @user_required
+    def get(self):
+        """ Gets all the revoked and unrevoked tokens from a user. """
+
+        args = request.args
+
+        page = int(args.get("page", 1))
+        per_page = int(args.get("per_page"), 5)
+
+        try:
+            # Generating pagination of tokens
+            user_identity = get_jwt_identity()
+            user = User.objects.get(username=user_identity)
+            pagination = TokenBlacklist.objects(user=user).paginate(
+                page=page, per_page=per_page
+            )
+
+            response_body = paginator(pagination, "auth.user_tokens")
+
+            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+
+        except Exception as e:
+            return (
+                {"erorr": "Could not retrieve tokens.", "detail": str(e)},
                 HttpStatus.internal_server_error_500.value,
             )
 

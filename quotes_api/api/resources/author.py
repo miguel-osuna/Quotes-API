@@ -3,7 +3,7 @@ from flask_restful import Resource
 
 from quotes_api.models import Quote
 from quotes_api.extensions import odm
-from quotes_api.common import HttpStatus, multipurpose_paginator
+from quotes_api.common import HttpStatus, paginator
 from quotes_api.auth.decorators import user_required, admin_required
 
 
@@ -39,7 +39,7 @@ class AuthorQuoteList(Resource):
                 page=page, per_page=per_page
             )
 
-            response_body = multipurpose_paginator(
+            response_body = paginator(
                 pagination, "api.quotes_by_author", author_name=author_name
             )
 
@@ -47,7 +47,7 @@ class AuthorQuoteList(Resource):
 
         except:
             {
-                "error": "Couldn't retrieve quotes"
+                "error": "Could not retrieve quotes"
             }, HttpStatus.internal_server_error_500.value
 
 
@@ -87,7 +87,7 @@ class AuthorQuoteRandom(Resource):
 
         except:
             return (
-                {"error": "Couldn't retrieve quote."},
+                {"error": "Could not retrieve quote."},
                 HttpStatus.internal_server_error_500.value,
             )
 

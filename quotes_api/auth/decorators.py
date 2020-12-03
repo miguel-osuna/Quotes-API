@@ -29,13 +29,14 @@ def user_required(fn):
 
         # Get the user claims defined in decorator "user_claims_loader"
         claims = get_jwt_claims()
+        roles = claims["roles"]
 
-        if ("basic" or "premium" or "admin") in claims["roles"]:
+        if ("basic" in roles) or ("premium" in roles) or ("admin" in roles):
             return fn(*args, **kwargs)
         else:
             return {"error": "Access denied."}, HttpStatus.forbidden_403.value
 
-        return wrapper
+    return wrapper
 
 
 def admin_required(fn):

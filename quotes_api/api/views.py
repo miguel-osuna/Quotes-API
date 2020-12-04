@@ -6,10 +6,9 @@ from quotes_api.api.resources import (
     QuoteList,
     QuoteRandom,
     QuoteSearch,
-    AuthorQuoteList,
+    AuthorList,
     AuthorQuoteRandom,
     CategoryList,
-    CategoryQuoteList,
     CategoryQuoteRandom,
 )
 from quotes_api.common import HttpStatus
@@ -25,20 +24,13 @@ api.add_resource(QuoteRandom, "/quotes/random", endpoint="quote_random")
 api.add_resource(QuoteSearch, "/quotes/search", endpoint="quote_search")
 
 # Authors routes
-api.add_resource(
-    AuthorQuoteList, "/authors/<string:author_name>", endpoint="quotes_by_author"
-)
+api.add_resource(AuthorList, "/authors", endpoint="authors")
 api.add_resource(
     AuthorQuoteRandom, "/authors/<string:author_name>/random", endpoint="author_random"
 )
 
 # Categories routes
 api.add_resource(CategoryList, "/categories", endpoint="categories")
-api.add_resource(
-    CategoryQuoteList,
-    "/categories/<string:category_name>",
-    endpoint="quotes_by_category",
-)
 api.add_resource(
     CategoryQuoteRandom,
     "/categories/<string:category_name>/random",

@@ -108,18 +108,53 @@ class QuoteList(Resource):
 
         page = int(args.get("page", 1))
         per_page = int(args.get("per_page", 5))
+        categories = args.get("categories", None)
+        author = args.get("author", None)
+        query = args.get("query", None)
 
         try:
-            # Generating pagination of quotes
-            pagination = Quote.objects.paginate(page=page, per_page=per_page)
+            # Build the filters for the database query
+            filters = {}
 
-            response_body = paginator(pagination, "api.quotes")
+            # Check if the user provided any categories for filtering
+            if categories is not None:
+
+                # Looks for quotes that have at least one category in their tags
+                # It acts as an OR operator.
+                if "|" in categories:
+                    filters["tags__in"] = categories.split("|")
+
+                # Looks for quotes that have every category in their tags.
+                # It acts as an AND operator.
+                elif "," in categories:
+                    filters["tags__all"] = categories.split(",")
+
+                else:
+                    filters["tags"] = categories
+
+            if author is not None:
+                filters["authorName"] = author
+
+            if query is not None:
+                pagination = (
+                    Quote.objects.filter(**filters)
+                    .search_text(query)
+                    .order_by("$text_score")
+                    .paginate(page=page, per_page=per_page)
+                )
+
+            else:
+                pagination = Quote.objects.filter(**filters).paginate(
+                    page=page, per_page=per_page
+                )
+
+            response_body = paginator(pagination, "api.improved_quotes")
 
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
-        except:
+        except Exception as e:
             return (
-                {"error": "Could not retrieve quotes."},
+                {"error": "Could not retrieve quotes.", "detail": str(e)},
                 HttpStatus.internal_server_error_500.value,
             )
 
@@ -196,13 +231,9 @@ class QuoteSearch(Resource):
         """ Get quote by doing a query search. """
         args = request.args
 
-        try:
-            query = str(args["query"])
-            page = int(args.get("page", 1))
-            per_page = int(args.get("per_page", 5))
-
-        except:
-            {"error": "Missing data."}, HttpStatus.bad_request_400.value
+        query = str(args.get("query", ""))
+        page = int(args.get("page", 1))
+        per_page = int(args.get("per_page", 5))
 
         try:
 
@@ -223,3 +254,9 @@ class QuoteSearch(Resource):
                 {"error": "Could not retrieve quotes."},
                 HttpStatus.internal_server_error_500.value,
             )
+
+
+class ImprovedQuoteRandom(Resource):
+    def get(self):
+        pass
+

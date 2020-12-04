@@ -3,8 +3,24 @@ from flask_restful import Resource
 
 from quotes_api.models import Quote
 from quotes_api.extensions import odm
-from quotes_api.common import HttpStatus, paginator
+from quotes_api.common import HttpStatus, paginator, author_paginator
 from quotes_api.auth.decorators import user_required, admin_required
+
+
+def sort_order_parser(input):
+    """ 
+    Parses a user query input for the sort_order parameter.
+
+    Checks if the sorting is ascending or descending.
+    """
+    if input == "ascending" or input == "asc" or input == "1":
+        return "+"
+
+    elif input == "descending" or input == "desc" or input == "-1":
+        return "-"
+
+    else:
+        return "+"
 
 
 class AuthorList(Resource):
@@ -16,39 +32,33 @@ class AuthorList(Resource):
     @user_required
     def get(self):
         """ Get quote authors by alphabetical order. """
-        pass
 
-
-class AuthorQuoteList(Resource):
-    """ Quote object list filtered by author. """
-
-    # Decorators applied to all class methods
-    method_decorators = []
-
-    @user_required
-    def get(self, author_name):
-        """ Get list of author quotes. """
         args = request.args
-
         page = int(args.get("page", 1))
-        per_page = int(args.get("per_page", 5))
+        per_page = int(args.get("per_page", 10))
+        sort_order = str(args.get("sort_order", "asc"))
 
         try:
-            # Generating pagination of filtered quotes by author
-            pagination = Quote.objects(authorName=str(author_name)).paginate(
-                page=page, per_page=per_page
+            sort = sort_order_parser(sort_order)
+
+            # Generating pagination of quotes
+            pagination = (
+                Quote.objects()
+                .order_by(sort + "authorName")
+                .paginate(page=page, per_page=per_page)
             )
 
-            response_body = paginator(
-                pagination, "api.quotes_by_author", author_name=author_name
+            response_body = author_paginator(
+                pagination, "api.authors", sort_order=sort_order
             )
 
             return make_response(jsonify(response_body, HttpStatus.ok_200.value))
 
         except:
-            {
-                "error": "Could not retrieve quotes"
-            }, HttpStatus.internal_server_error_500.value
+            return (
+                {"error": "Could not retrieve authors"},
+                HttpStatus.internal_server_error_500.value,
+            )
 
 
 class AuthorQuoteRandom(Resource):

@@ -1,13 +1,7 @@
 from flask import url_for
 
 
-def paginator(pagination, endpoint, **kwargs):
-    """ Paginator for supported models. """
-
-    # Creating list of items
-    items = []
-    for item in pagination.items:
-        items.append(item.to_dict())
+def generate_links(pagination, endpoint, **kwargs):
 
     self_link = url_for(
         endpoint=endpoint,
@@ -41,16 +35,54 @@ def paginator(pagination, endpoint, **kwargs):
         else None
     )
 
+    return {"self": self_link, "prev": previous_link, "next": next_link}
+
+
+def paginator(pagination, endpoint, **kwargs):
+    """ Paginator for supported models. """
+
+    # Creating list of items
+    items = []
+    for item in pagination.items:
+        items.append(item.to_dict())
+
+    links = generate_links(pagination, endpoint, **kwargs)
+
     response_body = {
         "meta": {
             "page_number": pagination.page,
             "page_size": pagination.per_page,
             "total_pages": pagination.pages,
             "total_records": pagination.total,
-            "links": {"self": self_link, "prev": previous_link, "next": next_link},
+            "links": links,
         },
         "records": items,
     }
 
     return response_body
 
+
+def author_paginator(pagination, endpoint, **kwargs):
+    """ Paginator for list of authors. """
+
+    authors = []
+    for item in pagination.items:
+        author = {"authorName": item.authorName}
+
+        if author not in authors:
+            authors.append(author)
+
+    links = generate_links(pagination, endpoint, **kwargs)
+
+    response_body = {
+        "meta": {
+            "page_number": pagination.page,
+            "page_size": pagination.per_page,
+            "total_pages": pagination.pages,
+            "total_records": len(authors),
+            "links": links,
+        },
+        "records": authors,
+    }
+
+    return response_body

@@ -57,40 +57,6 @@ class CategoryList(Resource):
             )
 
 
-class CategoryQuoteList(Resource):
-    """ Quote object list filtered by category. """
-
-    # Decorators applied to all class methods
-    method_decorators = []
-
-    @user_required
-    def get(self, category_name):
-        """ Get list of category quotes. """
-
-        args = request.args
-
-        page = int(args.get("page", 1))
-        per_page = int(args.get("per_page", 5))
-
-        try:
-            # Generating pagination of filtered quotes by category
-            pagination = Quote.objects(tags=str(category_name)).paginate(
-                page=page, per_page=per_page
-            )
-
-            response_body = paginator(
-                pagination, "api.quotes_by_category", category_name=category_name
-            )
-
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
-
-        except:
-            return (
-                {"error": "Could not retrieve quotes"},
-                HttpStatus.internal_server_error_500.value,
-            )
-
-
 class CategoryQuoteRandom(Resource):
     """ Random quote object filtered by category. """
 

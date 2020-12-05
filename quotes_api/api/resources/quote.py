@@ -129,6 +129,7 @@ class QuoteList(Resource):
                 elif "," in categories:
                     filters["tags__all"] = categories.split(",")
 
+                # User normal filtering when just 1 category is provided
                 else:
                     filters["tags"] = categories
 
@@ -148,7 +149,7 @@ class QuoteList(Resource):
                     page=page, per_page=per_page
                 )
 
-            response_body = paginator(pagination, "api.improved_quotes")
+            response_body = paginator(pagination, "api.quotes")
 
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
@@ -192,13 +193,52 @@ class QuoteRandom(Resource):
 
     @user_required
     def get(self):
+        """ Get random quote filtered by categories and author. """
+        args = request.args
+
+        categories = args.get("categories", None)
+        author = args.get("author", None)
 
         try:
-            # Bypassing mongoengine to use pymongo (driver)
+            # Build the filters for the database query
+            filters = {}
+
+            # Check if the user provided any categories for filtering
+            if categories is not None:
+                # Looks for quotes that have at least one category in their tags
+                # It acts as an OR operator
+                if "|" in categories:
+                    filters["tags"] = {"$in": categories.split("|")}
+
+                # Looks for quotes that have every category in their tags.
+                # It acts as an AND operator
+                elif "," in categories:
+                    filters["tags"] = {"$all": categories.split(",")}
+
+                # User normal filtering when just 1 category is provided
+                else:
+                    filters["tags"] = categories
+
+            if author is not None:
+                filters["authorName"] = author
+
+            # Baypassing mongoengine to use pymongo (driver)
             quote_collection = Quote._get_collection()
 
-            # Defining the pipeline for the aggregate
-            pipeline = [{"$sample": {"size": 1}}]
+            # Defining the pipelien for the aggregate
+            pipeline = [
+                {
+                    "$project": {
+                        "_id": 1,
+                        "quoteText": 1,
+                        "authorName": 1,
+                        "authorImage": 1,
+                        "tags": 1,
+                    }
+                },
+                {"$match": {"$and": [filters]}},
+                {"$sample": {"size": 1}},
+            ]
 
             # Converting CommandCursor class iterator into a list and then getting the only item in it
             random_quote = [quote for quote in quote_collection.aggregate(pipeline)][0]
@@ -213,50 +253,9 @@ class QuoteRandom(Resource):
 
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
-        except:
+        except Exception as e:
             return (
-                {"error": "Could not retrieve quote."},
+                {"error": "Could not retrieve quote.", "detail": str(e)},
                 HttpStatus.internal_server_error_500.value,
             )
-
-
-class QuoteSearch(Resource):
-    """ Query search for quote object. """
-
-    # Decorators applied to all class methods
-    method_decorators = []
-
-    @user_required
-    def get(self):
-        """ Get quote by doing a query search. """
-        args = request.args
-
-        query = str(args.get("query", ""))
-        page = int(args.get("page", 1))
-        per_page = int(args.get("per_page", 5))
-
-        try:
-
-            # Get the documents that match the text search and order them by score
-            # After that, create a paginator with the results
-            pagination = (
-                Quote.objects.search_text(query)
-                .order_by("$text_score")
-                .paginate(page=page, per_page=per_page)
-            )
-
-            response_body = paginator(pagination, "api.quote_search")
-
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
-
-        except:
-            return (
-                {"error": "Could not retrieve quotes."},
-                HttpStatus.internal_server_error_500.value,
-            )
-
-
-class ImprovedQuoteRandom(Resource):
-    def get(self):
-        pass
 

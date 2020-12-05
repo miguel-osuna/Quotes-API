@@ -108,34 +108,15 @@ class QuoteList(Resource):
 
         page = int(args.get("page", 1))
         per_page = int(args.get("per_page", 5))
-        categories = args.get("categories", None)
+        tags = args.get("tags", None)
         author = args.get("author", None)
         query = args.get("query", None)
 
         try:
             # Build the filters for the database query
-            filters = {}
+            filters = self.build_quote_list_filters(tags, author)
 
-            # Check if the user provided any categories for filtering
-            if categories is not None:
-
-                # Looks for quotes that have at least one category in their tags
-                # It acts as an OR operator.
-                if "|" in categories:
-                    filters["tags__in"] = categories.split("|")
-
-                # Looks for quotes that have every category in their tags.
-                # It acts as an AND operator.
-                elif "," in categories:
-                    filters["tags__all"] = categories.split(",")
-
-                # User normal filtering when just 1 category is provided
-                else:
-                    filters["tags"] = categories
-
-            if author is not None:
-                filters["authorName"] = author
-
+            # Do a search query if the user provided a query
             if query is not None:
                 pagination = (
                     Quote.objects.filter(**filters)
@@ -150,7 +131,6 @@ class QuoteList(Resource):
                 )
 
             response_body = paginator(pagination, "api.quotes")
-
             return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
         except Exception as e:
@@ -184,6 +164,34 @@ class QuoteList(Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
+    def build_quote_list_filters(self, tags, author):
+        """ Filter generation for quote list match. """
+
+        filters = {}
+
+        # Check if the user provided any tags for filtering
+        if tags is not None:
+
+            # Looks for quotes that have at least one tag in their tags
+            # It acts as an OR operator.
+            if "|" in tags:
+                filters["tags__in"] = tags.split("|")
+
+            # Looks for quotes that have every tag in their tags.
+            # It acts as an AND operator.
+            elif "," in tags:
+                filters["tags__all"] = tags.split(",")
+
+            # User normal filtering when just 1 tag is provided
+            else:
+                filters["tags"] = tags
+
+        # Check if the user provided an author name
+        if author is not None:
+            filters["authorName"] = author
+
+        return filters
+
 
 class QuoteRandom(Resource):
     """ Random quote object. """
@@ -193,39 +201,20 @@ class QuoteRandom(Resource):
 
     @user_required
     def get(self):
-        """ Get random quote filtered by categories and author. """
+        """ Get random quote filtered by tags and author. """
         args = request.args
 
-        categories = args.get("categories", None)
+        tags = args.get("tags", None)
         author = args.get("author", None)
 
         try:
             # Build the filters for the database query
-            filters = {}
-
-            # Check if the user provided any categories for filtering
-            if categories is not None:
-                # Looks for quotes that have at least one category in their tags
-                # It acts as an OR operator
-                if "|" in categories:
-                    filters["tags"] = {"$in": categories.split("|")}
-
-                # Looks for quotes that have every category in their tags.
-                # It acts as an AND operator
-                elif "," in categories:
-                    filters["tags"] = {"$all": categories.split(",")}
-
-                # User normal filtering when just 1 category is provided
-                else:
-                    filters["tags"] = categories
-
-            if author is not None:
-                filters["authorName"] = author
+            filters = self.build_random_quote_filters(tags, author)
 
             # Baypassing mongoengine to use pymongo (driver)
             quote_collection = Quote._get_collection()
 
-            # Defining the pipelien for the aggregate
+            # Defining the pipeline for the aggregate
             pipeline = [
                 {
                     "$project": {
@@ -258,4 +247,31 @@ class QuoteRandom(Resource):
                 {"error": "Could not retrieve quote.", "detail": str(e)},
                 HttpStatus.internal_server_error_500.value,
             )
+
+    def build_random_quote_filters(self, tags, author):
+        """ Filter generation for random quote match. """
+
+        filters = {}
+
+        # Check if the user provided any tags for filtering
+        if tags is not None:
+            # Looks for quotes that have at least one tag in their tags
+            # It acts as an OR operator
+            if "|" in tags:
+                filters["tags"] = {"$in": tags.split("|")}
+
+            # Looks for quotes that have every tag in their tags.
+            # It acts as an AND operator
+            elif "," in tags:
+                filters["tags"] = {"$all": tags.split(",")}
+
+            # User normal filtering when just 1 tag is provided
+            else:
+                filters["tags"] = tags
+
+        # Check if the user provided an author name
+        if author is not None:
+            filters["authorName"] = author
+
+        return filters
 

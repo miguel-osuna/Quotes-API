@@ -6,7 +6,7 @@ from quotes_api.api.resources import (
     QuoteList,
     QuoteRandom,
     AuthorList,
-    CategoryList,
+    TagList,
 )
 from quotes_api.common import HttpStatus
 
@@ -23,5 +23,5 @@ api.add_resource(QuoteRandom, "/quotes/random", endpoint="quote_random")
 # Authors routes
 api.add_resource(AuthorList, "/authors", endpoint="authors")
 
-# Categories routes
-api.add_resource(CategoryList, "/categories", endpoint="categories")
+# Tags routes
+api.add_resource(TagList, "/tags", endpoint="tags")

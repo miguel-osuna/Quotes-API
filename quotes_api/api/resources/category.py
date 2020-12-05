@@ -7,19 +7,19 @@ from quotes_api.common import HttpStatus, paginator
 from quotes_api.auth.decorators import user_required, admin_required
 
 
-class CategoryList(Resource):
-    """ List of categories. """
+class TagList(Resource):
+    """ List of tags. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
     @user_required
     def get(self):
-        """ Get list of all categories. """
+        """ Get list of all tags. """
 
         try:
             response_body = {
-                "categories": [
+                "tags": [
                     "love",
                     "life",
                     "inspiration",
@@ -52,6 +52,6 @@ class CategoryList(Resource):
 
         except:
             return (
-                {"error": "Could not retrieve list of categories"},
+                {"error": "Could not retrieve list of tags"},
                 HttpStatus.internal_server_error_500.value,
             )

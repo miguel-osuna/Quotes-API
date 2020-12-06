@@ -6,7 +6,7 @@ from flask_jwt_extended import (
     fresh_jwt_required,
     get_jwt_identity,
 )
-from flask_apispec import use_kwargs, marshal_with
+from flask_apispec import use_kwargs, marshal_with, doc
 from flask_apispec.views import MethodResource
 
 from quotes_api.models import User, TokenBlacklist
@@ -17,6 +17,7 @@ from quotes_api.auth.helpers import (
 )
 from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus, paginator
+from quotes_api.schemas import UserSchema, UserResponseSchema
 
 
 class UserSignup(MethodResource, Resource):
@@ -25,6 +26,7 @@ class UserSignup(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Registers a new user.", tags=["User"])
     def post(self):
         """ User registration to the database. """
         try:
@@ -57,6 +59,7 @@ class UserLogin(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Login a user.", tags=["User"])
     def post(self):
         """ Authenticate a user and return tokens. """
 
@@ -113,6 +116,7 @@ class UserLogout(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Logout a user.", tags=["User"])
     @fresh_jwt_required
     def post(self):
         pass
@@ -124,6 +128,7 @@ class UserResource(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Get user resource by id.", tags=["User"])
     @admin_required
     def get(self, user_id):
         " Get user by id. "
@@ -140,6 +145,7 @@ class UserResource(MethodResource, Resource):
 
         return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
+    @doc(description="Update user resource by id.", tags=["User"])
     @admin_required
     def put(self, user_id):
         """ Replace entire user. """
@@ -158,6 +164,7 @@ class UserResource(MethodResource, Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
+    @doc(description="Patch user resource by id.", tags=["User"])
     @admin_required
     def patch(self, user_id):
         """ Update user fields. """
@@ -180,6 +187,7 @@ class UserResource(MethodResource, Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
+    @doc(description="Delete a user resource by id.", tags=["User"])
     @admin_required
     def delete(self, user_id):
         """ Delete user from the database. """
@@ -210,6 +218,7 @@ class UserList(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Get list of user resources.", tags=["User"])
     @admin_required
     def get(self):
 
@@ -229,44 +238,6 @@ class UserList(MethodResource, Resource):
         except:
             return (
                 {"error": "Could not retrieve quotes"},
-                HttpStatus.internal_server_error_500.value,
-            )
-
-
-class UserTokens(MethodResource, Resource):
-    """ 
-    User tokens list resource. 
-    
-    Provides a way for a user to look at their tokens
-    """
-
-    # Decorators applied to all class methods
-    method_decorators = []
-
-    @user_required
-    def get(self):
-        """ Gets all the revoked and unrevoked tokens from a user. """
-
-        args = request.args
-
-        page = int(args.get("page", 1))
-        per_page = int(args.get("per_page", 5))
-
-        try:
-            # Generating pagination of tokens
-            user_identity = get_jwt_identity()
-            user = User.objects.get(username=user_identity)
-            pagination = TokenBlacklist.objects(user=user).paginate(
-                page=page, per_page=per_page
-            )
-
-            response_body = paginator(pagination, "auth.user_tokens")
-
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
-
-        except Exception as e:
-            return (
-                {"erorr": "Could not retrieve tokens.", "detail": str(e)},
                 HttpStatus.internal_server_error_500.value,
             )
 

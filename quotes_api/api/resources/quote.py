@@ -2,26 +2,11 @@ from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
 from flask_apispec import use_kwargs, marshal_with, doc
 from flask_apispec.views import MethodResource
-from marshmallow import Schema, fields
 
 from quotes_api.models import Quote
 from quotes_api.common import HttpStatus, paginator
+from quotes_api.schemas import QuoteSchema, QuoteResponseSchema
 from quotes_api.auth.decorators import user_required, admin_required
-
-
-class QuoteSchema(Schema):
-    quoteText = fields.String()
-    authorName = fields.String()
-    authorImage = fields.URL()
-    tags = fields.List(fields.String())
-
-
-class QuoteResponseSchema(Schema):
-    id = fields.String()
-    quoteText = fields.String()
-    authorName = fields.String()
-    authorImage = fields.URL()
-    tags = fields.List(fields.String())
 
 
 class QuoteResource(MethodResource, Resource):
@@ -124,8 +109,8 @@ class QuoteList(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get a list of quotes.", tags=["Quotes"])
-    @user_required
+    @doc(description="Get a list of quote resources.", tags=["Quote"])
+    # user_required
     def get(self):
         """ Get list of quotes. """
 
@@ -164,7 +149,7 @@ class QuoteList(MethodResource, Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
-    @doc(description="Create a quote resource.", tags=["Quotes"])
+    @doc(description="Create a quote resource.", tags=["Quote"])
     @admin_required
     def post(self):
         """ Create new quote. """
@@ -225,7 +210,7 @@ class QuoteRandom(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get a random quote resource.", tags=["Random Quote"])
+    @doc(description="Get a random quote resource.", tags=["Quote"])
     @marshal_with(QuoteSchema)
     @user_required
     def get(self):

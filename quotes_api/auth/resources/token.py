@@ -9,21 +9,64 @@ from flask_jwt_extended import (
     get_jwt_identity,
     get_raw_jwt,
 )
-from flask_apispec import use_kwargs, marshal_with
+from flask_apispec import use_kwargs, marshal_with, doc
 from flask_apispec import MethodResource
 
-from quotes_api.models import User
+from quotes_api.models import User, TokenBlacklist
 from quotes_api.auth.helpers import (
     revoke_token,
     add_token_to_database,
 )
 from quotes_api.auth.decorators import user_required, admin_required
-from quotes_api.common import HttpStatus
+from quotes_api.common import HttpStatus, paginator
+from quotes_api.schemas import TokenBlacklistSchema, TokenBlacklistResponseSchema
+
+
+class UserTokens(MethodResource, Resource):
+    """ 
+    User tokens list resource. 
+    
+    Provides a way for a user to look at their tokens
+    """
+
+    # Decorators applied to all class methods
+    method_decorators = []
+
+    @doc(description="Get list of token resources.", tags=["Api Key"])
+    @user_required
+    def get(self):
+        """ Gets all the revoked and unrevoked tokens from a user. """
+
+        args = request.args
+
+        page = int(args.get("page", 1))
+        per_page = int(args.get("per_page", 5))
+
+        try:
+            # Generating pagination of tokens
+            user_identity = get_jwt_identity()
+            user = User.objects.get(username=user_identity)
+            pagination = TokenBlacklist.objects(user=user).paginate(
+                page=page, per_page=per_page
+            )
+
+            response_body = paginator(pagination, "auth.user_tokens")
+
+            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+
+        except Exception as e:
+            return (
+                {"erorr": "Could not retrieve tokens.", "detail": str(e)},
+                HttpStatus.internal_server_error_500.value,
+            )
 
 
 class TokenRefresh(MethodResource, Resource):
     """ Token refresh. """
 
+    @doc(
+        description="Create an access token from a refresh token.", tags=["Api Key"],
+    )
     @jwt_refresh_token_required
     def post(self):
         """ Get an access token from a refresh token. """
@@ -54,6 +97,7 @@ class TokenRefresh(MethodResource, Resource):
 class AccessTokenRevoke(MethodResource, Resource):
     """ Access Token Revoke resource. """
 
+    @doc(description="Revoke an access token.", tags=["Api Key"])
     @jwt_required
     def delete(self):
         """ Revokes an access token from the database. 
@@ -78,6 +122,7 @@ class AccessTokenRevoke(MethodResource, Resource):
 class RefreshTokenRevoke(MethodResource, Resource):
     """ Refresh Token Revoked resource. """
 
+    @doc(description="Revokes a refresh token.", tags=["Api Key"])
     @jwt_refresh_token_required
     def delete(self):
         """ Revokes a refresh token from the database.
@@ -103,9 +148,10 @@ class RefreshTokenRevoke(MethodResource, Resource):
 class TrialToken(MethodResource, Resource):
     """ Trial api key creation resource. """
 
+    @doc(description="Create a trial api key.", tags=["Api Key"])
     @admin_required
     def post(self):
-        """ Creates a trial development token. """
+        """ Creates a trial api key. """
 
         try:
             # Get the current identity from the access token to retrieve
@@ -136,9 +182,10 @@ class TrialToken(MethodResource, Resource):
 class PermanentToken(MethodResource, Resource):
     """ Permanent api key creation resource. """
 
+    @doc(description="Create a permanent api key.", tags=["Api Key"])
     @admin_required
     def post(self):
-        """ Creates a permanent api token. """
+        """ Creates a permanent api key. """
 
         try:
             # Get the current user id from the access token to retrieve

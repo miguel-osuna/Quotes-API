@@ -14,6 +14,20 @@ from quotes_api.api.resources import (
     TagList,
 )
 
+from quotes_api.auth.resources import (
+    UserSignup,
+    UserLogin,
+    UserLogout,
+    UserResource,
+    UserList,
+    UserTokens,
+    TokenRefresh,
+    AccessTokenRevoke,
+    RefreshTokenRevoke,
+    TrialToken,
+    PermanentToken,
+)
+
 
 def create_app(configuration="ProductionConfig"):
     """ Applicaiton factory, used to create an application. """
@@ -40,6 +54,25 @@ def create_app(configuration="ProductionConfig"):
 
 def configure_apispec(app):
     """ Configure apispec for api documentation. """
+    tag_object = [
+        {"name": "Quote", "description": "Access to quote service."},
+        {"name": "Authors", "description": "Access to authors service."},
+        {"name": "Tags", "description": "Access to tags service."},
+        {"name": "User", "description": "Access to user service."},
+        {"name": "Api Key", "description": "Access to api key service."},
+    ]
+
+    info_object = {
+        "description": "Quotes API is a *REST API* that offers access to its feature rich platform. Serve some of the most **famous quotes** from all time. This is an interactive API documentation, feel free to try it.",
+        "contact": {
+            "name": "Miguel Osuna",
+            "url": "https://www.miguel-osuna.com",
+            "email": "contact@miguel-osuna.com",
+        },
+    }
+
+    security_requirement_object = {}
+
     app.config.update(
         {
             "APISPEC_SPEC": APISpec(
@@ -47,9 +80,9 @@ def configure_apispec(app):
                 version="v1",
                 plugins=[MarshmallowPlugin()],
                 openapi_version="3.0.3",
-                info={
-                    "description": "REST API that provides famous quotes from all time. "
-                },
+                info=info_object,
+                tags=tag_object,
+                # security=security_requirement_object,
             ),
             "APISPEC_SWAGGER_URL": "/docs-text/",
             "APISPEC_SWAGGER_UI_URL": "/docs/",
@@ -59,11 +92,30 @@ def configure_apispec(app):
 
 def register_apispec_resources(docs):
     """ Register apispec endpoints for documentation. """
-    docs.register(QuoteResource, blueprint="api", endpoint="quote")
-    docs.register(QuoteList, blueprint="api", endpoint="quotes")
-    docs.register(QuoteRandom, blueprint="api", endpoint="random_quote")
-    docs.register(AuthorList, blueprint="api", endpoint="authors")
-    docs.register(TagList, blueprint="api", endpoint="tags")
+    api_blueprint = "api"
+    auth_blueprint = "auth"
+
+    docs.register(QuoteResource, blueprint=api_blueprint, endpoint="quote")
+    docs.register(QuoteList, blueprint=api_blueprint, endpoint="quotes")
+    docs.register(QuoteRandom, blueprint=api_blueprint, endpoint="random_quote")
+    docs.register(AuthorList, blueprint=api_blueprint, endpoint="authors")
+    docs.register(TagList, blueprint=api_blueprint, endpoint="tags")
+
+    docs.register(UserSignup, blueprint=auth_blueprint, endpoint="user_signup")
+    docs.register(UserLogin, blueprint=auth_blueprint, endpoint="user_login")
+    docs.register(UserLogout, blueprint=auth_blueprint, endpoint="user_logout")
+    docs.register(UserResource, blueprint=auth_blueprint, endpoint="user_by_id")
+    docs.register(UserList, blueprint=auth_blueprint, endpoint="users")
+    docs.register(UserTokens, blueprint=auth_blueprint, endpoint="tokens")
+    docs.register(TokenRefresh, blueprint=auth_blueprint, endpoint="token_refresh")
+    docs.register(
+        AccessTokenRevoke, blueprint=auth_blueprint, endpoint="revoke_access_revoke"
+    )
+    docs.register(
+        RefreshTokenRevoke, blueprint=auth_blueprint, endpoint="revoke_refresh_token"
+    )
+    docs.register(TrialToken, blueprint=auth_blueprint, endpoint="trial_token")
+    docs.register(PermanentToken, blueprint=auth_blueprint, endpoint="permanent_token")
 
 
 def configure_extensions(app):

@@ -2,10 +2,10 @@ from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
 from flask_apispec import use_kwargs, marshal_with, doc
 from flask_apispec.views import MethodResource
-from marshmallow import Schema, fields
 
 from quotes_api.models import Quote
 from quotes_api.common import HttpStatus, paginator, author_paginator
+from quotes_api.schemas import AuthorSchema
 from quotes_api.auth.decorators import user_required, admin_required
 
 
@@ -23,11 +23,6 @@ def sort_order_parser(input):
 
     else:
         return "+"
-
-
-def AuthorSchema(Schema):
-    authorName = fields.String()
-    authorImage = fields.Image()
 
 
 class AuthorList(MethodResource, Resource):

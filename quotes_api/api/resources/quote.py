@@ -1,6 +1,6 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
-from flask_apispec import use_kwargs, marshal_with
+from flask_apispec import use_kwargs, marshal_with, doc
 from flask_apispec.views import MethodResource
 from marshmallow import Schema, fields
 
@@ -10,20 +10,18 @@ from quotes_api.auth.decorators import user_required, admin_required
 
 
 class QuoteSchema(Schema):
-    id = fields.String()
     quoteText = fields.String()
     authorName = fields.String()
+    authorImage = fields.URL()
     tags = fields.List(fields.String())
 
 
-class TestSchema(Schema):
-    message = fields.String(default="Success")
-
-
-class TestResource(MethodResource):
-    @marshal_with(TestSchema)
-    def get(self):
-        return {"message": "Testing Flask APISpec."}
+class QuoteResponseSchema(Schema):
+    id = fields.String()
+    quoteText = fields.String()
+    authorName = fields.String()
+    authorImage = fields.URL()
+    tags = fields.List(fields.String())
 
 
 class QuoteResource(MethodResource, Resource):
@@ -32,6 +30,7 @@ class QuoteResource(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Get quote resource by id.", tags=["Quote"])
     @marshal_with(QuoteSchema)
     @user_required
     def get(self, quote_id):
@@ -49,6 +48,8 @@ class QuoteResource(MethodResource, Resource):
 
         return make_response(jsonify(response_body), HttpStatus.ok_200.value)
 
+    @doc(description="Update quote resource by id.", tags=["Quote"])
+    @use_kwargs(QuoteSchema)
     @admin_required
     def put(self, quote_id):
         """ Replace entire quote. """
@@ -70,6 +71,8 @@ class QuoteResource(MethodResource, Resource):
                 HttpStatus.bad_request_400.value,
             )
 
+    @doc(description="Patch quote resource by id.", tags=["Quote"])
+    @use_kwargs(QuoteSchema)
     @admin_required
     def patch(self, quote_id):
         """ Update quote fields. """
@@ -91,6 +94,7 @@ class QuoteResource(MethodResource, Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
+    @doc(description="Delete quote resource by id.", tags=["Quote"])
     @admin_required
     def delete(self, quote_id):
         """ Delete quote. """
@@ -120,6 +124,7 @@ class QuoteList(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Get a list of quotes.", tags=["Quotes"])
     @user_required
     def get(self):
         """ Get list of quotes. """
@@ -159,6 +164,7 @@ class QuoteList(MethodResource, Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
+    @doc(description="Create a quote resource.", tags=["Quotes"])
     @admin_required
     def post(self):
         """ Create new quote. """
@@ -219,6 +225,8 @@ class QuoteRandom(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Get a random quote resource.", tags=["Random Quote"])
+    @marshal_with(QuoteSchema)
     @user_required
     def get(self):
         """ Get random quote filtered by tags and author. """

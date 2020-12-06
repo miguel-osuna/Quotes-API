@@ -1,11 +1,16 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
-from flask_apispec import use_kwargs, marshal_with
+from flask_apispec import use_kwargs, marshal_with, doc
 from flask_apispec.views import MethodResource
+from marshmallow import Schema, fields
 
 from quotes_api.models import Quote
 from quotes_api.common import HttpStatus, paginator
 from quotes_api.auth.decorators import user_required, admin_required
+
+
+class TagSchema(Schema):
+    tag = fields.String()
 
 
 class TagList(MethodResource, Resource):
@@ -14,6 +19,7 @@ class TagList(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
+    @doc(description="Get list of tags.", tags=["Tags"])
     @user_required
     def get(self):
         """ Get list of all tags. """

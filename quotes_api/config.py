@@ -13,13 +13,14 @@ class Config(object):
     TESTING = False
     SECRET_KEY = os.getenv("SECRET_KEY")
 
-    # Fask JWT Extended Confifuration
+    # Fask JWT Extended Configuration
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     JWT_ACCESS_TOKEN_EXPIRES = 15 * 60  # 15 minutes in seconds
     JWT_REFRESH_TOKEN_EXPIRES = 30 * 24 * 60 * 60  # 30 days in seconds
     JWT_ERROR_MESSAGE_KEY = "message"
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ("access", "refresh")
+
 
 
 class ProductionConfig(Config):

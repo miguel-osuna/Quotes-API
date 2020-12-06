@@ -1,18 +1,38 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
+from flask_apispec import use_kwargs, marshal_with
+from flask_apispec.views import MethodResource
+from marshmallow import Schema, fields
 
 from quotes_api.models import Quote
-from quotes_api.extensions import odm
 from quotes_api.common import HttpStatus, paginator
 from quotes_api.auth.decorators import user_required, admin_required
 
 
-class QuoteResource(Resource):
+class QuoteSchema(Schema):
+    id = fields.String()
+    quoteText = fields.String()
+    authorName = fields.String()
+    tags = fields.List(fields.String())
+
+
+class TestSchema(Schema):
+    message = fields.String(default="Success")
+
+
+class TestResource(MethodResource):
+    @marshal_with(TestSchema)
+    def get(self):
+        return {"message": "Testing Flask APISpec."}
+
+
+class QuoteResource(MethodResource, Resource):
     """ Single quote object resource. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
+    @marshal_with(QuoteSchema)
     @user_required
     def get(self, quote_id):
         """ Get quote by id. """
@@ -94,7 +114,7 @@ class QuoteResource(Resource):
             )
 
 
-class QuoteList(Resource):
+class QuoteList(MethodResource, Resource):
     """ Quote object list. """
 
     # Decorators applied to all class methods
@@ -193,7 +213,7 @@ class QuoteList(Resource):
         return filters
 
 
-class QuoteRandom(Resource):
+class QuoteRandom(MethodResource, Resource):
     """ Random quote object. """
 
     # Decorators applied to all class methods

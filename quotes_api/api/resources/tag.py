@@ -1,13 +1,14 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
+from flask_apispec import use_kwargs, marshal_with
+from flask_apispec.views import MethodResource
 
 from quotes_api.models import Quote
-from quotes_api.extensions import odm
 from quotes_api.common import HttpStatus, paginator
 from quotes_api.auth.decorators import user_required, admin_required
 
 
-class TagList(Resource):
+class TagList(MethodResource, Resource):
     """ List of tags. """
 
     # Decorators applied to all class methods

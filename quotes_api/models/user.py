@@ -17,8 +17,10 @@ class User(odm.Document):
 
     def __init__(self, **kwargs):
         """ User initialization with password encryption. """
-        super().__init__(**kwargs)
+        super(User, self).__init__(**kwargs)
+        print("Pasword:", self.password)
         self.password = pwd_context.hash(self.password)
+        print("Hashed password:", self.password)
 
     def __str__(self):
         return (

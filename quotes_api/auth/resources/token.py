@@ -9,6 +9,8 @@ from flask_jwt_extended import (
     get_jwt_identity,
     get_raw_jwt,
 )
+from flask_apispec import use_kwargs, marshal_with
+from flask_apispec import MethodResource
 
 from quotes_api.models import User
 from quotes_api.auth.helpers import (
@@ -19,7 +21,7 @@ from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus
 
 
-class TokenRefresh(Resource):
+class TokenRefresh(MethodResource, Resource):
     """ Token refresh. """
 
     @jwt_refresh_token_required
@@ -49,7 +51,7 @@ class TokenRefresh(Resource):
             )
 
 
-class AccessTokenRevoke(Resource):
+class AccessTokenRevoke(MethodResource, Resource):
     """ Access Token Revoke resource. """
 
     @jwt_required
@@ -73,7 +75,7 @@ class AccessTokenRevoke(Resource):
             )
 
 
-class RefreshTokenRevoke(Resource):
+class RefreshTokenRevoke(MethodResource, Resource):
     """ Refresh Token Revoked resource. """
 
     @jwt_refresh_token_required
@@ -98,7 +100,7 @@ class RefreshTokenRevoke(Resource):
             )
 
 
-class TrialToken(Resource):
+class TrialToken(MethodResource, Resource):
     """ Trial api key creation resource. """
 
     @admin_required
@@ -131,7 +133,7 @@ class TrialToken(Resource):
             )
 
 
-class PermanentToken(Resource):
+class PermanentToken(MethodResource, Resource):
     """ Permanent api key creation resource. """
 
     @admin_required

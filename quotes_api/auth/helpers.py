@@ -4,7 +4,6 @@ from datetime import datetime
 
 from flask_jwt_extended import decode_token
 
-from quotes_api.extensions import odm
 from quotes_api.models import TokenBlacklist, User
 
 

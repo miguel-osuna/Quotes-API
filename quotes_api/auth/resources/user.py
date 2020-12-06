@@ -1,12 +1,13 @@
 from flask import request, jsonify, make_response, current_app as app
 from flask_restful import Resource
-
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     fresh_jwt_required,
     get_jwt_identity,
 )
+from flask_apispec import use_kwargs, marshal_with
+from flask_apispec.views import MethodResource
 
 from quotes_api.models import User, TokenBlacklist
 from quotes_api.extensions import pwd_context, jwt
@@ -18,7 +19,7 @@ from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus, paginator
 
 
-class UserSignup(Resource):
+class UserSignup(MethodResource, Resource):
     """ User sign up resource. """
 
     # Decorators applied to all class methods
@@ -50,7 +51,7 @@ class UserSignup(Resource):
             return {"error": "Missing data"}, HttpStatus.bad_request_400.value
 
 
-class UserLogin(Resource):
+class UserLogin(MethodResource, Resource):
     """ User login resource. """
 
     # Decorators applied to all class methods
@@ -70,10 +71,11 @@ class UserLogin(Resource):
                 # Check if there's a match for the user in the database
                 user = User.objects(username=str(username)).first()
 
+                if user is None:
+                    raise Exception("User does not exist")
+
                 # Check the passwords match
                 if not pwd_context.verify(password, user.password):
-                    print("Password:", password)
-                    print("Hashed password:", user.password)
                     raise Exception("Wrong password")
 
                 # Store tokens in our database with a status of currently not revoked
@@ -105,7 +107,7 @@ class UserLogin(Resource):
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
 
-class UserLogout(Resource):
+class UserLogout(MethodResource, Resource):
     """ User logout resource. """
 
     # Decorators applied to all class methods
@@ -116,7 +118,7 @@ class UserLogout(Resource):
         pass
 
 
-class UserResource(Resource):
+class UserResource(MethodResource, Resource):
     """ Single user resource. """
 
     # Decorators applied to all class methods
@@ -202,7 +204,7 @@ class UserResource(Resource):
             )
 
 
-class UserList(Resource):
+class UserList(MethodResource, Resource):
     """ User list resource. """
 
     # Decorators applied to all class methods
@@ -231,7 +233,7 @@ class UserList(Resource):
             )
 
 
-class UserTokens(Resource):
+class UserTokens(MethodResource, Resource):
     """ 
     User tokens list resource. 
     

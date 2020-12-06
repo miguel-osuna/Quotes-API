@@ -10,7 +10,7 @@ from flask_jwt_extended import (
     get_jwt_claims,
 )
 
-from quotes_api.extensions import odm, jwt
+from quotes_api.extensions import jwt
 from quotes_api.models import TokenBlacklist, User
 from quotes_api.common import HttpStatus
 

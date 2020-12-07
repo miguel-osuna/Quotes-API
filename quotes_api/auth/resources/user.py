@@ -6,8 +6,6 @@ from flask_jwt_extended import (
     fresh_jwt_required,
     get_jwt_identity,
 )
-from flask_apispec import use_kwargs, marshal_with, doc
-from flask_apispec.views import MethodResource
 
 from quotes_api.models import User, TokenBlacklist
 from quotes_api.extensions import pwd_context, jwt
@@ -17,62 +15,60 @@ from quotes_api.auth.helpers import (
 )
 from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus, paginator
-from quotes_api.schemas import UserSchema, TokenBlacklistSchema
+from quotes_api.auth.schemas.user import UserSchema
+from quotes_api.auth.schemas.blacklist import TokenBlacklistSchema
 
 
-class UserSignup(MethodResource, Resource):
+class UserSignup(Resource):
     """ User sign up resource. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Registers a new user.", tags=["User"])
+    # @doc(description="Registers a new user.", tags=["User"])
     def post(self):
         """ User registration to the database. """
         try:
-            # Get data from request
-            data = request.get_json()
-
-            # Ceck data with marshmallow
+            # Create user schema instance
             user_schema = UserSchema(only=["username", "email", "password"])
 
-            username = data["username"]
-            email = data["email"]
-            password = data["password"]
+            data = user_schema.load(request.json)
 
             try:
-                user = User(username=username, email=email, password=password)
+                user = User(**data)
                 user.save()
 
                 return {"message": "Successful sign up."}, HttpStatus.created_201.value
 
-            except:
+            except Exception as e:
                 return (
-                    {"error": "Could not sign up user."},
+                    {"error": "Could not sign up user.", "detail": str(e)},
                     HttpStatus.internal_server_error_500.value,
                 )
 
-        except:
-            return {"error": "Missing data"}, HttpStatus.bad_request_400.value
+        except Exception as e:
+            return (
+                {"error": "Missing data", "detail": str(e)},
+                HttpStatus.bad_request_400.value,
+            )
 
 
-class UserLogin(MethodResource, Resource):
+class UserLogin(Resource):
     """ User login resource. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Login a user.", tags=["User"])
+    # @doc(description="Login a user.", tags=["User"])
     def post(self):
         """ Authenticate a user and return tokens. """
 
         try:
-            # Get data from request
-            data = request.get_json()
-
             # Create user schema instance
             user_schema = UserSchema(only=["username", "password"])
 
+            # Get data from request
+            data = user_schema.load(request.json)
             username = data["username"]
             password = data["password"]
 
@@ -116,25 +112,25 @@ class UserLogin(MethodResource, Resource):
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
 
-class UserLogout(MethodResource, Resource):
+class UserLogout(Resource):
     """ User logout resource. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Logout a user.", tags=["User"])
+    # @doc(description="Logout a user.", tags=["User"])
     @fresh_jwt_required
     def post(self):
         pass
 
 
-class UserResource(MethodResource, Resource):
+class UserResource(Resource):
     """ Single user resource. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get user resource by id.", tags=["User"])
+    # @doc(description="Get user resource by id.", tags=["User"])
     @admin_required
     def get(self, user_id):
         " Get user by id. "
@@ -146,10 +142,11 @@ class UserResource(MethodResource, Resource):
                 HttpStatus.not_found_404.value,
             )
 
+        # Create user schema instance
         user_schema = UserSchema()
         return make_response(user_schema.dump(user), HttpStatus.ok_200.value)
 
-    @doc(description="Update user resource by id.", tags=["User"])
+    # @doc(description="Update user resource by id.", tags=["User"])
     @admin_required
     def put(self, user_id):
         """ Replace entire user. """
@@ -159,9 +156,9 @@ class UserResource(MethodResource, Resource):
             return {"error": "The requested URL was not found on the server."}
         try:
             # Create user schema instance
-            user_schema = UserSchema(exclude=["id"])
+            user_schema = UserSchema()
 
-            data = request.get_json()
+            data = user_schema.load(request.json)
             user.update(**data)
             user.save()
 
@@ -170,7 +167,7 @@ class UserResource(MethodResource, Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    @doc(description="Patch user resource by id.", tags=["User"])
+    # @doc(description="Patch user resource by id.", tags=["User"])
     @admin_required
     def patch(self, user_id):
         """ Update user fields. """
@@ -182,10 +179,10 @@ class UserResource(MethodResource, Resource):
                 HttpStatus.not_found_404.value,
             )
         try:
-            # Create user schema instance
-            user_schema = UserSchema(exclude=["id"])
+            # Create user schema instance and ignore any missing fields
+            user_schema = UserSchema(partial=True)
 
-            data = request.get_json()
+            data = user_schema.load(request.json, partial=True)
             user.update(**data)
             user.save()
 
@@ -194,7 +191,7 @@ class UserResource(MethodResource, Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    @doc(description="Delete a user resource by id.", tags=["User"])
+    # @doc(description="Delete a user resource by id.", tags=["User"])
     @admin_required
     def delete(self, user_id):
         """ Delete user from the database. """
@@ -216,13 +213,13 @@ class UserResource(MethodResource, Resource):
             )
 
 
-class UserList(MethodResource, Resource):
+class UserList(Resource):
     """ User list resource. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get list of user resources.", tags=["User"])
+    # @doc(description="Get list of user resources.", tags=["User"])
     @admin_required
     def get(self):
 

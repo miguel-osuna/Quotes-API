@@ -1,21 +1,19 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
-from flask_apispec import use_kwargs, marshal_with, doc
-from flask_apispec.views import MethodResource
 
 from quotes_api.models import Quote
 from quotes_api.common import HttpStatus, paginator
-from quotes_api.schemas import QuoteSchema
+from quotes_api.api.schemas import QuoteSchema
 from quotes_api.auth.decorators import user_required, admin_required
 
 
-class QuoteResource(MethodResource, Resource):
+class QuoteResource(Resource):
     """ Single quote object resource. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get quote resource by id.", tags=["Quote"])
+    # @doc(description="Get quote resource by id.", tags=["Quote"])
     @user_required
     def get(self, quote_id):
         """ Get quote by id. """
@@ -29,7 +27,7 @@ class QuoteResource(MethodResource, Resource):
         quote_schema = QuoteSchema()
         return make_response(quote_schema.dump(quote), HttpStatus.ok_200.value)
 
-    @doc(description="Update quote resource by id.", tags=["Quote"])
+    # @doc(description="Update quote resource by id.", tags=["Quote"])
     @admin_required
     def put(self, quote_id):
         """ Replace entire quote. """
@@ -38,10 +36,10 @@ class QuoteResource(MethodResource, Resource):
         except:
             return {"error": "The requested URL was not found on the server."}
         try:
-            # Check data with marshmallow
+            # Create quote schema instance
             quote_schema = QuoteSchema()
 
-            data = request.get_json()
+            data = quote_schema.load(request.json)
             quote.update(**data)
             quote.save()
 
@@ -52,7 +50,7 @@ class QuoteResource(MethodResource, Resource):
                 HttpStatus.bad_request_400.value,
             )
 
-    @doc(description="Patch quote resource by id.", tags=["Quote"])
+    # @doc(description="Patch quote resource by id.", tags=["Quote"])
     @admin_required
     def patch(self, quote_id):
         """ Update quote fields. """
@@ -64,10 +62,10 @@ class QuoteResource(MethodResource, Resource):
                 HttpStatus.not_found_404.value,
             )
         try:
-            # Check data with marshmallow
-            quote_schema = QuoteSchema()
+            # Check quote schema instance
+            quote_schema = QuoteSchema(partial=True)
 
-            data = request.get_json()
+            data = quote_schema.load(request.json)
             quote.update(**data)
             quote.save()
 
@@ -75,7 +73,7 @@ class QuoteResource(MethodResource, Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    @doc(description="Delete quote resource by id.", tags=["Quote"])
+    # @doc(description="Delete quote resource by id.", tags=["Quote"])
     @admin_required
     def delete(self, quote_id):
         """ Delete quote. """
@@ -97,13 +95,13 @@ class QuoteResource(MethodResource, Resource):
             )
 
 
-class QuoteList(MethodResource, Resource):
+class QuoteList(Resource):
     """ Quote object list. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get a list of quote resources.", tags=["Quote"])
+    # @doc(description="Get a list of quote resources.", tags=["Quote"])
     @user_required
     def get(self):
         """ Get list of quotes. """
@@ -141,14 +139,14 @@ class QuoteList(MethodResource, Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
-    @doc(description="Create a quote resource.", tags=["Quote"])
+    # @doc(description="Create a quote resource.", tags=["Quote"])
     @admin_required
     def post(self):
         """ Create new quote. """
         try:
-            # Check data with marshmallow
+            # Create quote schema instace
             quote_schema = QuoteSchema()
-            data = request.get_json()
+            data = quote_schema.load(request.json)
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
         try:
@@ -196,14 +194,13 @@ class QuoteList(MethodResource, Resource):
         return filters
 
 
-class QuoteRandom(MethodResource, Resource):
+class QuoteRandom(Resource):
     """ Random quote object. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get a random quote resource.", tags=["Quote"])
-    @marshal_with(QuoteSchema)
+    # @doc(description="Get a random quote resource.", tags=["Quote"])
     @user_required
     def get(self):
         """ Get random quote filtered by tags and author. """
@@ -237,15 +234,12 @@ class QuoteRandom(MethodResource, Resource):
             # Converting CommandCursor class iterator into a list and then getting the only item in it
             random_quote = [quote for quote in quote_collection.aggregate(pipeline)][0]
 
-            response_body = {
-                "id": str(random_quote["_id"]),
-                "quoteText": random_quote["quoteText"],
-                "authorName": random_quote["authorName"],
-                "authorImage": random_quote["authorImage"],
-                "tags": random_quote["tags"],
-            }
+            # Create quote schema instance
+            quote_schema = QuoteSchema()
 
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+            return make_response(
+                quote_schema.dump(random_quote), HttpStatus.ok_200.value
+            )
 
         except Exception as e:
             return (

@@ -22,9 +22,10 @@ flask-restful = "*"
 flask-mongoengine = "*"
 flask-jwt-extended = "*"
 flask-marshmallow = "*"
-flask-apispec = "*"
 python-dotenv = "*"
 passlib = "*"
+apispec = "*"
+apispec-webframeworks = "*"
 
 [script]
 

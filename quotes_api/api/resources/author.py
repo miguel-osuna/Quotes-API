@@ -1,21 +1,19 @@
 from flask import request, jsonify, make_response, url_for
 from flask_restful import Resource
-from flask_apispec import use_kwargs, marshal_with, doc
-from flask_apispec.views import MethodResource
 
 from quotes_api.models import Quote
 from quotes_api.common import HttpStatus, paginator, author_paginator
-from quotes_api.schemas import AuthorSchema
+from quotes_api.api.schemas import AuthorSchema
 from quotes_api.auth.decorators import user_required, admin_required
 
 
-class AuthorList(MethodResource, Resource):
+class AuthorList(Resource):
     """ List of quote authors. """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get list of authors.", tags=["Authors"])
+    # @doc(description="Get list of authors.", tags=["Authors"])
     @user_required
     def get(self):
         """ Get quote authors by alphabetical order. """

@@ -9,8 +9,6 @@ from flask_jwt_extended import (
     get_jwt_identity,
     get_raw_jwt,
 )
-from flask_apispec import use_kwargs, marshal_with, doc
-from flask_apispec import MethodResource
 
 from quotes_api.models import User, TokenBlacklist
 from quotes_api.auth.helpers import (
@@ -19,10 +17,10 @@ from quotes_api.auth.helpers import (
 )
 from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus, paginator
-from quotes_api.schemas import TokenBlacklistSchema
+from quotes_api.auth.schemas.blacklist import TokenBlacklistSchema
 
 
-class UserTokens(MethodResource, Resource):
+class UserTokens(Resource):
     """ 
     User tokens list resource. 
     
@@ -32,7 +30,7 @@ class UserTokens(MethodResource, Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @doc(description="Get list of token resources.", tags=["Api Key"])
+    # @doc(description="Get list of token resources.", tags=["Api Key"])
     @user_required
     def get(self):
         """ Gets all the revoked and unrevoked tokens from a user. """
@@ -60,12 +58,12 @@ class UserTokens(MethodResource, Resource):
             )
 
 
-class TokenRefresh(MethodResource, Resource):
+class TokenRefresh(Resource):
     """ Token refresh. """
 
-    @doc(
-        description="Create an access token from a refresh token.", tags=["Api Key"],
-    )
+    # @doc(
+    #     description="Create an access token from a refresh token.", tags=["Api Key"],
+    # )
     @jwt_refresh_token_required
     def post(self):
         """ Get an access token from a refresh token. """
@@ -93,10 +91,10 @@ class TokenRefresh(MethodResource, Resource):
             )
 
 
-class AccessTokenRevoke(MethodResource, Resource):
+class AccessTokenRevoke(Resource):
     """ Access Token Revoke resource. """
 
-    @doc(description="Revoke an access token.", tags=["Api Key"])
+    # @doc(description="Revoke an access token.", tags=["Api Key"])
     @jwt_required
     def delete(self):
         """ Revokes an access token from the database. 
@@ -118,10 +116,10 @@ class AccessTokenRevoke(MethodResource, Resource):
             )
 
 
-class RefreshTokenRevoke(MethodResource, Resource):
+class RefreshTokenRevoke(Resource):
     """ Refresh Token Revoked resource. """
 
-    @doc(description="Revokes a refresh token.", tags=["Api Key"])
+    # @doc(description="Revokes a refresh token.", tags=["Api Key"])
     @jwt_refresh_token_required
     def delete(self):
         """ Revokes a refresh token from the database.
@@ -144,10 +142,10 @@ class RefreshTokenRevoke(MethodResource, Resource):
             )
 
 
-class TrialToken(MethodResource, Resource):
+class TrialToken(Resource):
     """ Trial api key creation resource. """
 
-    @doc(description="Create a trial api key.", tags=["Api Key"])
+    # @doc(description="Create a trial api key.", tags=["Api Key"])
     @admin_required
     def post(self):
         """ Creates a trial api key. """
@@ -179,10 +177,10 @@ class TrialToken(MethodResource, Resource):
             )
 
 
-class PermanentToken(MethodResource, Resource):
+class PermanentToken(Resource):
     """ Permanent api key creation resource. """
 
-    @doc(description="Create a permanent api key.", tags=["Api Key"])
+    # @doc(description="Create a permanent api key.", tags=["Api Key"])
     @admin_required
     def post(self):
         """ Creates a permanent api key. """

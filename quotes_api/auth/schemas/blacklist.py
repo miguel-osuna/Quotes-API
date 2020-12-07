@@ -1,5 +1,5 @@
 from quotes_api.extensions import ma
-from quotes_api.schemas import UserSchema
+from quotes_api.auth.schemas.user import UserSchema
 
 
 class TokenBlacklistSchema(ma.Schema):

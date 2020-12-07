@@ -1,18 +1,13 @@
-from marshmallow import Schema, fields
-from quotes_api.schemas import UserResponseSchema
+from quotes_api.extensions import ma
+from quotes_api.schemas import UserSchema
 
 
-class TokenBlacklistSchema(Schema):
+class TokenBlacklistSchema(ma.Schema):
     """ Token Blacklist Schema. """
 
-
-class TokenBlacklistResponseSchema(Schema):
-    """ Token Blacklist Response Schema. """
-
-    id = fields.String()
-    jti = fields.String()
-    tokenType = fields.String()
-    user = fields.Nested(UserResponseSchema)
-    revoked = fields.Boolean()
-    expires = fields.DateTime()
-
+    id = ma.String()
+    jti = ma.String()
+    tokenType = ma.String()
+    user = ma.Nested(UserSchema(only=["id",]))
+    revoked = ma.Boolean()
+    expires = ma.DateTime(allow_none=True, data_key="exp")

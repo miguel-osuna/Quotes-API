@@ -1,9 +1,7 @@
 """ Various helpers for auth. Maily for token blacklisting. """
 
 from datetime import datetime
-
 from flask_jwt_extended import decode_token
-
 from quotes_api.models import TokenBlacklist, User
 
 
@@ -15,15 +13,13 @@ def add_token_to_database(encoded_token, identity_claim):
 
     # Decoded token variables
     jti = decoded_token.get("jti")
-    token_type = decoded_token.get("type")
+    token_type = decoded_token.get("tokenType")
     user_identity = decoded_token.get(identity_claim)
-
     exp = decoded_token.get("exp", None)
     if exp != None:
         expires = datetime.fromtimestamp(exp)
     else:
         expires = None
-
     revoked = False
 
     # Get user document to add to the token blacklist

@@ -1,5 +1,4 @@
-from marshmallow import Schema, fields
+from quotes_api.extensions import ma
 
-
-class TagSchema(Schema):
-    tag = fields.String()
+class TagSchema(ma.Schema):
+    tag = ma.String()

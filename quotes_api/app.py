@@ -5,7 +5,7 @@ from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
 from quotes_api import api, auth
-from quotes_api.extensions import jwt, odm, docs
+from quotes_api.extensions import jwt, odm, ma, docs
 from quotes_api.api.resources import (
     QuoteResource,
     QuoteList,
@@ -123,6 +123,7 @@ def configure_extensions(app):
     odm.init_app(app)
     jwt.init_app(app)
     docs.init_app(app)
+    ma.init_app(app)
 
 
 def register_blueprints(app):

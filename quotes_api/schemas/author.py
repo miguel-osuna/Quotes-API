@@ -1,6 +1,5 @@
-from marshmallow import Schema, fields
+from quotes_api.extensions import ma 
 
-
-def AuthorSchema(Schema):
-    authorName = fields.String()
-    authorImage = fields.Image()
+class AuthorSchema(ma.Schema):
+    authorName = ma.String()
+    authorImage = ma.URL()

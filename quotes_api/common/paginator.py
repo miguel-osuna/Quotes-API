@@ -38,14 +38,14 @@ def generate_links(pagination, endpoint, **kwargs):
     return {"self": self_link, "prev": previous_link, "next": next_link}
 
 
-def paginator(pagination, endpoint, **kwargs):
+def paginator(pagination, endpoint, schema, **kwargs):
     """ Paginator for supported models. """
 
-    # Creating list of items
-    items = []
-    for item in pagination.items:
-        items.append(item.to_dict())
+    # Create schemas
+    schema = schema(many=True)
 
+    # Creating list of items
+    items = [item for item in pagination.items]
     links = generate_links(pagination, endpoint, **kwargs)
 
     response_body = {
@@ -56,22 +56,21 @@ def paginator(pagination, endpoint, **kwargs):
             "total_records": pagination.total,
             "links": links,
         },
-        "records": items,
+        "records": schema.dump(items),
     }
 
     return response_body
 
 
-def author_paginator(pagination, endpoint, **kwargs):
+def author_paginator(pagination, endpoint, schema, **kwargs):
     """ Paginator for list of authors. """
 
-    authors = []
-    for item in pagination.items:
-        author = {"authorName": item.authorName, "authorImage": item.authorImage}
+    schema = schema(many=True)
 
+    authors = []
+    for author in pagination.items:
         if author not in authors:
             authors.append(author)
-
     links = generate_links(pagination, endpoint, **kwargs)
 
     response_body = {
@@ -82,7 +81,7 @@ def author_paginator(pagination, endpoint, **kwargs):
             "total_records": len(authors),
             "links": links,
         },
-        "records": authors,
+        "records": schema.dump(authors),
     }
 
     return response_body

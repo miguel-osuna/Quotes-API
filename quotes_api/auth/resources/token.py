@@ -19,7 +19,7 @@ from quotes_api.auth.helpers import (
 )
 from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus, paginator
-from quotes_api.schemas import TokenBlacklistSchema, TokenBlacklistResponseSchema
+from quotes_api.schemas import TokenBlacklistSchema
 
 
 class UserTokens(MethodResource, Resource):
@@ -50,9 +50,8 @@ class UserTokens(MethodResource, Resource):
                 page=page, per_page=per_page
             )
 
-            response_body = paginator(pagination, "auth.user_tokens")
-
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+            response_body = paginator(pagination, "auth.tokens", TokenBlacklistSchema)
+            return make_response(response_body, HttpStatus.ok_200.value)
 
         except Exception as e:
             return (
@@ -85,7 +84,7 @@ class TokenRefresh(MethodResource, Resource):
             add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
 
             response_body = {"accessToken": access_token}
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+            return make_response(response_body, HttpStatus.ok_200.value)
 
         except:
             return (
@@ -154,6 +153,7 @@ class TrialToken(MethodResource, Resource):
         """ Creates a trial api key. """
 
         try:
+
             # Get the current identity from the access token to retrieve
             # the user from the database
             user_identity = get_jwt_identity()
@@ -169,8 +169,8 @@ class TrialToken(MethodResource, Resource):
             # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
             add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
 
-            response_body = {"token": token}
-            return make_response(jsonify(response_body), HttpStatus.created_201.value)
+            response_body = {"trialApiKey": token}
+            return make_response(response_body, HttpStatus.created_201.value)
 
         except:
             return (
@@ -192,9 +192,9 @@ class PermanentToken(MethodResource, Resource):
             # the user from the database
             user_identity = get_jwt_identity()
             expires = False
-
             # We pass the "current_user" User instance as the token identity.
             current_user = User.objects.get(username=user_identity)
+
             token = create_access_token(
                 identity=current_user, expires_delta=expires, fresh=False
             )
@@ -203,8 +203,8 @@ class PermanentToken(MethodResource, Resource):
             # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
             add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
 
-            response_body = {"token": token}
-            return make_response(jsonify(response_body), HttpStatus.created_201.value)
+            response_body = {"permanentApiKey": token}
+            return make_response(response_body, HttpStatus.created_201.value)
 
         except:
             return (

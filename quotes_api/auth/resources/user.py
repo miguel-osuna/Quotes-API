@@ -17,7 +17,7 @@ from quotes_api.auth.helpers import (
 )
 from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus, paginator
-from quotes_api.schemas import UserSchema, UserResponseSchema
+from quotes_api.schemas import UserSchema, TokenBlacklistSchema
 
 
 class UserSignup(MethodResource, Resource):
@@ -32,6 +32,9 @@ class UserSignup(MethodResource, Resource):
         try:
             # Get data from request
             data = request.get_json()
+
+            # Ceck data with marshmallow
+            user_schema = UserSchema(only=["username", "email", "password"])
 
             username = data["username"]
             email = data["email"]
@@ -67,6 +70,9 @@ class UserLogin(MethodResource, Resource):
             # Get data from request
             data = request.get_json()
 
+            # Create user schema instance
+            user_schema = UserSchema(only=["username", "password"])
+
             username = data["username"]
             password = data["password"]
 
@@ -98,11 +104,11 @@ class UserLogin(MethodResource, Resource):
                     "accessToken": access_token,
                     "refreshToken": refresh_token,
                 }
-                return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+                return make_response(response_body, HttpStatus.ok_200.value)
 
-            except:
+            except Exception as e:
                 return (
-                    {"error": "Wrong credentials"},
+                    {"error": "Wrong credentials", "detail": str(e)},
                     HttpStatus.unauthorized_401.value,
                 )
 
@@ -134,16 +140,14 @@ class UserResource(MethodResource, Resource):
         " Get user by id. "
         try:
             user = User.objects.get_or_404(id=user_id)
-
         except:
             return (
                 {"error": "The requested URL was not found on the server."},
                 HttpStatus.not_found_404.value,
             )
 
-        response_body = {"user": user.to_dict()}
-
-        return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+        user_schema = UserSchema()
+        return make_response(user_schema.dump(user), HttpStatus.ok_200.value)
 
     @doc(description="Update user resource by id.", tags=["User"])
     @admin_required
@@ -153,8 +157,10 @@ class UserResource(MethodResource, Resource):
             user = User.objects.get_or_404(id=user_id)
         except:
             return {"error": "The requested URL was not found on the server."}
-
         try:
+            # Create user schema instance
+            user_schema = UserSchema(exclude=["id"])
+
             data = request.get_json()
             user.update(**data)
             user.save()
@@ -170,14 +176,15 @@ class UserResource(MethodResource, Resource):
         """ Update user fields. """
         try:
             user = User.objects.get_or_404(id=user_id)
-
         except:
             return (
                 {"error": "The requested URL was not found on the server."},
                 HttpStatus.not_found_404.value,
             )
-
         try:
+            # Create user schema instance
+            user_schema = UserSchema(exclude=["id"])
+
             data = request.get_json()
             user.update(**data)
             user.save()
@@ -195,16 +202,13 @@ class UserResource(MethodResource, Resource):
         try:
             user = User.objects.get_or_404(id=user_id)
         except:
-
             return (
                 {"error": "The requested URL was not found on the server."},
                 HttpStatus.not_found_404.value,
             )
-
         try:
             user.delete()
             return "", HttpStatus.no_content_204.value
-
         except:
             return (
                 {"error": "Could not delete user"},
@@ -230,10 +234,9 @@ class UserList(MethodResource, Resource):
         try:
             # Generating pagination of quotes
             pagination = User.objects.paginate(page=page, per_page=per_page)
+            response_body = paginator(pagination, "auth.users", UserSchema)
 
-            response_body = paginator(pagination, "auth.users")
-
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+            return make_response(response_body, HttpStatus.ok_200.value)
 
         except:
             return (

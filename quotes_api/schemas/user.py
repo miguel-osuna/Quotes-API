@@ -1,19 +1,10 @@
-from marshmallow import Schema, fields
+from quotes_api.extensions import ma
 
 
-class UserSchema(Schema):
-    username = fields.String()
-    email = fields.Email()
-    password = fields.String()
-    active = fields.Boolean()
-    roles = fields.List(fields.String())
-
-
-class UserResponseSchema(Schema):
-    id = fields.String()
-    username = fields.String()
-    email = fields.Email()
-    password = fields.String()
-    active = fields.Boolean()
-    roles = fields.List(fields.String())
-
+class UserSchema(ma.Schema):
+    id = ma.String(dump_only=True)
+    username = ma.String()
+    email = ma.Email()
+    password = ma.String(load_only=True)
+    active = ma.Boolean()
+    roles = ma.List(ma.String())

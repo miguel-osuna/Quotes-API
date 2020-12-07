@@ -18,9 +18,9 @@ class User(odm.Document):
     def __init__(self, **kwargs):
         """ User initialization with password encryption. """
         super(User, self).__init__(**kwargs)
-        print("Pasword:", self.password)
+        # print("Pasword:", self.password)
         self.password = pwd_context.hash(self.password)
-        print("Hashed password:", self.password)
+        # print("Hashed password:", self.password)
 
     def __str__(self):
         return (
@@ -33,14 +33,3 @@ class User(odm.Document):
 
     def __repr__(self):
         return f"<User {str(self.id)}>"
-
-    def to_dict(self):
-        return {
-            "id": str(self.id),
-            "username": self.username,
-            "email": self.email,
-            "password": self.password,
-            "active": self.active,
-            "roles": self.roles,
-        }
-

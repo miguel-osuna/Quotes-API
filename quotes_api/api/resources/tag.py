@@ -4,7 +4,7 @@ from flask_apispec import use_kwargs, marshal_with, doc
 from flask_apispec.views import MethodResource
 
 from quotes_api.models import Quote
-from quotes_api.common import HttpStatus, paginator
+from quotes_api.common import HttpStatus
 from quotes_api.schemas import TagSchema
 from quotes_api.auth.decorators import user_required, admin_required
 

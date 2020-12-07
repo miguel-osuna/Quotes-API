@@ -23,14 +23,3 @@ class TokenBlacklist(odm.Document):
 
     def __repr__(self):
         return f"<Token {str(self.id)}>"
-
-    def to_dict(self):
-        return {
-            "id": str(self.id),
-            "jti": self.jti,
-            "tokenType": self.tokenType,
-            "user": str(self.user.id),
-            "revoked": self.revoked,
-            "expires": self.expires,
-        }
-

@@ -1,16 +1,9 @@
-from marshmallow import Schema, fields
+from quotes_api.extensions import ma
 
 
-class QuoteSchema(Schema):
-    quoteText = fields.String()
-    authorName = fields.String()
-    authorImage = fields.URL()
-    tags = fields.List(fields.String())
-
-
-class QuoteResponseSchema(Schema):
-    id = fields.String()
-    quoteText = fields.String()
-    authorName = fields.String()
-    authorImage = fields.URL()
-    tags = fields.List(fields.String())
+class QuoteSchema(ma.Schema):
+    id = ma.String(dump_only=True)
+    quoteText = ma.String()
+    authorName = ma.String()
+    authorImage = ma.URL()
+    tags = ma.List(ma.String())

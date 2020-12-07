@@ -1,12 +1,7 @@
 from datetime import timedelta
-from flask import Blueprint, make_response, request, jsonify, current_app as app
+from flask import Blueprint, current_app, jsonify, current_app as app
 from flask_restful import Api
 
-
-from quotes_api.models import User
-from quotes_api.extensions import pwd_context, jwt
-from quotes_api.common import HttpStatus
-from quotes_api.auth.helpers import is_token_revoked
 from quotes_api.auth.resources import (
     UserSignup,
     UserLogin,
@@ -20,20 +15,22 @@ from quotes_api.auth.resources import (
     TrialToken,
     PermanentToken,
 )
+from quotes_api.models import User
+from quotes_api.auth.schemas import UserSchema, TokenBlacklistSchema
+from quotes_api.extensions import pwd_context, jwt, apispec
+from quotes_api.common import HttpStatus
+from quotes_api.auth.helpers import is_token_revoked
 
 blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
 api = Api(blueprint)
 
-# User routes
+# Ruote all resources
 api.add_resource(UserSignup, "/signup", endpoint="user_signup")
 api.add_resource(UserLogin, "/login", endpoint="user_login")
 api.add_resource(UserLogout, "/logout", endpoint="user_logout")
 api.add_resource(UserResource, "/users/<user_id>", endpoint="user_by_id")
 api.add_resource(UserList, "/users", endpoint="users")
-
-
-# Token routes
 api.add_resource(UserTokens, "/tokens", endpoint="tokens")
 api.add_resource(TokenRefresh, "/refresh", endpoint="token_refresh")
 api.add_resource(
@@ -46,7 +43,7 @@ api.add_resource(TrialToken, "/generate_trial_key", endpoint="trial_token")
 api.add_resource(PermanentToken, "/generate_permanent_key", endpoint="permanent_token")
 
 
-# CALLBACK FUNCTIONS
+# Callback functions
 @jwt.token_in_blacklist_loader
 def check_if_token_revoked(decoded_token):
     """ 
@@ -93,4 +90,26 @@ def user_identity_lookup(user):
     """
 
     return user.username
+
+
+# Apispec view configuration
+@blueprint.before_app_first_request
+def register_views():
+    """ Register views for API documentation. """
+
+    # Adding User views
+    apispec.spec.components.schema("UserSchema", schema=UserSchema)
+    apispec.spec.path(view=UserResource, app=current_app)
+    apispec.spec.path(view=UserList, app=current_app)
+    apispec.spec.path(view=UserTokens, app=current_app)
+
+    # Adding authentication views
+    apispec.spec.path(view=UserSignup, app=current_app)
+    apispec.spec.path(view=UserLogin, app=current_app)
+    apispec.spec.path(view=UserLogout, app=current_app)
+    apispec.spec.path(view=TokenRefresh, app=current_app)
+    apispec.spec.path(view=AccessTokenRevoke, app=current_app)
+    apispec.spec.path(view=RefreshTokenRevoke, app=current_app)
+    apispec.spec.path(view=TrialToken, app=current_app)
+    apispec.spec.path(view=PermanentToken, app=current_app)
 

@@ -65,9 +65,9 @@ def create_app(configuration="ProductionConfig"):
 def configure_apispec(app):
     """ Configure APISpec for swagger support. """
     apispec.init_app(app, security=[{"jwt": []}])
-    apispec.spec.components.security_scheme(
-        "jwt", {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
-    )
+
+    jwt_scheme = {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
+    apispec.spec.components.security_scheme("jwt", jwt_scheme)
 
 
 def configure_extensions(app):

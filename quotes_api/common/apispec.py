@@ -41,10 +41,10 @@ class APISpecExt:
 
     def init_app(self, app, **kwargs):
         app.config.setdefault("APISPEC_TITLE", "Quotes API")
-        app.config.setdefault("APISPEC_VERSION", "1.0.0")
+        app.config.setdefault("APISPEC_VERSION", "v1.0.0")
         app.config.setdefault("OPENAPI_VERSION", "3.0.2")
         app.config.setdefault("SWAGGER_JSON_URL", "/swagger.json")
-        app.config.setdefault("SWAGGER_UI_URL", "/docs")
+        app.config.setdefault("SWAGGER_UI_URL", "/swagger")
         app.config.setdefault("SWAGGER_URL_PREFIX", None)
 
         self.spec = APISpec(
@@ -62,12 +62,13 @@ class APISpecExt:
             url_prefix=app.config["SWAGGER_URL_PREFIX"],
         )
 
-        blueprint.add_url_rule(
-            app.config["SWAGGER_JSON_URL"], "swagger_json", self.swagger_json
-        )
-        blueprint.add_url_rule(
-            app.config["SWAGGER_UI_URL"], "swagger_ui", self.swagger_ui
-        )
+        @blueprint.route("/swagger.json")
+        def swagger_json():
+            return self.swagger_json()
+
+        @blueprint.route("/documentation")
+        def swagger_ui():
+            return self.swagger_ui()
 
         app.register_blueprint(blueprint)
 

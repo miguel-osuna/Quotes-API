@@ -25,6 +25,35 @@ class UserTokens(Resource):
     User tokens list resource. 
     
     Provides a way for a user to look at their tokens
+
+    ---
+    get:
+      tags: 
+        - auth
+      parameters:
+        - in: query
+          name: page
+          schema: 
+            type: integer
+          description: Page number for pagination
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+          description: Number of results per page
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/MetadataSchema'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TokenBlacklistSchema'
     """
 
     # Decorators applied to all class methods

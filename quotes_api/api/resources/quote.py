@@ -8,7 +8,107 @@ from quotes_api.auth.decorators import user_required, admin_required
 
 
 class QuoteResource(Resource):
-    """ Single quote object resource. """
+    """ Single quote object resource. 
+    
+    ---
+    get:
+      tags:
+        - api
+      parameters:
+        - in: path
+          name: quote_id
+          schema: 
+            type: integer
+          description: Quote ID
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  quote: QuoteSchema
+        404:
+          description: Quote does not exist
+
+    put:
+      tags:
+        - api
+      parameters:
+        - in: path
+          name: quote_id
+          schema:
+            type: integer
+          description: Quote ID
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              QuoteSchema
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  message:
+                    type: string
+                    example: Quote updated
+                  quote: QuoteSchema
+        404:
+          description: Quote does not exist
+
+    patch:
+      tags:
+        - api
+      parameters:
+        - in: path
+          name: quote_id
+          schema:
+            type: integer
+          description: Quote ID
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              QuoteSchema
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  message:
+                    type: string
+                    example: Quote updated
+                  quote: QuoteSchema
+        404:
+          description: Quote does not exist
+
+    delete:
+      tags:
+        - api
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          description: Quote ID
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User deleted
+        404:
+          description: User does not exist
+    """
 
     # Decorators applied to all class methods
     method_decorators = []
@@ -96,7 +196,70 @@ class QuoteResource(Resource):
 
 
 class QuoteList(Resource):
-    """ Quote object list. """
+    """ Quote object list. 
+    
+    ---
+    get:
+      tags:
+        - api
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number for pagination
+        - in: query
+          name: per_page
+          schema:
+            type: integer 
+          description: Number of results per page
+        - in: query
+          name: tags
+          schema: 
+            type: string
+          description: Quote tags for filtering
+        - in: query
+          name: author
+          schema:
+            type: string
+          description: Author name for filtering
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Query for quote search
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/MetadataSchema'
+                  - type: object
+                    properties:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/QuoteSchema'
+    post:
+      tags:
+        - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              QuoteSchema
+        responses:
+          201:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Quote created
+                    quote: QuoteSchema
+    """
 
     # Decorators applied to all class methods
     method_decorators = []
@@ -195,7 +358,34 @@ class QuoteList(Resource):
 
 
 class QuoteRandom(Resource):
-    """ Random quote object. """
+    """ Random quote object. 
+    
+    ---
+    get:
+      tags:
+        - api
+      parameters:
+        - in: query
+          name: tags
+          schema:
+            type: string
+          description: Quote tags for filtering
+        - in: query
+          name: author
+          schema:
+            type: Author name for filtering
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quote: QuoteSchema
+        500:
+          description: Could not retrieve quote
+
+    """
 
     # Decorators applied to all class methods
     method_decorators = []

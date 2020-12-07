@@ -8,7 +8,42 @@ from quotes_api.auth.decorators import user_required, admin_required
 
 
 class AuthorList(Resource):
-    """ List of quote authors. """
+    """ List of quote authors. 
+    
+    ---
+    get:
+      tags:
+        - api
+      parameters:
+        - in: query
+          name: page
+          schema: 
+            type: integer
+          description: Page number for pagination
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+          description: Number of result per page
+        - in: query
+          name: sort_order
+          schema:
+            type: string
+          description: Author name sort order
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/MetadataSchema'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AuthorSchema'
+    """
 
     # Decorators applied to all class methods
     method_decorators = []

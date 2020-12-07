@@ -8,7 +8,24 @@ from quotes_api.auth.decorators import user_required, admin_required
 
 
 class TagList(Resource):
-    """ List of tags. """
+    """ List of tags. 
+    
+    ---
+    get:
+      tags:
+        - api:
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      type: string
+    """
 
     # Decorators applied to all class methods
     method_decorators = []

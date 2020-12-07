@@ -207,6 +207,7 @@ class UserResource(Resource):
           name: user_id
           schema:
             type: integer
+          description: User ID
       responses:
         200:
           content:
@@ -226,6 +227,7 @@ class UserResource(Resource):
           name: user_id
           schema:
             type: integer
+          description: User ID
       requestBody:
         content: 
           application/json:
@@ -252,6 +254,7 @@ class UserResource(Resource):
           name: user_id
           schema:
             type: integer
+          description: User ID
       requestBody:
         content: 
           application/json:
@@ -278,6 +281,7 @@ class UserResource(Resource):
           name: user_id
           schema:
             type: integer
+          description: User ID
       responses:
         200:
           content: 
@@ -385,6 +389,17 @@ class UserList(Resource):
     get:
       tags:
         - api
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number for pagination
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+          description: Number of results per page
       responses:
         200:
           content:

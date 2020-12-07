@@ -13,7 +13,14 @@ class TagList(Resource):
     ---
     get:
       tags:
-        - api:
+        - Tag
+      description: |
+        Get list of supported tags.
+      parameters:
+        - in: header
+          name: Authorization
+          required: false
+          description: Valid API Key
       responses:
         200:
           content:
@@ -25,12 +32,16 @@ class TagList(Resource):
                     type: array
                     items:
                       type: string
+        400:
+          description: Bad request
+        401: 
+          description: Unauthorized
     """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Get list of tags.", tags=["Tags"])
+    # @doc(description="", tags=["Tags"])
     @user_required
     def get(self):
         """ Get list of all tags. """

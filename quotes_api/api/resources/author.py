@@ -13,7 +13,9 @@ class AuthorList(Resource):
     ---
     get:
       tags:
-        - api
+        - Author
+      description: |
+        Get list of available authors.
       parameters:
         - in: query
           name: page
@@ -30,6 +32,10 @@ class AuthorList(Resource):
           schema:
             type: string
           description: Author name sort order
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid API Key
       responses:
         200:
           content:
@@ -48,7 +54,6 @@ class AuthorList(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Get list of authors.", tags=["Authors"])
     @user_required
     def get(self):
         """ Get quote authors by alphabetical order. """

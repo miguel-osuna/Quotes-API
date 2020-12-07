@@ -13,13 +13,19 @@ class QuoteResource(Resource):
     ---
     get:
       tags:
-        - api
+        - Quote
+      description: |
+        Get quote resource by id.
       parameters:
         - in: path
           name: quote_id
           schema: 
             type: integer
           description: Quote ID
+        - in: header
+          name: Authorization
+          required: true
+          description: Valid API Key
       responses:
         200:
           content:
@@ -33,13 +39,19 @@ class QuoteResource(Resource):
 
     put:
       tags:
-        - api
+        - Quote
+      description: |
+        Update quote resource by id.
       parameters:
         - in: path
           name: quote_id
           schema:
             type: integer
           description: Quote ID
+        - in: path
+          name: Authorization
+          required: true
+          description: Valid admin Api Key
       requestBody:
         content: 
           application/json:
@@ -61,13 +73,19 @@ class QuoteResource(Resource):
 
     patch:
       tags:
-        - api
+        - Quote
+      description: |
+        Patch quote resource by id.
       parameters:
         - in: path
           name: quote_id
           schema:
             type: integer
           description: Quote ID
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid admin API Key
       requestBody:
         content: 
           application/json:
@@ -89,13 +107,19 @@ class QuoteResource(Resource):
 
     delete:
       tags:
-        - api
+        - Quote
+      description: |
+        Delete quote resource by id.
       parameters:
         - in: path
           name: user_id
           schema:
             type: integer
           description: Quote ID
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid admin API Key
       responses:
         200:
           content:
@@ -113,7 +137,6 @@ class QuoteResource(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Get quote resource by id.", tags=["Quote"])
     @user_required
     def get(self, quote_id):
         """ Get quote by id. """
@@ -127,7 +150,6 @@ class QuoteResource(Resource):
         quote_schema = QuoteSchema()
         return make_response(quote_schema.dump(quote), HttpStatus.ok_200.value)
 
-    # @doc(description="Update quote resource by id.", tags=["Quote"])
     @admin_required
     def put(self, quote_id):
         """ Replace entire quote. """
@@ -150,7 +172,6 @@ class QuoteResource(Resource):
                 HttpStatus.bad_request_400.value,
             )
 
-    # @doc(description="Patch quote resource by id.", tags=["Quote"])
     @admin_required
     def patch(self, quote_id):
         """ Update quote fields. """
@@ -173,7 +194,6 @@ class QuoteResource(Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    # @doc(description="Delete quote resource by id.", tags=["Quote"])
     @admin_required
     def delete(self, quote_id):
         """ Delete quote. """
@@ -201,7 +221,9 @@ class QuoteList(Resource):
     ---
     get:
       tags:
-        - api
+        - Quote
+      description: |
+        Get a list of quote resources.
       parameters:
         - in: query
           name: page
@@ -228,6 +250,10 @@ class QuoteList(Resource):
           schema:
             type: string
           description: Query for quote search
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid API Key
       responses:
         200:
           content:
@@ -242,7 +268,14 @@ class QuoteList(Resource):
                         $ref: '#/components/schemas/QuoteSchema'
     post:
       tags:
-        - api
+        - Quote
+      description: |
+        Create a quote resource.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid admin API Key
       requestBody:
         content:
           application/json:
@@ -264,7 +297,6 @@ class QuoteList(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Get a list of quote resources.", tags=["Quote"])
     @user_required
     def get(self):
         """ Get list of quotes. """
@@ -302,7 +334,6 @@ class QuoteList(Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
-    # @doc(description="Create a quote resource.", tags=["Quote"])
     @admin_required
     def post(self):
         """ Create new quote. """
@@ -363,7 +394,9 @@ class QuoteRandom(Resource):
     ---
     get:
       tags:
-        - api
+        - Quote
+      description: |
+        Get a random quote resource.
       parameters:
         - in: query
           name: tags
@@ -374,6 +407,10 @@ class QuoteRandom(Resource):
           name: author
           schema:
             type: Author name for filtering
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid API Key
       responses:
         200:
           content:
@@ -384,13 +421,11 @@ class QuoteRandom(Resource):
                   quote: QuoteSchema
         500:
           description: Could not retrieve quote
-
     """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Get a random quote resource.", tags=["Quote"])
     @user_required
     def get(self):
         """ Get random quote filtered by tags and author. """

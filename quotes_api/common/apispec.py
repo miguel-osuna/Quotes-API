@@ -47,12 +47,22 @@ class APISpecExt:
         app.config.setdefault("SWAGGER_UI_URL", "/swagger")
         app.config.setdefault("SWAGGER_URL_PREFIX", None)
 
+        info_object = {
+            "description": "Quotes API is a *REST API* that offers access to its feature rich platform. Serve some of the most **famous quotes** from all time. This is an interactive API documentation, feel free to try it.",
+            "contact": {
+                "name": "Miguel Osuna",
+                "url": "https://www.miguel-osuna.com",
+                "email": "contact@miguel-osuna.com",
+            },
+        }
+
         self.spec = APISpec(
             title=app.config["APISPEC_TITLE"],
             version=app.config["APISPEC_VERSION"],
             openapi_version=app.config["OPENAPI_VERSION"],
             plugins=[MarshmallowPlugin(), FlaskRestfulPlugin()],
-            **kwargs
+            **kwargs,
+            info=info_object
         )
 
         blueprint = Blueprint(

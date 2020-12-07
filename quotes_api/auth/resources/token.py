@@ -29,7 +29,9 @@ class UserTokens(Resource):
     ---
     get:
       tags: 
-        - auth
+        - Authentication
+      description: |
+      Get list of token resources.
       parameters:
         - in: query
           name: page
@@ -41,6 +43,10 @@ class UserTokens(Resource):
           schema:
             type: integer
           description: Number of results per page
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid API Key
       responses:
         200:
           content:
@@ -59,7 +65,6 @@ class UserTokens(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Get list of token resources.", tags=["Api Key"])
     @user_required
     def get(self):
         """ Gets all the revoked and unrevoked tokens from a user. """
@@ -93,12 +98,14 @@ class TokenRefresh(Resource):
     ---
     post:
       tags:
-        - auth
+        - Authentication
+      description: |
+      Create an access token from a refresh token.
       parameters:
         - in: header
           name: Authorization
           required: true
-          description: valid refresh token
+          description: Valid refresh token
       responses:
         200: 
           content:
@@ -115,9 +122,6 @@ class TokenRefresh(Resource):
           description: unautorized
     """
 
-    # @doc(
-    #     description="Create an access token from a refresh token.", tags=["Api Key"],
-    # )
     @jwt_refresh_token_required
     def post(self):
         """ Get an access token from a refresh token. """
@@ -151,7 +155,14 @@ class AccessTokenRevoke(Resource):
     ---
     delete:
       tags:
-        - auth
+        - Authentication
+      description: |
+      Revoke an access token.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid access token
       responses:
         200:
           content:
@@ -168,7 +179,6 @@ class AccessTokenRevoke(Resource):
           description: unauthorized
     """
 
-    # @doc(description="Revoke an access token.", tags=["Api Key"])
     @jwt_required
     def delete(self):
         """ Revokes an access token from the database. 
@@ -196,7 +206,14 @@ class RefreshTokenRevoke(Resource):
     ---
     delete:
       tags:
-        - auth
+        - Authentication
+      description: |
+      Revokes a refresh token.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid refresh token
       responses:
         200:
           content:
@@ -213,7 +230,6 @@ class RefreshTokenRevoke(Resource):
           description: unauthorized
     """
 
-    # @doc(description="Revokes a refresh token.", tags=["Api Key"])
     @jwt_refresh_token_required
     def delete(self):
         """ Revokes a refresh token from the database.
@@ -242,7 +258,14 @@ class TrialToken(Resource):
     ---
     post:
       tags:
-        - auth
+        - Authentication
+      description: |
+      Create a trial api key.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid admin API Key
       responses:
         200:
           content: 
@@ -259,7 +282,6 @@ class TrialToken(Resource):
           description: unauthorized
     """
 
-    # @doc(description="Create a trial api key.", tags=["Api Key"])
     @admin_required
     def post(self):
         """ Creates a trial api key. """
@@ -297,7 +319,14 @@ class PermanentToken(Resource):
     ---
     post:
       tags:
-        - auth
+        - Authentication
+      description: |
+      Create a permanent api key.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid admin API Key
       responses:
         200:
           content: 
@@ -314,7 +343,6 @@ class PermanentToken(Resource):
           description: unauthorized
     """
 
-    # @doc(description="Create a permanent api key.", tags=["Api Key"])
     @admin_required
     def post(self):
         """ Creates a permanent api key. """

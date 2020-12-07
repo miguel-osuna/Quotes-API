@@ -35,7 +35,7 @@ def create_app(configuration="ProductionConfig"):
 #     ]
 
 #     info_object = {
-#         "description": "Quotes API is a *REST API* that offers access to its feature rich platform. Serve some of the most **famous quotes** from all time. This is an interactive API documentation, feel free to try it.",
+#         "description": "",
 #         "contact": {
 #             "name": "Miguel Osuna",
 #             "url": "https://www.miguel-osuna.com",

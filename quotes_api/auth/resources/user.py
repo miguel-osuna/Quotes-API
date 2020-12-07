@@ -23,7 +23,9 @@ class UserSignup(Resource):
     ---
     post:
       tags:
-        - auth
+        - Authentication
+      description: |
+      Register a new user.
       requestBody:
         content:
           application/json:
@@ -61,7 +63,6 @@ class UserSignup(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Registers a new user.", tags=["User"])
     def post(self):
         """ User registration to the database. """
         try:
@@ -95,7 +96,9 @@ class UserLogin(Resource):
     ---
     post:
       tags:
-        - auth
+        - Authentication
+      description: |
+      Login a user.
       requestBody:
         content:
           application/json:
@@ -131,7 +134,6 @@ class UserLogin(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Login a user.", tags=["User"])
     def post(self):
         """ Authenticate a user and return tokens. """
 
@@ -201,13 +203,19 @@ class UserResource(Resource):
     ---
     get:
       tags:
-        - api
+        - User
+      description: |
+      Get user resource by id.
       parameters:
         - in: path
           name: user_id
           schema:
             type: integer
           description: User ID
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid API Key
       responses:
         200:
           content:
@@ -221,13 +229,19 @@ class UserResource(Resource):
 
     put:
       tags:
-        - api
+        - User
+      description: |
+      Update user resource by id.
       parameters:
         - in: path
           name: user_id
           schema:
             type: integer
           description: User ID
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid admin API Key
       requestBody:
         content: 
           application/json:
@@ -248,13 +262,19 @@ class UserResource(Resource):
 
     patch: 
       tags:
-        - api
+        - User
+      description: |
+      Patch user resource by id.
       parameters:
         - in: path
           name: user_id
           schema:
             type: integer
           description: User ID
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid admin API Key
       requestBody:
         content: 
           application/json:
@@ -275,13 +295,19 @@ class UserResource(Resource):
 
     delete:
       tags:
-        - api
+        - Users
+      description: |
+      Delete a user resource by id.
       parameters:
         - in: path
           name: user_id
           schema:
             type: integer
           description: User ID
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid admin API Key
       responses:
         200:
           content: 
@@ -299,7 +325,6 @@ class UserResource(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Get user resource by id.", tags=["User"])
     @admin_required
     def get(self, user_id):
         """ Get user by id. """
@@ -315,7 +340,6 @@ class UserResource(Resource):
         user_schema = UserSchema()
         return make_response(user_schema.dump(user), HttpStatus.ok_200.value)
 
-    # @doc(description="Update user resource by id.", tags=["User"])
     @admin_required
     def put(self, user_id):
         """ Replace entire user. """
@@ -336,7 +360,6 @@ class UserResource(Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    # @doc(description="Patch user resource by id.", tags=["User"])
     @admin_required
     def patch(self, user_id):
         """ Update user fields. """
@@ -360,7 +383,6 @@ class UserResource(Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    # @doc(description="Delete a user resource by id.", tags=["User"])
     @admin_required
     def delete(self, user_id):
         """ Delete user from the database. """
@@ -388,7 +410,9 @@ class UserList(Resource):
     ---
     get:
       tags:
-        - api
+        - User
+      description:
+      Get list of user resources.
       parameters:
         - in: query
           name: page
@@ -400,6 +424,10 @@ class UserList(Resource):
           schema:
             type: integer
           description: Number of results per page
+        - in: header
+          name: Authorization
+          required: true 
+          description: Valid API Key
       responses:
         200:
           content:
@@ -413,35 +441,14 @@ class UserList(Resource):
                         type: array
                         items:
                           $ref: '#/components/schemas/UserSchema'
-
-    post:
-      tags:
-        - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              UserSchema
-      responses:
-        201:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: User created
-                  user: UserSchema
     """
 
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Get list of user resources.", tags=["User"])
     @admin_required
     def get(self):
-
+        """ Get list of users. """
         args = request.args
 
         page = int(args.get("page", 1))

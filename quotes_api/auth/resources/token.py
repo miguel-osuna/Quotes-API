@@ -17,7 +17,7 @@ from quotes_api.auth.helpers import (
 )
 from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus, paginator
-from quotes_api.auth.schemas.blacklist import TokenBlacklistSchema
+from quotes_api.auth.schemas import TokenBlacklistSchema
 
 
 class UserTokens(Resource):
@@ -59,7 +59,32 @@ class UserTokens(Resource):
 
 
 class TokenRefresh(Resource):
-    """ Token refresh. """
+    """ Token refresh. 
+    
+    ---
+    post:
+      tags:
+        - auth
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          description: valid refresh token
+      responses:
+        200: 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: myaccesstoken
+        400:
+          description: bad request
+        401:
+          description: unautorized
+    """
 
     # @doc(
     #     description="Create an access token from a refresh token.", tags=["Api Key"],
@@ -81,7 +106,7 @@ class TokenRefresh(Resource):
             # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
             add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
 
-            response_body = {"accessToken": access_token}
+            response_body = {"access_token": access_token}
             return make_response(response_body, HttpStatus.ok_200.value)
 
         except:
@@ -92,7 +117,27 @@ class TokenRefresh(Resource):
 
 
 class AccessTokenRevoke(Resource):
-    """ Access Token Revoke resource. """
+    """ Access Token Revoke resource. 
+    
+    ---
+    delete:
+      tags:
+        - auth
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  message: 
+                    type: string 
+                    example: token revoked
+        400:
+          description: bad request
+        401:
+          description: unauthorized
+    """
 
     # @doc(description="Revoke an access token.", tags=["Api Key"])
     @jwt_required
@@ -117,7 +162,27 @@ class AccessTokenRevoke(Resource):
 
 
 class RefreshTokenRevoke(Resource):
-    """ Refresh Token Revoked resource. """
+    """ Refresh Token Revoked resource. 
+    
+    ---
+    delete:
+      tags:
+        - auth
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  message:
+                    type: string
+                    example: token revoked
+        400:
+          description: bad request
+        401:
+          description: unauthorized
+    """
 
     # @doc(description="Revokes a refresh token.", tags=["Api Key"])
     @jwt_refresh_token_required
@@ -143,7 +208,27 @@ class RefreshTokenRevoke(Resource):
 
 
 class TrialToken(Resource):
-    """ Trial api key creation resource. """
+    """ Trial api key creation resource. 
+    
+    ---
+    post:
+      tags:
+        - auth
+      responses:
+        200:
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trial_api_key:
+                    type: string
+                    example: myapikey
+        400:
+          description: bad request
+        401:
+          description: unauthorized
+    """
 
     # @doc(description="Create a trial api key.", tags=["Api Key"])
     @admin_required
@@ -167,7 +252,7 @@ class TrialToken(Resource):
             # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
             add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
 
-            response_body = {"trialApiKey": token}
+            response_body = {"trial_api_key": token}
             return make_response(response_body, HttpStatus.created_201.value)
 
         except:
@@ -178,7 +263,27 @@ class TrialToken(Resource):
 
 
 class PermanentToken(Resource):
-    """ Permanent api key creation resource. """
+    """ Permanent api key creation resource. 
+    
+    ---
+    post:
+      tags:
+        - auth
+      responses:
+        200:
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  permanent_api_key:
+                    type: string
+                    example: myapikey
+        400:
+          description: bad request
+        401:
+          description: unauthorized
+    """
 
     # @doc(description="Create a permanent api key.", tags=["Api Key"])
     @admin_required
@@ -201,7 +306,7 @@ class PermanentToken(Resource):
             # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
             add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
 
-            response_body = {"permanentApiKey": token}
+            response_body = {"permanent_api_key": token}
             return make_response(response_body, HttpStatus.created_201.value)
 
         except:

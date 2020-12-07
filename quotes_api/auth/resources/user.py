@@ -15,12 +15,48 @@ from quotes_api.auth.helpers import (
 )
 from quotes_api.auth.decorators import user_required, admin_required
 from quotes_api.common import HttpStatus, paginator
-from quotes_api.auth.schemas.user import UserSchema
-from quotes_api.auth.schemas.blacklist import TokenBlacklistSchema
+from quotes_api.auth.schemas import UserSchema, TokenBlacklistSchema
 
 
 class UserSignup(Resource):
-    """ User sign up resource. """
+    """ User sign up resource. 
+    ---
+    post:
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                username:
+                  type: string
+                  example: myuser
+                  required: true 
+                email:
+                  type: string
+                  example: email@email.com
+                  required: true
+                password:
+                  type: string 
+                  example: P4$$w0rd!
+                  required: true 
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  message:
+                    type: string
+                    example: Successful sign up
+        400:
+          description: bad request
+      security: []  
+    
+    """
 
     # Decorators applied to all class methods
     method_decorators = []
@@ -54,7 +90,43 @@ class UserSignup(Resource):
 
 
 class UserLogin(Resource):
-    """ User login resource. """
+    """ User login resource. 
+    
+    ---
+    post:
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object 
+              properties:
+                username:
+                  type: string
+                  example: myuser
+                  required: true 
+                password:
+                  type: string 
+                  example: P4$$w0rd!
+                  required: true 
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  access_token:
+                    type: string 
+                    example: myaccesstoken
+                  refresh_token:
+                    type: string
+                    example: myrefreshtoken
+        400:
+          description: bad request
+      security: []  
+    """
 
     # Decorators applied to all class methods
     method_decorators = []
@@ -97,8 +169,8 @@ class UserLogin(Resource):
                 add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 
                 response_body = {
-                    "accessToken": access_token,
-                    "refreshToken": refresh_token,
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
                 }
                 return make_response(response_body, HttpStatus.ok_200.value)
 
@@ -125,7 +197,100 @@ class UserLogout(Resource):
 
 
 class UserResource(Resource):
-    """ Single user resource. """
+    """ Single user resource. 
+    ---
+    get:
+      tags:
+        - api
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: UserSchema
+        404:
+          description: User does not exist
+
+    put:
+      tags:
+        - api
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              UserSchema
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User updated 
+        404:
+          description: User does not exist
+
+    patch: 
+      tags:
+        - api
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              UserSchema
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  message:
+                    type: string 
+                    example: User patched 
+        404:
+          description: User does not exist
+
+    delete:
+      tags:
+        - api
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+      responses:
+        200:
+          content: 
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  message: 
+                    type: string 
+                    example: User deleted
+        404: 
+          description: User does not exist
+    """
 
     # Decorators applied to all class methods
     method_decorators = []
@@ -133,12 +298,12 @@ class UserResource(Resource):
     # @doc(description="Get user resource by id.", tags=["User"])
     @admin_required
     def get(self, user_id):
-        " Get user by id. "
+        """ Get user by id. """
         try:
             user = User.objects.get_or_404(id=user_id)
         except:
             return (
-                {"error": "The requested URL was not found on the server."},
+                {"error": "User does not exist."},
                 HttpStatus.not_found_404.value,
             )
 
@@ -153,7 +318,7 @@ class UserResource(Resource):
         try:
             user = User.objects.get_or_404(id=user_id)
         except:
-            return {"error": "The requested URL was not found on the server."}
+            return {"error": "User does not exist."}
         try:
             # Create user schema instance
             user_schema = UserSchema()
@@ -175,7 +340,7 @@ class UserResource(Resource):
             user = User.objects.get_or_404(id=user_id)
         except:
             return (
-                {"error": "The requested URL was not found on the server."},
+                {"error": "User does not exist."},
                 HttpStatus.not_found_404.value,
             )
         try:
@@ -200,7 +365,7 @@ class UserResource(Resource):
             user = User.objects.get_or_404(id=user_id)
         except:
             return (
-                {"error": "The requested URL was not found on the server."},
+                {"error": "User does not exist."},
                 HttpStatus.not_found_404.value,
             )
         try:
@@ -214,7 +379,46 @@ class UserResource(Resource):
 
 
 class UserList(Resource):
-    """ User list resource. """
+    """ User list resource. 
+    
+    ---
+    get:
+      tags:
+        - api
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/MetadataSchema'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UserSchema'
+
+    post:
+      tags:
+        - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              UserSchema
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User created
+                  user: UserSchema
+    """
 
     # Decorators applied to all class methods
     method_decorators = []

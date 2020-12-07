@@ -69,8 +69,6 @@ def configure_apispec(app):
         "jwt", {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
     )
 
-    # TODO: Add PaginatedResult schema
-
 
 def configure_extensions(app):
     """ Configure flask extensions. """

@@ -21,7 +21,7 @@ class QuoteResource(Resource):
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
             return (
-                {"error": "The requested URL was not found on the server."},
+                {"error": "Quote does not exist."},
                 HttpStatus.not_found_404.value,
             )
         quote_schema = QuoteSchema()
@@ -34,7 +34,7 @@ class QuoteResource(Resource):
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
-            return {"error": "The requested URL was not found on the server."}
+            return {"error": "Qutoe does not exist."}
         try:
             # Create quote schema instance
             quote_schema = QuoteSchema()
@@ -58,7 +58,7 @@ class QuoteResource(Resource):
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
             return (
-                {"error": "The requested URL was not found on the server."},
+                {"error": "Quote does not exist."},
                 HttpStatus.not_found_404.value,
             )
         try:
@@ -81,7 +81,7 @@ class QuoteResource(Resource):
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
             return (
-                {"error": "The requested URL was not found on the server."},
+                {"error": "Quote does not exist."},
                 HttpStatus.not_found_404.value,
             )
 

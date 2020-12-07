@@ -7,7 +7,7 @@ class LinksSchema(ma.Schema):
     previous_link = ma.URL(allow_none=True)
 
 
-class MetaSchema(ma.Schema):
+class MetadataSchema(ma.Schema):
     page_number = ma.Integer()
     page_size = ma.Integer()
     total_pages = ma.Integer()

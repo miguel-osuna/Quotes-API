@@ -25,7 +25,7 @@ class UserSignup(Resource):
       tags:
         - Authentication
       description: |
-      Register a new user.
+        Register a new user.
       requestBody:
         content:
           application/json:
@@ -98,7 +98,7 @@ class UserLogin(Resource):
       tags:
         - Authentication
       description: |
-      Login a user.
+        Login a user.
       requestBody:
         content:
           application/json:
@@ -205,10 +205,11 @@ class UserResource(Resource):
       tags:
         - User
       description: |
-      Get user resource by id.
+        Get user resource by id.
       parameters:
         - in: path
           name: user_id
+          required: true
           schema:
             type: integer
           description: User ID
@@ -231,10 +232,11 @@ class UserResource(Resource):
       tags:
         - User
       description: |
-      Update user resource by id.
+        Update user resource by id.
       parameters:
         - in: path
           name: user_id
+          required: true
           schema:
             type: integer
           description: User ID
@@ -264,10 +266,11 @@ class UserResource(Resource):
       tags:
         - User
       description: |
-      Patch user resource by id.
+        Patch user resource by id.
       parameters:
         - in: path
           name: user_id
+          required: true
           schema:
             type: integer
           description: User ID
@@ -295,12 +298,13 @@ class UserResource(Resource):
 
     delete:
       tags:
-        - Users
+        - User
       description: |
-      Delete a user resource by id.
+        Delete a user resource by id.
       parameters:
         - in: path
           name: user_id
+          required: true
           schema:
             type: integer
           description: User ID
@@ -412,17 +416,19 @@ class UserList(Resource):
       tags:
         - User
       description:
-      Get list of user resources.
+        Get list of user resources.
       parameters:
         - in: query
           name: page
           schema:
             type: integer
+            default: 1
           description: Page number for pagination
         - in: query
           name: per_page
           schema:
             type: integer
+            default: 5
           description: Number of results per page
         - in: header
           name: Authorization

@@ -31,17 +31,19 @@ class UserTokens(Resource):
       tags: 
         - Authentication
       description: |
-      Get list of token resources.
+        Get list of token resources.
       parameters:
         - in: query
           name: page
           schema: 
             type: integer
+            default: 1
           description: Page number for pagination
         - in: query
           name: per_page
           schema:
             type: integer
+            default: 5
           description: Number of results per page
         - in: header
           name: Authorization
@@ -100,7 +102,7 @@ class TokenRefresh(Resource):
       tags:
         - Authentication
       description: |
-      Create an access token from a refresh token.
+        Create an access token from a refresh token.
       parameters:
         - in: header
           name: Authorization
@@ -157,7 +159,7 @@ class AccessTokenRevoke(Resource):
       tags:
         - Authentication
       description: |
-      Revoke an access token.
+        Revoke an access token.
       parameters:
         - in: header
           name: Authorization
@@ -208,7 +210,7 @@ class RefreshTokenRevoke(Resource):
       tags:
         - Authentication
       description: |
-      Revokes a refresh token.
+        Revokes a refresh token.
       parameters:
         - in: header
           name: Authorization
@@ -260,7 +262,7 @@ class TrialToken(Resource):
       tags:
         - Authentication
       description: |
-      Create a trial api key.
+        Create a trial api key.
       parameters:
         - in: header
           name: Authorization
@@ -321,7 +323,7 @@ class PermanentToken(Resource):
       tags:
         - Authentication
       description: |
-      Create a permanent api key.
+        Create a permanent api key.
       parameters:
         - in: header
           name: Authorization

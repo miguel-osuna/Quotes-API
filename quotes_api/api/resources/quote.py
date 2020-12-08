@@ -15,17 +15,18 @@ class QuoteResource(Resource):
       tags:
         - Quote
       description: |
-        Get quote resource by id.
+        Get `quote` resource by id. Requires a valid `Api Key` for authentication.
       parameters:
         - in: path
           name: quote_id
+          required: true
           schema: 
             type: integer
-          description: Quote ID
+          description: Quote ID.
         - in: header
           name: Authorization
           required: true
-          description: Valid API Key
+          description: Valid API Key.
       responses:
         200:
           content:
@@ -34,104 +35,92 @@ class QuoteResource(Resource):
                 type: object 
                 properties:
                   quote: QuoteSchema
+        401:
+          description: Missing authentication header.
         404:
-          description: Quote does not exist
+          description: Quote does not exist.
 
     put:
       tags:
         - Quote
       description: |
-        Update quote resource by id.
+        Update `quote` resource by id. Requires a valid `admin` `Api Key` for authentication.
       parameters:
         - in: path
           name: quote_id
+          required: true
           schema:
             type: integer
-          description: Quote ID
+          description: Quote ID.
         - in: path
           name: Authorization
           required: true
-          description: Valid admin Api Key
+          description: Valid admin Api Key.
       requestBody:
         content: 
           application/json:
             schema:
               QuoteSchema
       responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object 
-                properties:
-                  message:
-                    type: string
-                    example: Quote updated
-                  quote: QuoteSchema
+        204:
+          description: The quote resource was updated successfully.
+        401: 
+          description: Missing authentication header.
         404:
-          description: Quote does not exist
+          description: Quote does not exist.
 
     patch:
       tags:
         - Quote
       description: |
-        Patch quote resource by id.
+        Patch `quote` resource by id. Requires a valid `admin` `Api Key` for authentication.
       parameters:
         - in: path
           name: quote_id
+          required: true
           schema:
             type: integer
-          description: Quote ID
+          description: Quote ID.
         - in: header
           name: Authorization
           required: true 
-          description: Valid admin API Key
+          description: Valid admin API Key.
       requestBody:
         content: 
           application/json:
             schema:
               QuoteSchema
       responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object 
-                properties:
-                  message:
-                    type: string
-                    example: Quote updated
-                  quote: QuoteSchema
+        204:
+          description: The quote resource was patched successfully.
+        401:
+          description: Missing authentication header.
         404:
-          description: Quote does not exist
+          description: Quote does not exist.
 
     delete:
       tags:
         - Quote
       description: |
-        Delete quote resource by id.
+        Delete `quote` resource by id. Requires a valid `admin` `Api Key` for authentication.
       parameters:
         - in: path
           name: user_id
+          required: true
           schema:
             type: integer
-          description: Quote ID
+          description: Quote ID.
         - in: header
           name: Authorization
           required: true 
-          description: Valid admin API Key
+          description: Valid admin API Key.
       responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: User deleted
+        204:
+          description: The quote resource was deleted successfully.
+        401:
+          description: Missing authentication header.
         404:
-          description: User does not exist
+          description: Quote does not exist.
     """
 
     # Decorators applied to all class methods
@@ -223,37 +212,39 @@ class QuoteList(Resource):
       tags:
         - Quote
       description: |
-        Get a list of quote resources.
+        Get a list of `quote` resources. Optional `tags`, `author` and `query` parameters filter the results. Requires a valid `Api Key` for authentication.
       parameters:
         - in: query
           name: page
           schema:
             type: integer
-          description: Page number for pagination
+            default: 1
+          description: Page number for pagination.
         - in: query
           name: per_page
           schema:
             type: integer 
-          description: Number of results per page
+            default: 5
+          description: Number of results per page.
         - in: query
           name: tags
           schema: 
             type: string
-          description: Quote tags for filtering
+          description: Quote tags for filtering.
         - in: query
           name: author
           schema:
             type: string
-          description: Author name for filtering
+          description: Author name for filtering.
         - in: query
           name: query
           schema:
             type: string
-          description: Query for quote search
+          description: Query for quote search.
         - in: header
           name: Authorization
           required: true 
-          description: Valid API Key
+          description: Valid API Key.
       responses:
         200:
           content:
@@ -266,32 +257,36 @@ class QuoteList(Resource):
                       type: array
                       items:
                         $ref: '#/components/schemas/QuoteSchema'
+        401:
+          description: Missing authentication header
+
     post:
       tags:
         - Quote
       description: |
-        Create a quote resource.
+        Create a quote resource. Requires a valid `admin` `Api Key` for authentication.
       parameters:
         - in: header
           name: Authorization
           required: true 
-          description: Valid admin API Key
+          description: Valid admin API Key.
       requestBody:
         content:
           application/json:
             schema:
               QuoteSchema
-        responses:
-          201:
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Quote created
-                    quote: QuoteSchema
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: quoteid
+        401:
+          description: Missing authentication header.
     """
 
     # Decorators applied to all class methods
@@ -396,21 +391,22 @@ class QuoteRandom(Resource):
       tags:
         - Quote
       description: |
-        Get a random quote resource.
+        Get a random `quote` resource. Optional `tags` and `author` parameters filter the result. Requires a valid `Api Key` for authentication.
       parameters:
         - in: query
           name: tags
           schema:
             type: string
-          description: Quote tags for filtering
+          description: Quote tags for filtering.
         - in: query
           name: author
           schema:
-            type: Author name for filtering
+            type: string
+          description: Author name for filtering.
         - in: header
           name: Authorization
           required: true 
-          description: Valid API Key
+          description: Valid API Key.
       responses:
         200:
           content:
@@ -419,8 +415,8 @@ class QuoteRandom(Resource):
                 type: object
                 properties:
                   quote: QuoteSchema
-        500:
-          description: Could not retrieve quote
+        401:
+          description: Missing authentication header.
     """
 
     # Decorators applied to all class methods

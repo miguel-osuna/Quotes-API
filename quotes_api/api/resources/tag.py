@@ -15,12 +15,12 @@ class TagList(Resource):
       tags:
         - Tag
       description: |
-        Get list of supported tags.
+        Get list of supported tags. Requires a valid `Api Key` for authentication.
       parameters:
         - in: header
           name: Authorization
-          required: false
-          description: Valid API Key
+          required: true
+          description: Valid API Key.
       responses:
         200:
           content:

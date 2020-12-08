@@ -15,27 +15,31 @@ class AuthorList(Resource):
       tags:
         - Author
       description: |
-        Get list of available authors.
+        Get list of available `authors`. Optional `sort_order` parameter determines the order in which the authors are displayed. Requires a valid `Api Key` for authentication.
       parameters:
         - in: query
           name: page
           schema: 
             type: integer
-          description: Page number for pagination
+            default: 1
+          description: Page number of the pagination.
         - in: query
           name: per_page
           schema:
             type: integer
-          description: Number of result per page
+            default: 5
+          description: Number of results per page.
         - in: query
           name: sort_order
           schema:
             type: string
-          description: Author name sort order
+            enum: [asc, desc]
+            default: asc
+          description: Author's name sort order. 
         - in: header
           name: Authorization
           required: true 
-          description: Valid API Key
+          description: Valid API Key.
       responses:
         200:
           content:
@@ -49,6 +53,9 @@ class AuthorList(Resource):
                         type: array
                         items:
                           $ref: '#/components/schemas/AuthorSchema'
+
+        401:
+          description: Unauthorized
     """
 
     # Decorators applied to all class methods

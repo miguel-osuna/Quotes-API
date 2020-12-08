@@ -29,39 +29,43 @@ class UserTokens(Resource):
     ---
     get:
       tags: 
-        - Authentication
+        - User
       description: |
-        Get list of token resources.
+        Get list of `token` resources. Requires a valid `user` `api key` for authentication.
+      security:
+        - user_api_key: []
+          admin_api_key: []        
       parameters:
         - in: query
           name: page
           schema: 
             type: integer
             default: 1
-          description: Page number for pagination
+          description: Page number for pagination.
         - in: query
           name: per_page
           schema:
             type: integer
             default: 5
-          description: Number of results per page
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid API Key
+          description: Number of results per page.
       responses:
         200:
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/MetadataSchema'
-                  - type: object
+                  - type: object 
                     properties:
-                      results:
+                      meta: 
+                        $ref: '#/components/schemas/MetadataSchema'
+                  - type: object 
+                    properties:
+                      records: 
                         type: array
                         items:
                           $ref: '#/components/schemas/TokenBlacklistSchema'
+        401:
+          description: Missing authentication header.
     """
 
     # Decorators applied to all class methods
@@ -102,12 +106,9 @@ class TokenRefresh(Resource):
       tags:
         - Authentication
       description: |
-        Create an access token from a refresh token.
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          description: Valid refresh token
+        Create an `access token` from a `refresh token`. Requires valid `admin` `access token`.
+      security:
+        - admin_api_key: []           
       responses:
         200: 
           content:
@@ -119,12 +120,12 @@ class TokenRefresh(Resource):
                     type: string
                     example: myaccesstoken
         400:
-          description: bad request
+          description: Bad request.
         401:
-          description: unautorized
+          description: Missing authentication header.
     """
 
-    @jwt_refresh_token_required
+    @admin_required
     def post(self):
         """ Get an access token from a refresh token. """
 
@@ -159,12 +160,9 @@ class AccessTokenRevoke(Resource):
       tags:
         - Authentication
       description: |
-        Revoke an access token.
-      parameters:
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid access token
+        Revoke an `access token`. Requires a valid `admin` `access token`.
+      security:
+        - admin_api_key: []           
       responses:
         200:
           content:
@@ -176,9 +174,9 @@ class AccessTokenRevoke(Resource):
                     type: string 
                     example: token revoked
         400:
-          description: bad request
+          description: Bad request.
         401:
-          description: unauthorized
+          description: Missing authentication header.
     """
 
     @jwt_required
@@ -210,12 +208,9 @@ class RefreshTokenRevoke(Resource):
       tags:
         - Authentication
       description: |
-        Revokes a refresh token.
-      parameters:
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid refresh token
+        Revokes a `refresh token`. Requires a valid `admin` `refresh token`.
+      security:
+        - admin_api_key: []           
       responses:
         200:
           content:
@@ -227,9 +222,9 @@ class RefreshTokenRevoke(Resource):
                     type: string
                     example: token revoked
         400:
-          description: bad request
+          description: Bad request.
         401:
-          description: unauthorized
+          description: Missing authentication header.
     """
 
     @jwt_refresh_token_required
@@ -262,12 +257,9 @@ class TrialToken(Resource):
       tags:
         - Authentication
       description: |
-        Create a trial api key.
-      parameters:
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid admin API Key
+        Create a `trial` `api key`. Requires a valid `admin` `api key` for authentication. This trial api key lasts for `30 days`.
+      security:
+        - admin_api_key: []           
       responses:
         200:
           content: 
@@ -279,9 +271,9 @@ class TrialToken(Resource):
                     type: string
                     example: myapikey
         400:
-          description: bad request
+          description: Bad request.
         401:
-          description: unauthorized
+          description: Missing authentication header.
     """
 
     @admin_required
@@ -323,12 +315,9 @@ class PermanentToken(Resource):
       tags:
         - Authentication
       description: |
-        Create a permanent api key.
-      parameters:
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid admin API Key
+        Create a `permanent` `api key`. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []         
       responses:
         200:
           content: 
@@ -340,9 +329,9 @@ class PermanentToken(Resource):
                     type: string
                     example: myapikey
         400:
-          description: bad request
+          description: Bad request.
         401:
-          description: unauthorized
+          description: Missing authentication header.
     """
 
     @admin_required

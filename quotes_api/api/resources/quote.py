@@ -15,18 +15,17 @@ class QuoteResource(Resource):
       tags:
         - Quote
       description: |
-        Get `quote` resource by id. Requires a valid `Api Key` for authentication.
+        Get `quote` resource by id. Requires a valid `user` `api key` for authentication.
+      security:
+        - user_api_key: []      
+          admin_api_key: []
       parameters:
         - in: path
           name: quote_id
           required: true
           schema: 
-            type: integer
-          description: Quote ID.
-        - in: header
-          name: Authorization
-          required: true
-          description: Valid API Key.
+            type: string
+          description: Quote id.
       responses:
         200:
           content:
@@ -44,18 +43,16 @@ class QuoteResource(Resource):
       tags:
         - Quote
       description: |
-        Update `quote` resource by id. Requires a valid `admin` `Api Key` for authentication.
+        Update `quote` resource by id. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []
       parameters:
         - in: path
           name: quote_id
           required: true
           schema:
-            type: integer
-          description: Quote ID.
-        - in: path
-          name: Authorization
-          required: true
-          description: Valid admin Api Key.
+            type: string
+          description: Quote id.
       requestBody:
         content: 
           application/json:
@@ -63,7 +60,7 @@ class QuoteResource(Resource):
               QuoteSchema
       responses:
         204:
-          description: The quote resource was updated successfully.
+          description: The quote resource was successfully updated.
         401: 
           description: Missing authentication header.
         404:
@@ -73,18 +70,16 @@ class QuoteResource(Resource):
       tags:
         - Quote
       description: |
-        Patch `quote` resource by id. Requires a valid `admin` `Api Key` for authentication.
+        Patch `quote` resource by id. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: [] 
       parameters:
         - in: path
           name: quote_id
           required: true
           schema:
-            type: integer
-          description: Quote ID.
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid admin API Key.
+            type: string
+          description: Quote id.
       requestBody:
         content: 
           application/json:
@@ -92,7 +87,7 @@ class QuoteResource(Resource):
               QuoteSchema
       responses:
         204:
-          description: The quote resource was patched successfully.
+          description: The quote resource was successfully patched.
         401:
           description: Missing authentication header.
         404:
@@ -102,21 +97,19 @@ class QuoteResource(Resource):
       tags:
         - Quote
       description: |
-        Delete `quote` resource by id. Requires a valid `admin` `Api Key` for authentication.
+        Delete `quote` resource by id. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []          
       parameters:
         - in: path
-          name: user_id
+          name: quote_id
           required: true
           schema:
-            type: integer
-          description: Quote ID.
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid admin API Key.
+            type: string
+          description: Quote id.
       responses:
         204:
-          description: The quote resource was deleted successfully.
+          description: The quote resource was successfully deleted.
         401:
           description: Missing authentication header.
         404:
@@ -212,7 +205,10 @@ class QuoteList(Resource):
       tags:
         - Quote
       description: |
-        Get a list of `quote` resources. Optional `tags`, `author` and `query` parameters filter the results. Requires a valid `Api Key` for authentication.
+        Get a list of `quote` resources. Optional `tags`, `author` and `query` parameters filter the results. Requires a valid `user` `api key` for authentication.
+      security:
+        - user_api_key: []
+          admin_api_key: []        
       parameters:
         - in: query
           name: page
@@ -241,35 +237,34 @@ class QuoteList(Resource):
           schema:
             type: string
           description: Query for quote search.
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid API Key.
+      security:
+        - bearerAuth: []
       responses:
         200:
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/MetadataSchema'
                   - type: object
                     properties:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/QuoteSchema'
+                      meta:
+                        $ref: '#/components/schemas/MetadataSchema'
+                  - type: object
+                    properties:
+                      records:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/QuoteSchema'
         401:
-          description: Missing authentication header
+          description: Missing authentication header.
 
     post:
       tags:
         - Quote
       description: |
-        Create a quote resource. Requires a valid `admin` `Api Key` for authentication.
-      parameters:
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid admin API Key.
+        Create a `quote` resource. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []        
       requestBody:
         content:
           application/json:
@@ -391,7 +386,10 @@ class QuoteRandom(Resource):
       tags:
         - Quote
       description: |
-        Get a random `quote` resource. Optional `tags` and `author` parameters filter the result. Requires a valid `Api Key` for authentication.
+        Get a random `quote` resource. Optional `tags` and `author` parameters filter the result. Requires a valid `user` `api key` for authentication.
+      security:
+        - user_api_key: []    
+          admin_api_key: []        
       parameters:
         - in: query
           name: tags
@@ -403,10 +401,6 @@ class QuoteRandom(Resource):
           schema:
             type: string
           description: Author name for filtering.
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid API Key.
       responses:
         200:
           content:

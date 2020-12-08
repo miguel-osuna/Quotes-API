@@ -15,12 +15,10 @@ class TagList(Resource):
       tags:
         - Tag
       description: |
-        Get list of supported tags. Requires a valid `Api Key` for authentication.
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          description: Valid API Key.
+        Get list of supported `tags`. Requires a valid `user` `api key` for authentication.
+      security:
+        - user_api_key: []          
+          admin_api_key: [] 
       responses:
         200:
           content:
@@ -33,9 +31,9 @@ class TagList(Resource):
                     items:
                       type: string
         400:
-          description: Bad request
+          description: Bad request.
         401: 
-          description: Unauthorized
+          description: Missing authentication header.
     """
 
     # Decorators applied to all class methods

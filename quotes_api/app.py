@@ -22,52 +22,19 @@ def create_app(configuration="ProductionConfig"):
     return app
 
 
-# def configure_apispec(app):
-
-
-#     """ Configure apispec for api documentation. """
-#     tag_object = [
-#         {"name": "Quote", "description": "Access to quote service."},
-#         {"name": "Authors", "description": "Access to authors service."},
-#         {"name": "Tags", "description": "Access to tags service."},
-#         {"name": "User", "description": "Access to user service."},
-#         {"name": "Api Key", "description": "Access to api key service."},
-#     ]
-
-#     info_object = {
-#         "description": "",
-#         "contact": {
-#             "name": "Miguel Osuna",
-#             "url": "https://www.miguel-osuna.com",
-#             "email": "contact@miguel-osuna.com",
-#         },
-#     }
-
-#     security_requirement_object = {}
-
-#     app.config.update(
-#         {
-#             "APISPEC_SPEC": APISpec(
-#                 title="Quotes API",
-#                 version="v1",
-#                 plugins=[MarshmallowPlugin()],
-#                 openapi_version="3.0.3",
-#                 info=info_object,
-#                 tags=tag_object,
-#                 # security=security_requirement_object,
-#             ),
-#             "APISPEC_SWAGGER_URL": "/docs-text/",
-#             "APISPEC_SWAGGER_UI_URL": "/docs/",
-#         }
-#     )
-
-
 def configure_apispec(app):
     """ Configure APISpec for swagger support. """
-    apispec.init_app(app, security=[{"jwt": []}])
+    apispec.init_app(app)  # security=[{"user_api_key": []}])
 
-    jwt_scheme = {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
-    apispec.spec.components.security_scheme("jwt", jwt_scheme)
+    jwt_scheme = {
+        "type": "http",
+        "description": "Enter a valid api key",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+    }
+
+    apispec.spec.components.security_scheme("user_api_key", jwt_scheme)
+    apispec.spec.components.security_scheme("admin_api_key", jwt_scheme)
 
 
 def configure_extensions(app):

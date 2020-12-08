@@ -107,6 +107,8 @@ def register_views():
     apispec.spec.path(view=UserSignup, app=current_app)
     apispec.spec.path(view=UserLogin, app=current_app)
     apispec.spec.path(view=UserLogout, app=current_app)
+
+    apispec.spec.components.schema("TokenBlacklistSchema", schema=TokenBlacklistSchema)
     apispec.spec.path(view=TokenRefresh, app=current_app)
     apispec.spec.path(view=AccessTokenRevoke, app=current_app)
     apispec.spec.path(view=RefreshTokenRevoke, app=current_app)

@@ -25,7 +25,7 @@ class UserSignup(Resource):
       tags:
         - Authentication
       description: |
-        Register a new user.
+        Register a `new user` into the platform.
       requestBody:
         content:
           application/json:
@@ -34,15 +34,12 @@ class UserSignup(Resource):
               properties:
                 username:
                   type: string
-                  example: myuser
                   required: true 
                 email:
                   type: string
-                  example: email@email.com
                   required: true
                 password:
                   type: string 
-                  example: P4$$w0rd!
                   required: true 
       responses:
         201:
@@ -53,11 +50,9 @@ class UserSignup(Resource):
                 properties:
                   message:
                     type: string
-                    example: Successful sign up
+                    example: Successful sign up.
         400:
-          description: bad request
-      security: []  
-    
+          description: Could not sign up user.  
     """
 
     # Decorators applied to all class methods
@@ -98,7 +93,7 @@ class UserLogin(Resource):
       tags:
         - Authentication
       description: |
-        Login a user.
+        Login a `user`. Returns an `access_token` and `refresh_token`.
       requestBody:
         content:
           application/json:
@@ -107,11 +102,9 @@ class UserLogin(Resource):
               properties:
                 username:
                   type: string
-                  example: myuser
                   required: true 
                 password:
                   type: string 
-                  example: P4$$w0rd!
                   required: true 
       responses:
         200:
@@ -122,13 +115,10 @@ class UserLogin(Resource):
                 properties:
                   access_token:
                     type: string 
-                    example: myaccesstoken
                   refresh_token:
                     type: string
-                    example: myrefreshtoken
         400:
-          description: bad request
-      security: []  
+          description: Could not login user.
     """
 
     # Decorators applied to all class methods
@@ -205,18 +195,16 @@ class UserResource(Resource):
       tags:
         - User
       description: |
-        Get user resource by id.
+        Get `user` resource by id. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []           
       parameters:
         - in: path
           name: user_id
           required: true
           schema:
-            type: integer
-          description: User ID
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid API Key
+            type: string
+          description: User ID.
       responses:
         200:
           content:
@@ -225,105 +213,86 @@ class UserResource(Resource):
                 type: object
                 properties:
                   user: UserSchema
+        401:
+          description: Missing authentication header.
         404:
-          description: User does not exist
+          description: User does not exist.
 
     put:
       tags:
         - User
       description: |
-        Update user resource by id.
+        Update `user` resource by id. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []           
       parameters:
         - in: path
           name: user_id
           required: true
           schema:
-            type: integer
-          description: User ID
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid admin API Key
+            type: string
+          description: User ID.
       requestBody:
         content: 
           application/json:
             schema:
               UserSchema
       responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: User updated 
+        204:
+          description: The user resource was successfully updated.
+        401:
+          description: Missing authentication header.
         404:
-          description: User does not exist
+          description: User does not exist.
 
     patch: 
       tags:
         - User
       description: |
-        Patch user resource by id.
+        Patch `user` resource by id. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []           
       parameters:
         - in: path
           name: user_id
           required: true
           schema:
-            type: integer
-          description: User ID
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid admin API Key
+            type: string
+          description: User ID.
       requestBody:
         content: 
           application/json:
             schema:
               UserSchema
       responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object 
-                properties:
-                  message:
-                    type: string 
-                    example: User patched 
+        204:
+          description: The user resource was successfully patched.
+        401:
+          description: Missing authentication header.
         404:
-          description: User does not exist
+          description: User does not exist.
 
     delete:
       tags:
         - User
       description: |
-        Delete a user resource by id.
+        Delete a `user` resource by id. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []           
       parameters:
         - in: path
           name: user_id
           required: true
           schema:
-            type: integer
-          description: User ID
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid admin API Key
+            type: string
+          description: User ID.
       responses:
-        200:
-          content: 
-            application/json:
-              schema:
-                type: object 
-                properties:
-                  message: 
-                    type: string 
-                    example: User deleted
+        204:
+          description: User resources were successfully deleted.
+        401:
+          description: Missing authentication header.
         404: 
-          description: User does not exist
+          description: User does not exist.
     """
 
     # Decorators applied to all class methods
@@ -416,37 +385,41 @@ class UserList(Resource):
       tags:
         - User
       description:
-        Get list of user resources.
+        Get list of `user` resources. Requires a valid `admin` `api key` for authentication.
+      security:
+        - admin_api_key: []           
       parameters:
         - in: query
           name: page
           schema:
             type: integer
             default: 1
-          description: Page number for pagination
+          description: Page number for pagination.
         - in: query
           name: per_page
           schema:
             type: integer
             default: 5
-          description: Number of results per page
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid API Key
+          description: Number of results per page.
       responses:
         200:
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/MetadataSchema'
                   - type: object
                     properties:
-                      results:
+                      meta:
+                        $ref: '#/components/schemas/MetadataSchema'
+                  - type: object
+                    properties:
+                      records:
                         type: array
                         items:
                           $ref: '#/components/schemas/UserSchema'
+
+        401:
+          description: Missing authentication header.
     """
 
     # Decorators applied to all class methods

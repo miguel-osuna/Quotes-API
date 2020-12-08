@@ -15,7 +15,10 @@ class AuthorList(Resource):
       tags:
         - Author
       description: |
-        Get list of available `authors`. Optional `sort_order` parameter determines the order in which the authors are displayed. Requires a valid `Api Key` for authentication.
+        Get list of available `authors`. Optional `sort_order` parameter determines the order in which the authors are displayed. Requires a valid `user` `api key` for authentication.
+      security:
+        - user_api_key: []
+          admin_api_key: []
       parameters:
         - in: query
           name: page
@@ -36,26 +39,24 @@ class AuthorList(Resource):
             enum: [asc, desc]
             default: asc
           description: Author's name sort order. 
-        - in: header
-          name: Authorization
-          required: true 
-          description: Valid API Key.
       responses:
         200:
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/MetadataSchema'
                   - type: object
                     properties:
-                      results:
+                      meta:
+                        $ref: '#/components/schemas/MetadataSchema'
+                  - type: object
+                    properties:
+                      records:
                         type: array
                         items:
                           $ref: '#/components/schemas/AuthorSchema'
-
         401:
-          description: Unauthorized
+          description: Missing authentication header.
     """
 
     # Decorators applied to all class methods

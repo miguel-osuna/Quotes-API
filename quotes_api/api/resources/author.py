@@ -77,7 +77,7 @@ class AuthorList(Resource):
             # Generating pagination of quotes
             pagination = (
                 Quote.objects()
-                .order_by(sort + "authorName")
+                .order_by(sort + "author_name")
                 .paginate(page=page, per_page=per_page)
             )
 

@@ -373,7 +373,7 @@ class QuoteList(Resource):
 
         # Check if the user provided an author name
         if author is not None:
-            filters["authorName"] = author
+            filters["author_name"] = author
 
         return filters
 
@@ -436,9 +436,9 @@ class QuoteRandom(Resource):
                 {
                     "$project": {
                         "_id": 1,
-                        "quoteText": 1,
-                        "authorName": 1,
-                        "authorImage": 1,
+                        "quote_text": 1,
+                        "author_name": 1,
+                        "author_image": 1,
                         "tags": 1,
                     }
                 },
@@ -485,7 +485,7 @@ class QuoteRandom(Resource):
 
         # Check if the user provided an author name
         if author is not None:
-            filters["authorName"] = author
+            filters["author_name"] = author
 
         return filters
 

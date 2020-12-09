@@ -13,7 +13,7 @@ def add_token_to_database(encoded_token, identity_claim):
 
     # Decoded token variables
     jti = decoded_token.get("jti")
-    token_type = decoded_token.get("tokenType")
+    token_type = decoded_token.get("token_type")
     user_identity = decoded_token.get(identity_claim)
     exp = decoded_token.get("exp", None)
     if exp != None:
@@ -26,7 +26,7 @@ def add_token_to_database(encoded_token, identity_claim):
     user = User.objects.get(username=user_identity)
 
     db_token = TokenBlacklist(
-        jti=jti, tokenType=token_type, user=user, expires=expires, revoked=revoked
+        jti=jti, token_type=token_type, user=user, expires=expires, revoked=revoked
     )
     db_token.save()
 

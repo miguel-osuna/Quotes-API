@@ -7,7 +7,7 @@ class TokenBlacklistSchema(ma.Schema):
 
     id = ma.String()
     jti = ma.String()
-    tokenType = ma.String()
+    token_type = ma.String()
     user = ma.Nested(UserSchema(only=["id",]))
     revoked = ma.Boolean()
     expires = ma.DateTime(allow_none=True, data_key="exp")

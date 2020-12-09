@@ -126,7 +126,7 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-# Pyre tokenType checker
+# Pyre token_type checker
 .pyre/
 
 # VS Code configuration files

@@ -18,7 +18,7 @@ class QuoteResource(Resource):
         Get `quote` resource by id. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []      
-          admin_api_key: []
+        - admin_api_key: []
       parameters:
         - in: path
           name: quote_id
@@ -208,7 +208,7 @@ class QuoteList(Resource):
         Get a list of `quote` resources. Optional `tags`, `author` and `query` parameters filter the results. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []
-          admin_api_key: []        
+        - admin_api_key: []        
       parameters:
         - in: query
           name: page
@@ -237,8 +237,6 @@ class QuoteList(Resource):
           schema:
             type: string
           description: Query for quote search.
-      security:
-        - bearerAuth: []
       responses:
         200:
           content:
@@ -389,7 +387,7 @@ class QuoteRandom(Resource):
         Get a random `quote` resource. Optional `tags` and `author` parameters filter the result. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []    
-          admin_api_key: []        
+        - admin_api_key: []        
       parameters:
         - in: query
           name: tags
@@ -448,6 +446,7 @@ class QuoteRandom(Resource):
 
             # Converting CommandCursor class iterator into a list and then getting the only item in it
             random_quote = [quote for quote in quote_collection.aggregate(pipeline)][0]
+            random_quote["id"] = random_quote["_id"]
 
             # Create quote schema instance
             quote_schema = QuoteSchema()

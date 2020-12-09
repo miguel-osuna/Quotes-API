@@ -18,7 +18,7 @@ class TagList(Resource):
         Get list of supported `tags`. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []          
-          admin_api_key: [] 
+        - admin_api_key: [] 
       responses:
         200:
           content:

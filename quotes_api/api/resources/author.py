@@ -18,7 +18,7 @@ class AuthorList(Resource):
         Get list of available `authors`. Optional `sort_order` parameter determines the order in which the authors are displayed. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []
-          admin_api_key: []
+        - admin_api_key: []
       parameters:
         - in: query
           name: page
@@ -68,7 +68,7 @@ class AuthorList(Resource):
 
         args = request.args
         page = int(args.get("page", 1))
-        per_page = int(args.get("per_page", 10))
+        per_page = int(args.get("per_page", 20))
         sort_order = str(args.get("sort_order", "asc"))
 
         try:

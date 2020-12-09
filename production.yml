@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  application:
+    build:
+      context: .
+      dockerfile: ./compose/local/application/Dockerfile
+    image: quotes_api_production
+    container_name: quotes_api
+    volumes:
+      - .:/app
+    env_file:
+      - ./.envs/.production/.application
+      - ./.envs/.production/.mongo
+    ports:
+      - "8000:8000"
+    command: /start

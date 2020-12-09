@@ -26,6 +26,7 @@ python-dotenv = "*"
 passlib = "*"
 apispec = "*"
 apispec-webframeworks = "*"
+zappa = "*"
 
 [script]
 

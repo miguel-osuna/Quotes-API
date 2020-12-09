@@ -65,23 +65,23 @@ def paginator(pagination, endpoint, schema, **kwargs):
 def author_paginator(pagination, endpoint, schema, **kwargs):
     """ Paginator for list of authors. """
 
-    schema = schema(many=True)
-
     authors = []
-    for author in pagination.items:
-        if author not in authors:
-            authors.append(author)
+    for item in pagination.items:
+        author_name = item.author_name
+        print(author_name)
+
+        if author_name not in authors:
+            authors.append(author_name)
     links = generate_links(pagination, endpoint, **kwargs)
 
     response_body = {
         "meta": {
             "page_number": pagination.page,
-            "page_size": pagination.per_page,
+            "page_size": len(authors),
             "total_pages": pagination.pages,
-            "total_records": len(authors),
             "links": links,
         },
-        "records": schema.dump(authors),
+        "records": authors,
     }
 
     return response_body

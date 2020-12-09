@@ -6,14 +6,20 @@ from quotes_api.extensions import jwt, odm, ma, apispec
 
 
 def create_app(configuration="ProductionConfig"):
-    """ Applicaiton factory, used to create an application. """
+    """ Application factory, used to create an application. """
 
     # Create Flaks application
     app = Flask("quotes_api")
 
+    print("Initial configuration:", app.config)
+
     # Setup app configuration from configuration object
     settings = "quotes_api.config.{}".format(configuration)
+
+    print("Settings:", settings)
     app.config.from_object(settings)
+
+    print("Final configuration:", app.config)
 
     configure_extensions(app)
     configure_apispec(app)
@@ -24,17 +30,24 @@ def create_app(configuration="ProductionConfig"):
 
 def configure_apispec(app):
     """ Configure APISpec for swagger support. """
-    apispec.init_app(app)  # security=[{"user_api_key": []}])
+    apispec.init_app(app)
 
-    jwt_scheme = {
+    user_api_key_scheme = {
         "type": "http",
-        "description": "Enter a valid api key",
+        "description": "Enter a valid user api key",
         "scheme": "bearer",
         "bearerFormat": "JWT",
     }
 
-    apispec.spec.components.security_scheme("user_api_key", jwt_scheme)
-    apispec.spec.components.security_scheme("admin_api_key", jwt_scheme)
+    admin_api_key_scheme = {
+        "type": "http",
+        "description": "Enter a valid admin api key",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+    }
+
+    apispec.spec.components.security_scheme("user_api_key", user_api_key_scheme)
+    apispec.spec.components.security_scheme("admin_api_key", admin_api_key_scheme)
 
 
 def configure_extensions(app):

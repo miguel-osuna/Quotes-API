@@ -34,7 +34,7 @@ class UserTokens(Resource):
         Get list of `token` resources. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []
-          admin_api_key: []        
+        - admin_api_key: []        
       parameters:
         - in: query
           name: page

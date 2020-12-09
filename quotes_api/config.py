@@ -12,6 +12,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv("SECRET_KEY")
+    SERVER_NAME = os.getenv("SERVER_NAME")
 
     # Fask JWT Extended Configuration
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
@@ -20,7 +21,6 @@ class Config(object):
     JWT_ERROR_MESSAGE_KEY = "message"
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ("access", "refresh")
-
 
 
 class ProductionConfig(Config):
@@ -51,12 +51,11 @@ class DevelopmentConfig(Config):
     # Flask Configuration
     ENV = "development"
     DEBUG = True
-    SERVER_NAME = "127.0.0.1:8000"
 
     # Mongoengine Configuration
     MONGODB_DB = os.getenv("MONGODB_DB")
     MONGODB_HOST = os.getenv("MONGODB_HOST")
-    MONGODB_PORT = int(os.getenv("MONGODB_PORT"))
+    # MONGODB_PORT = int(os.getenv("MONGODB_PORT"))
 
 
 class TestingConfig(Config):

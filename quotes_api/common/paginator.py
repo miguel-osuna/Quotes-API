@@ -68,7 +68,6 @@ def author_paginator(pagination, endpoint, schema, **kwargs):
     authors = []
     for item in pagination.items:
         author_name = item.author_name
-        print(author_name)
 
         if author_name not in authors:
             authors.append(author_name)

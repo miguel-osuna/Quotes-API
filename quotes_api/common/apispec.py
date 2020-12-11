@@ -86,16 +86,11 @@ class APISpecExt:
 
         @blueprint.route("/swagger.json")
         def swagger_json():
-            return self.swagger_json()
+            return jsonify(self.spec.to_dict())
 
         @blueprint.route("/documentation")
         def swagger_ui():
-            return self.swagger_ui()
+            return render_template("swagger.j2")
 
         app.register_blueprint(blueprint)
 
-    def swagger_json(self):
-        return jsonify(self.spec.to_dict())
-
-    def swagger_ui(self):
-        return render_template("swagger.jinja2")

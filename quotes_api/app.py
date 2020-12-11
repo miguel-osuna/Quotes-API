@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 
 from quotes_api import api, auth
 from quotes_api.extensions import jwt, odm, ma, apispec
@@ -9,17 +9,12 @@ def create_app(configuration="ProductionConfig"):
     """ Application factory, used to create an application. """
 
     # Create Flaks application
-    app = Flask("quotes_api")
-
-    print("Initial configuration:", app.config)
+    app = Flask("quotes_api", template_folder="templates")
 
     # Setup app configuration from configuration object
     settings = "quotes_api.config.{}".format(configuration)
 
-    print("Settings:", settings)
     app.config.from_object(settings)
-
-    print("Final configuration:", app.config)
 
     configure_extensions(app)
     configure_apispec(app)

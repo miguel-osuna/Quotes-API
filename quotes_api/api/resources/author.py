@@ -87,9 +87,9 @@ class AuthorList(Resource):
 
             return make_response(response_body, HttpStatus.ok_200.value)
 
-        except Exception as e:
+        except:
             return (
-                {"error": "Could not retrieve authors", "detail": str(e)},
+                {"error": "Could not retrieve authors"},
                 HttpStatus.internal_server_error_500.value,
             )
 

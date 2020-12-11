@@ -14,7 +14,6 @@ from quotes_api.extensions import apispec
 from quotes_api.api.schemas import QuoteSchema, AuthorSchema, TagSchema, MetadataSchema
 
 blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
-print(__name__)
 
 api = Api(blueprint)
 

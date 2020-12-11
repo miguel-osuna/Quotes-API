@@ -316,9 +316,9 @@ class QuoteList(Resource):
             response_body = paginator(pagination, "api.quotes", QuoteSchema)
             return make_response(response_body, HttpStatus.ok_200.value)
 
-        except Exception as e:
+        except:
             return (
-                {"error": "Could not retrieve quotes.", "detail": str(e)},
+                {"error": "Could not retrieve quotes."},
                 HttpStatus.internal_server_error_500.value,
             )
 
@@ -455,9 +455,9 @@ class QuoteRandom(Resource):
                 quote_schema.dump(random_quote), HttpStatus.ok_200.value
             )
 
-        except Exception as e:
+        except:
             return (
-                {"error": "Could not retrieve quote.", "detail": str(e)},
+                {"error": "Could not retrieve quote."},
                 HttpStatus.internal_server_error_500.value,
             )
 

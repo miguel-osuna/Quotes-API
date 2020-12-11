@@ -91,9 +91,9 @@ class UserTokens(Resource):
             response_body = paginator(pagination, "auth.tokens", TokenBlacklistSchema)
             return make_response(response_body, HttpStatus.ok_200.value)
 
-        except Exception as e:
+        except:
             return (
-                {"erorr": "Could not retrieve tokens.", "detail": str(e)},
+                {"erorr": "Could not retrieve tokens."},
                 HttpStatus.internal_server_error_500.value,
             )
 

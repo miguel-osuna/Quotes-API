@@ -72,15 +72,15 @@ class UserSignup(Resource):
 
                 return {"message": "Successful sign up."}, HttpStatus.created_201.value
 
-            except Exception as e:
+            except:
                 return (
-                    {"error": "Could not sign up user.", "detail": str(e)},
+                    {"error": "Could not sign up user."},
                     HttpStatus.internal_server_error_500.value,
                 )
 
-        except Exception as e:
+        except:
             return (
-                {"error": "Missing data", "detail": str(e)},
+                {"error": "Missing data."},
                 HttpStatus.bad_request_400.value,
             )
 
@@ -166,9 +166,9 @@ class UserLogin(Resource):
                 }
                 return make_response(response_body, HttpStatus.ok_200.value)
 
-            except Exception as e:
+            except:
                 return (
-                    {"error": "Wrong credentials", "detail": str(e)},
+                    {"error": "Wrong credentials."},
                     HttpStatus.unauthorized_401.value,
                 )
 

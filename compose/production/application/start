@@ -4,4 +4,4 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-gunicorn wsgi:app
+gunicorn wsgi:app -b 0.0.0.0:8000

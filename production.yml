@@ -4,7 +4,7 @@ services:
   application:
     build:
       context: .
-      dockerfile: ./compose/local/application/Dockerfile
+      dockerfile: ./compose/production/application/Dockerfile
     image: quotes_api_production
     container_name: quotes_api
     volumes:

@@ -12,7 +12,6 @@ class Config(object):
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv("SECRET_KEY")
-    # SERVER_NAME = os.getenv("SERVER_NAME")
 
     # Fask JWT Extended Configuration
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")

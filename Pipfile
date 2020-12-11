@@ -27,6 +27,7 @@ passlib = "*"
 apispec = "*"
 apispec-webframeworks = "*"
 gunicorn = "*"
+zappa = "*"
 
 [script]
 

@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template
+from flask_cors import CORS
 
 from quotes_api import api, auth
 from quotes_api.extensions import jwt, odm, ma, apispec
@@ -10,6 +11,9 @@ def create_app(configuration="ProductionConfig"):
 
     # Create Flaks application
     app = Flask("quotes_api", template_folder="templates")
+
+    # CORS default initialization
+    CORS(app)
 
     # Setup app configuration from configuration object
     settings = "quotes_api.config.{}".format(configuration)

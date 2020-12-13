@@ -67,9 +67,7 @@ class APISpecExt:
             },
         ]
 
-        server_object = [
-            {"url": app.config["SERVER"], "description": "Production server",}
-        ]
+        server_object = [{"url": app.config["SERVER"]}]
 
         self.spec = APISpec(
             title=app.config["APISPEC_TITLE"],

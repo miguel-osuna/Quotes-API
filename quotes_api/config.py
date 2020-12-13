@@ -8,6 +8,9 @@ import os
 class Config(object):
     """ Configuration base class. """
 
+    # Quotes API Variables
+    SERVER = os.getenv("SERVER")
+
     # Flask Configuration
     DEBUG = False
     TESTING = False
@@ -27,7 +30,6 @@ class ProductionConfig(Config):
 
     # Flask Configuration
     ENV = "production"
-    SERVER = os.getenv("SERVER")
 
     # Mongoengine Configuration
     MONGODB_DB = os.getenv("MONGODB_DB")

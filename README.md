@@ -1,14 +1,12 @@
 # Quotes-API
-Quotes API built with Flask-RESTful and Flask-Mongoengine
-
-# Quotes-API
 
 ## :book: Description
-Quotes API built with Flask-RESTful and Flask-Mongoengine
+RESTful API that server the most famous quotes from all time. Built with Flask-RESTful.
 
 ### :dart: Features
 - RESTful API created with Flask-RESTful
 - MongoDB integration with Flask-Mongoengine
+- Open API specification documentation
 
 ### :high_brightness: Visuals
 ![](img/quotes_api_demo.png)
@@ -25,7 +23,7 @@ You'll need Git, Python 3.7, Pip and a Virtual Environment (in this case, Pipenv
 $ git clone https://github.com/miguel-osuna/Quotes-API.git
 
 # Go into the repository from the terminal
-$ cd Bookstore-App
+$ cd Quotes-API
 
 # Remove current origin repository
 $ git remote remove origin

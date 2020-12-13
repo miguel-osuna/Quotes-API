@@ -27,6 +27,7 @@ class ProductionConfig(Config):
 
     # Flask Configuration
     ENV = "production"
+    SERVER = os.getenv("SERVER")
 
     # Mongoengine Configuration
     MONGODB_DB = os.getenv("MONGODB_DB")

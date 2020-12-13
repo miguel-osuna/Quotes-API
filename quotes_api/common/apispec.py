@@ -67,6 +67,10 @@ class APISpecExt:
             },
         ]
 
+        server_object = [
+            {"url": app.config["SERVER"], "description": "Production server",}
+        ]
+
         self.spec = APISpec(
             title=app.config["APISPEC_TITLE"],
             version=app.config["APISPEC_VERSION"],
@@ -74,7 +78,8 @@ class APISpecExt:
             plugins=[MarshmallowPlugin(), FlaskRestfulPlugin()],
             **kwargs,
             info=info_object,
-            tags=tag_object
+            tags=tag_object,
+            servers=server_object
         )
 
         blueprint = Blueprint(

@@ -15,7 +15,7 @@ RESTful API that server the most famous quotes from all time. Built with Flask-R
 Follow the instructions below to work on the project on your local environment.
 
 ### :clipboard: Prerequisites
-You'll need Git, Python 3.7, Pip and a Virtual Environment (in this case, Pipenv is used as a package manager and virtual environment).
+In case you don't use Docker, you'll need Git, Python 3.8, Pip and a Virtual Environment (in this case, Pipenv is used as a package manager and virtual environment).
 
 ### :computer: Installation
 ```

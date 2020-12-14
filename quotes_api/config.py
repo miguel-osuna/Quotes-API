@@ -65,5 +65,11 @@ class TestingConfig(Config):
 
     # Flask Configuration
     ENV = "development"
+    DEBUG = True
     TESTING = True
+    SECRET_KEY = "testing"
+
+    # Mongoengine Configuration
+    MONGODB_DB = None
+    MONGODB_HOST = None
 

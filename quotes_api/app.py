@@ -1,9 +1,8 @@
 import os
 from flask import Flask, render_template
-from flask_cors import CORS
 
 from quotes_api import api, auth
-from quotes_api.extensions import jwt, odm, ma, apispec
+from quotes_api.extensions import jwt, odm, ma, cors, apispec
 
 
 def create_app(configuration="ProductionConfig"):
@@ -11,9 +10,6 @@ def create_app(configuration="ProductionConfig"):
 
     # Create Flaks application
     app = Flask("quotes_api", template_folder="templates")
-
-    # CORS default initialization
-    CORS(app)
 
     # Setup app configuration from configuration object
     settings = "quotes_api.config.{}".format(configuration)
@@ -54,6 +50,7 @@ def configure_extensions(app):
     odm.init_app(app)
     jwt.init_app(app)
     ma.init_app(app)
+    cors.init_app(app)
 
 
 def register_blueprints(app):
@@ -61,4 +58,9 @@ def register_blueprints(app):
 
     app.register_blueprint(api.views.blueprint)
     app.register_blueprint(auth.views.blueprint)
+
+
+def register_commands(app):
+    """ Register all commands for an application. """
+    pass
 

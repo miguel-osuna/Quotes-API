@@ -70,6 +70,14 @@ class TestingConfig(Config):
     SECRET_KEY = "testing"
 
     # Mongoengine Configuration
-    MONGODB_DB = None
-    MONGODB_HOST = None
+    MONGODB_DB = "test_quotes_database"
+    MONGODB_HOST = "mongo"
 
+
+# App configuration dictionary
+app_config = {
+    "development": DevelopmentConfig,
+    "testing": TestingConfig,
+    "staging": StagingConfig,
+    "production": ProductionConfig,
+}

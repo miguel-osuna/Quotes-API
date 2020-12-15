@@ -2,19 +2,22 @@ import os
 from flask import Flask, render_template
 
 from quotes_api import api, auth
+from quotes_api.config import app_config
 from quotes_api.extensions import jwt, odm, ma, cors, apispec
 
 
-def create_app(configuration="ProductionConfig"):
+def create_app(configuration="production"):
     """ Application factory, used to create an application. """
 
     # Create Flaks application
     app = Flask("quotes_api", template_folder="templates")
 
-    # Setup app configuration from configuration object
-    settings = "quotes_api.config.{}".format(configuration)
+    @app.route("/")
+    def index():
+        return {"hello": "world"}, 200
 
-    app.config.from_object(settings)
+    # Setup app configuration from configuration object
+    app.config.from_object(app_config[configuration])
 
     configure_extensions(app)
     configure_apispec(app)

@@ -1,15 +1,17 @@
+from mongoengine import Document, StringField, BooleanField, ListField
+
 from quotes_api.extensions import odm, pwd_context
 
 
-class User(odm.Document):
-    """ Basic user document. """
+class UserFields(Document):
+    """ User Document base class. """
 
-    username = odm.StringField(max_lenght=80, unique=True, null=False)
-    email = odm.StringField(max_lenght=80, unique=True, null=False)
-    password = odm.StringField(max_lenght=255, null=False)
-    active = odm.BooleanField(default=True)
-    roles = odm.ListField(
-        odm.StringField(required=True, null=False),
+    username = StringField(max_lenght=80, unique=True, null=False)
+    email = StringField(max_lenght=80, unique=True, null=False)
+    password = StringField(max_lenght=255, null=False)
+    active = BooleanField(default=True)
+    roles = ListField(
+        StringField(required=True, null=False),
         required=True,
         null=False,
         default=["basic"],
@@ -17,7 +19,7 @@ class User(odm.Document):
 
     def __init__(self, **kwargs):
         """ User initialization with password encryption. """
-        super(User, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.password = pwd_context.hash(self.password)
 
     def __str__(self):
@@ -31,3 +33,13 @@ class User(odm.Document):
 
     def __repr__(self):
         return f"<User {str(self.id)}>"
+
+    meta = {"abstract": True}
+
+
+class User(odm.Document, UserFields):
+    """ User Document for mongodb database instance. """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+

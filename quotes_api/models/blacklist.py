@@ -1,16 +1,24 @@
-import mongoengine
+from mongoengine import (
+    Document,
+    StringField,
+    ReferenceField,
+    BooleanField,
+    DateTimeField,
+    CASCADE,
+)
+
 from quotes_api.extensions import odm
 from quotes_api.models import User
 
 
-class TokenBlacklist(odm.Document):
-    """ Token blacklist representation. """
+class TokenBlacklistFields(Document):
+    """ Token blacklist base class representation. """
 
-    jti = odm.StringField(max_length=36, null=False, unique=True)
-    token_type = odm.StringField(max_length=10, null=False)
-    user = odm.ReferenceField(User, null=False, reverse_delete_rule=mongoengine.CASCADE)
-    revoked = odm.BooleanField(null=False)
-    expires = odm.DateTimeField(null=True)
+    jti = StringField(max_length=36, null=False, unique=True)
+    token_type = StringField(max_length=10, null=False)
+    user = ReferenceField(User, null=False, reverse_delete_rule=CASCADE)
+    revoked = BooleanField(null=False)
+    expires = DateTimeField(null=True)
 
     def __str__(self):
         return (
@@ -23,3 +31,13 @@ class TokenBlacklist(odm.Document):
 
     def __repr__(self):
         return f"<Token {str(self.id)}>"
+
+    meta = {"abstract": True}
+
+
+class TokenBlacklist(odm.Document, TokenBlacklistFields):
+    """ Token blacklist Document for mongodb database instance. """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+

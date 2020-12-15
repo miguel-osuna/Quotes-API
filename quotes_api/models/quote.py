@@ -1,12 +1,16 @@
+from mongoengine import Document, StringField, ListField
+
 from quotes_api.extensions import odm
 
 
-class Quote(odm.Document):
-    quote_text = odm.StringField(required=True, null=False, unique=True)
-    author_name = odm.StringField(required=True, null=False)
-    author_image = odm.StringField(required=False, null=False)
-    tags = odm.ListField(
-        odm.StringField(required=True, null=False),
+class QuoteFields(Document):
+    """ Quote Document base class. """
+
+    quote_text = StringField(required=True, null=False, unique=True)
+    author_name = StringField(required=True, null=False)
+    author_image = StringField(required=False, null=False)
+    tags = ListField(
+        StringField(required=True, null=False),
         required=True,
         null=False,
         default=["other"],
@@ -30,5 +34,14 @@ class Quote(odm.Document):
                 "default_language": "english",
                 "weights": {"quote_text": 1},
             }
-        ]
+        ],
+        "abstract": True,
     }
+
+
+class Quote(odm.Document, QuoteFields):
+    """ Quote Document for mongodb database instance. """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+

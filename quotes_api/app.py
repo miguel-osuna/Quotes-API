@@ -12,10 +12,6 @@ def create_app(configuration="production"):
     # Create Flaks application
     app = Flask("quotes_api", template_folder="templates")
 
-    @app.route("/")
-    def index():
-        return {"hello": "world"}, 200
-
     # Setup app configuration from configuration object
     app.config.from_object(app_config[configuration])
 

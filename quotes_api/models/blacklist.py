@@ -8,7 +8,7 @@ from mongoengine import (
 )
 
 from quotes_api.extensions import odm
-from quotes_api.models import User
+from quotes_api.models import UserFields
 
 
 class TokenBlacklistFields(Document):
@@ -16,7 +16,7 @@ class TokenBlacklistFields(Document):
 
     jti = StringField(max_length=36, null=False, unique=True)
     token_type = StringField(max_length=10, null=False)
-    user = ReferenceField(User, null=False, reverse_delete_rule=CASCADE)
+    user = ReferenceField(UserFields, null=False, reverse_delete_rule=CASCADE)
     revoked = BooleanField(null=False)
     expires = DateTimeField(null=True)
 

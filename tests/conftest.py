@@ -1,35 +1,95 @@
 """ Defines fixtures available to all tests. """
 
 import pytest
+import mongoengine
 from datetime import datetime
+from flask_mongoengine import MongoEngine
 
 from quotes_api.app import create_app
-from quotes_api.extensions import odm as _db
-from quotes_api.models import Quote, User, TokenBlacklist
+from quotes_api.models import QuoteFields, UserFields, TokenBlacklistFields
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def app():
     """ Create application for testing. """
     app = create_app("testing")
-    return app
+
+    with app.app_context():
+        yield app  # This is where testing happens
+
+    mongoengine.connection.disconnect_all()
 
 
-@pytest.fixture
-def client(app):
+@pytest.fixture(scope="session")
+def client():
+    """ Create app client for testing. """
     with app.test_client() as client:
-        yield client
+        yield client  # This is where testing happens
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def db(app):
     """ Create database for testing. """
-    pass
+
+    # app.config["MONGODB_HOST"] = "mongo"
+    test_db = MongoEngine(app)
+    db_name = test_db.connection.get_database("test_quotes_database").name
+
+    if not db_name.endswith("_quotes_database"):
+        raise RuntimeError(
+            f"DATABASE_URL must point to testing db, not to master db ({db_name})"
+        )
+
+    # Clear database before tests, for cases when some test failed before.
+    test_db.connection.drop_database(db_name)
+
+    print(db_name)
+
+    yield test_db  # This is where testing happens
+
+    # Clear database after tests, for graceful exit.
+    test_db.connection.drop_database(db_name)
 
 
-@pytest.fixture
-def user():
-    """ Create basic user for testing. """
+@pytest.fixture(scope="session")
+def user(db):
+    """ Create user model instance for test database. """
+
+    class User(db.Document, UserFields):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+    return User
+
+
+@pytest.fixture(scope="session")
+def token_blacklist(db):
+    """ Create token blacklist model instance for test database. """
+
+    class TokenBlacklist(db.Document, TokenBlacklistFields):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+    return TokenBlacklist
+
+
+@pytest.fixture(scope="session")
+def quote(db):
+    """ Create quote model instance for test database. """
+
+    class Quote(db.Document, QuoteFields):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+    return Quote
+
+
+@pytest.fixture(scope="module")
+def new_user(user):
+    """ Create new user for testing. """
+
+    User = user
+
     # User mock data
     user_data = {
         "username": "user",
@@ -37,15 +97,17 @@ def user():
         "password": "user",
     }
 
-    user = User(**user_data)
-    user.save()
+    new_user = User(**user_data)
+    new_user.save()
 
-    return user
+    return new_user
 
 
-@pytest.fixture
-def admin_user():
-    """ Create admin user for testing. """
+@pytest.fixture(scope="module")
+def new_admin(user):
+    """ Create new admin user for testing. """
+    User = user
+
     # Admin user mock data
     admin_user_data = {
         "username": "admin",
@@ -53,15 +115,17 @@ def admin_user():
         "password": "admin",
     }
 
-    user = User(**admin_user_data)
-    user.save()
+    new_admin = User(**admin_user_data)
+    new_admin.save()
 
-    return user
+    return new_admin
 
 
-@pytest.fixture
-def quote():
-    """ Create quote for testing. """
+@pytest.fixture(scope="module")
+def new_quote(quote):
+    """ Create new quote for testing. """
+
+    Quote = quote
 
     # Quote mock data
     quote_data = {
@@ -71,19 +135,22 @@ def quote():
         "tags": ["test-tag"],
     }
 
-    quote = Quote(**quote_data)
-    quote.save()
+    new_quote = Quote(**quote_data)
+    new_quote.save()
 
-    return quote
+    return new_quote
 
 
-@pytest.fixture
-def access_token(user):
-    """ Create access token for testing. """
+@pytest.fixture(scope="module")
+def new_access_token(new_user, token_blacklist):
+    """ Create new access token for testing. """
+
+    TokenBlacklist = token_blacklist
+
     access_token_data = {
         "jti": "jti_example",
         "token_type": "access",
-        "user": user,
+        "user": new_user,
         "revoked": False,
         "expires": datetime.fromtimestamp(1608057500),
     }
@@ -94,13 +161,16 @@ def access_token(user):
     return token
 
 
-@pytest.fixture
-def refresh_token(user):
-    """ Create refresh token for testing. """
+@pytest.fixture(scope="module")
+def new_refresh_token(new_user, token_blacklist):
+    """ Create new refresh token for testing. """
+
+    TokenBlacklist = token_blacklist
+
     refresh_token_data = {
         "jti": "jti_example",
         "token_type": "refresh",
-        "user": user,
+        "user": new_user,
         "revoked": False,
         "expires": datetime.fromtimestamp(1608057500),
     }

@@ -57,7 +57,6 @@ class DevelopmentConfig(Config):
     # Mongoengine Configuration
     MONGODB_DB = os.getenv("MONGODB_DB")
     MONGODB_HOST = os.getenv("MONGODB_HOST")
-    # MONGODB_PORT = int(os.getenv("MONGODB_PORT"))
 
 
 class TestingConfig(Config):
@@ -70,7 +69,7 @@ class TestingConfig(Config):
     SECRET_KEY = "testing"
 
     # Mongoengine Configuration
-    MONGODB_DB = "test_quotes_database"
+    MONGODB_DB = "quotes_test_database"
     MONGODB_HOST = "mongo"
 
 

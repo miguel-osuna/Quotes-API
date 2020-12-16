@@ -15,7 +15,7 @@ from quotes_api.auth.helpers import (
     revoke_token,
     add_token_to_database,
 )
-from quotes_api.auth.decorators import user_required, admin_required
+from quotes_api.auth.decorators import Role, role_required
 from quotes_api.common import HttpStatus, paginator
 from quotes_api.auth.schemas import TokenBlacklistSchema
 
@@ -71,7 +71,7 @@ class UserTokens(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @user_required
+    @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
         """ Gets all the revoked and unrevoked tokens from a user. """
 
@@ -91,9 +91,9 @@ class UserTokens(Resource):
             response_body = paginator(pagination, "auth.tokens", TokenBlacklistSchema)
             return make_response(response_body, HttpStatus.ok_200.value)
 
-        except:
+        except Exception as e:
             return (
-                {"erorr": "Could not retrieve tokens."},
+                {"error": "Could not retrieve tokens.", "detail": str(e)},
                 HttpStatus.internal_server_error_500.value,
             )
 
@@ -125,7 +125,7 @@ class TokenRefresh(Resource):
           description: Missing authentication header.
     """
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def post(self):
         """ Get an access token from a refresh token. """
 
@@ -276,7 +276,7 @@ class TrialToken(Resource):
           description: Missing authentication header.
     """
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def post(self):
         """ Creates a trial api key. """
 
@@ -334,7 +334,7 @@ class PermanentToken(Resource):
           description: Missing authentication header.
     """
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def post(self):
         """ Creates a permanent api key. """
 

@@ -13,7 +13,7 @@ from quotes_api.auth.helpers import (
     get_user_tokens,
     add_token_to_database,
 )
-from quotes_api.auth.decorators import user_required, admin_required
+from quotes_api.auth.decorators import Role, role_required
 from quotes_api.common import HttpStatus, paginator
 from quotes_api.auth.schemas import UserSchema, TokenBlacklistSchema
 
@@ -182,7 +182,6 @@ class UserLogout(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="Logout a user.", tags=["User"])
     @fresh_jwt_required
     def post(self):
         pass
@@ -298,7 +297,7 @@ class UserResource(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def get(self, user_id):
         """ Get user by id. """
         try:
@@ -313,7 +312,7 @@ class UserResource(Resource):
         user_schema = UserSchema()
         return make_response(user_schema.dump(user), HttpStatus.ok_200.value)
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def put(self, user_id):
         """ Replace entire user. """
         try:
@@ -333,7 +332,7 @@ class UserResource(Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def patch(self, user_id):
         """ Update user fields. """
         try:
@@ -356,7 +355,7 @@ class UserResource(Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def delete(self, user_id):
         """ Delete user from the database. """
 
@@ -425,7 +424,7 @@ class UserList(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def get(self):
         """ Get list of users. """
         args = request.args

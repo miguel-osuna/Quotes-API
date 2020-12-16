@@ -4,7 +4,7 @@ from flask_restful import Resource
 from quotes_api.models import Quote
 from quotes_api.common import HttpStatus, paginator, author_paginator
 from quotes_api.api.schemas import AuthorSchema
-from quotes_api.auth.decorators import user_required, admin_required
+from quotes_api.auth.decorators import Role, role_required
 
 
 class AuthorList(Resource):
@@ -62,7 +62,7 @@ class AuthorList(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @user_required
+    @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
         """ Get quote authors by alphabetical order. """
 

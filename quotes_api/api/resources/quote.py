@@ -4,7 +4,7 @@ from flask_restful import Resource
 from quotes_api.models import Quote
 from quotes_api.common import HttpStatus, paginator
 from quotes_api.api.schemas import QuoteSchema
-from quotes_api.auth.decorators import user_required, admin_required
+from quotes_api.auth.decorators import Role, role_required
 
 
 class QuoteResource(Resource):
@@ -119,7 +119,7 @@ class QuoteResource(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @user_required
+    @role_required([Role.BASIC, Role.ADMIN])
     def get(self, quote_id):
         """ Get quote by id. """
         try:
@@ -132,7 +132,7 @@ class QuoteResource(Resource):
         quote_schema = QuoteSchema()
         return make_response(quote_schema.dump(quote), HttpStatus.ok_200.value)
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def put(self, quote_id):
         """ Replace entire quote. """
         try:
@@ -154,7 +154,7 @@ class QuoteResource(Resource):
                 HttpStatus.bad_request_400.value,
             )
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def patch(self, quote_id):
         """ Update quote fields. """
         try:
@@ -176,7 +176,7 @@ class QuoteResource(Resource):
         except:
             return {"error": "Missing data."}, HttpStatus.bad_request_400.value
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def delete(self, quote_id):
         """ Delete quote. """
         try:
@@ -285,7 +285,7 @@ class QuoteList(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @user_required
+    @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
         """ Get list of quotes. """
 
@@ -322,7 +322,7 @@ class QuoteList(Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
-    @admin_required
+    @role_required([Role.ADMIN])
     def post(self):
         """ Create new quote. """
         try:
@@ -414,7 +414,7 @@ class QuoteRandom(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @user_required
+    @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
         """ Get random quote filtered by tags and author. """
         args = request.args

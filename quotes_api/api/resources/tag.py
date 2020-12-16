@@ -4,7 +4,7 @@ from flask_restful import Resource
 from quotes_api.models import Quote
 from quotes_api.common import HttpStatus
 from quotes_api.api.schemas import TagSchema
-from quotes_api.auth.decorators import user_required, admin_required
+from quotes_api.auth.decorators import Role, role_required
 
 
 class TagList(Resource):
@@ -39,8 +39,7 @@ class TagList(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    # @doc(description="", tags=["Tags"])
-    @user_required
+    @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
         """ Get list of all tags. """
 

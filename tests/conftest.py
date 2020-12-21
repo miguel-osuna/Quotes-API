@@ -1,6 +1,7 @@
 """ Defines fixtures available to all tests. """
 
 import pytest
+import json
 import mongoengine
 from datetime import datetime
 from flask_mongoengine import MongoEngine
@@ -9,7 +10,7 @@ from quotes_api.app import create_app
 from quotes_api.models import QuoteFields, UserFields, TokenBlacklistFields
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def app():
     """ Create application for testing. """
     app = create_app("testing")
@@ -20,14 +21,7 @@ def app():
     mongoengine.connection.disconnect_all()
 
 
-@pytest.fixture(scope="session")
-def client():
-    """ Create app client for testing. """
-    with app.test_client() as client:
-        yield client  # This is where testing happens
-
-
-@pytest.fixture(scope="session")
+@pytest.fixture
 def db(app):
     """ Create database for testing. """
 
@@ -43,15 +37,13 @@ def db(app):
     # Clear database before tests, for cases when some test failed before.
     test_db.connection.drop_database(db_name)
 
-    print(db_name)
-
     yield test_db  # This is where testing happens
 
     # Clear database after tests, for graceful exit.
     test_db.connection.drop_database(db_name)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def user(db):
     """ Create user model instance for test database. """
 
@@ -62,7 +54,7 @@ def user(db):
     return User
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def token_blacklist(db):
     """ Create token blacklist model instance for test database. """
 
@@ -73,7 +65,7 @@ def token_blacklist(db):
     return TokenBlacklist
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def quote(db):
     """ Create quote model instance for test database. """
 
@@ -84,7 +76,7 @@ def quote(db):
     return Quote
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def new_user(user):
     """ Create new user for testing. """
 
@@ -103,7 +95,7 @@ def new_user(user):
     return new_user
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def new_admin(user):
     """ Create new admin user for testing. """
     User = user
@@ -121,7 +113,7 @@ def new_admin(user):
     return new_admin
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def new_quote(quote):
     """ Create new quote for testing. """
 
@@ -141,7 +133,7 @@ def new_quote(quote):
     return new_quote
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def new_access_token(new_user, token_blacklist):
     """ Create new access token for testing. """
 
@@ -161,7 +153,7 @@ def new_access_token(new_user, token_blacklist):
     return token
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def new_refresh_token(new_user, token_blacklist):
     """ Create new refresh token for testing. """
 
@@ -179,3 +171,63 @@ def new_refresh_token(new_user, token_blacklist):
     token.save()
 
     return token
+
+
+@pytest.fixture
+def user_headers(new_user, client):
+    """ Generate access token authorization headers for a user. """
+    data = {"username": new_user.username, "password": "user"}
+
+    res = client.post(
+        "/auth/login",
+        data=json.dumps(data),
+        headers={"content-type": "application/json"},
+    )
+
+    tokens = json.loads(res.get_data(as_text=True))
+
+    return {
+        "content-type": "application/json",
+        "authorization": "Bearer {}".format(tokens["access_token"]),
+    }
+
+
+@pytest.fixture
+def admin_headers(new_admin, client):
+    """ Generate access token authorization headers for admin. """
+
+    data = {"username": new_admin.username, "password": "admin"}
+
+    res = client.post(
+        "/auth/login",
+        data=json.dumps(data),
+        headers={"content-type": "application/json"},
+    )
+
+    tokens = json.loads(res.get_data(as_text=True))
+
+    return {
+        "content-type": "application/json",
+        "authorization": "Bearer {}".format(tokens["access_token"]),
+    }
+
+
+@pytest.fixture
+def admin_refresh_headers(new_admin, client):
+    """ Generate refresh token authorization headers for admin. """
+
+    data = {"username": new_admin.username, "password": "admin"}
+
+    res = client.post(
+        "/auth/login",
+        data=json.dumps(data),
+        headers={"content-type": "application/json"},
+    )
+
+    tokens = json.loads(res.get_data(as_text=True))
+
+    return {
+        "content-type": "application/json",
+        "authorization": "Bearer {}".format(tokens["refresh_token"]),
+    }
+

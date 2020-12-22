@@ -17,11 +17,6 @@ class UserFields(Document):
         default=["basic"],
     )
 
-    def __init__(self, **kwargs):
-        """ User initialization with password encryption. """
-        super().__init__(**kwargs)
-        self.password = pwd_context.hash(self.password)
-
     def __str__(self):
         return (
             f"Username: {self.username}\n"

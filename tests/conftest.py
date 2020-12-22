@@ -4,10 +4,18 @@ import pytest
 import json
 import mongoengine
 from datetime import datetime
+from flask import url_for
 from flask_mongoengine import MongoEngine
+from passlib.context import CryptContext
 
 from quotes_api.app import create_app
 from quotes_api.models import QuoteFields, UserFields, TokenBlacklistFields
+
+
+@pytest.fixture
+def password_hasher():
+    pwd_context = CryptContext(schemes=["sha256_crypt"])
+    return pwd_context
 
 
 @pytest.fixture
@@ -79,7 +87,7 @@ def quote(db):
 
 
 @pytest.fixture
-def new_user(user):
+def new_user(user, password_hasher):
     """ Create new user for testing. """
 
     User = user
@@ -88,7 +96,7 @@ def new_user(user):
     user_data = {
         "username": "user",
         "email": "user@email.com",
-        "password": "user",
+        "password": password_hasher.hash("user"),
     }
 
     new_user = User(**user_data)
@@ -98,7 +106,7 @@ def new_user(user):
 
 
 @pytest.fixture
-def new_admin(user):
+def new_admin(user, password_hasher):
     """ Create new admin user for testing. """
     User = user
 
@@ -106,7 +114,7 @@ def new_admin(user):
     admin_user_data = {
         "username": "admin",
         "email": "admin@email.com",
-        "password": "admin",
+        "password": password_hasher.hash("admin"),
     }
 
     new_admin = User(**admin_user_data)
@@ -178,19 +186,15 @@ def new_refresh_token(new_user, token_blacklist):
 @pytest.fixture
 def user_headers(new_user, client):
     """ Generate access token authorization headers for a user. """
+
     data = {"username": new_user.username, "password": "user"}
-
-    res = client.post(
-        "/auth/login",
-        data=json.dumps(data),
-        headers={"content-type": "applicaiton/json"},
-    )
-
-    tokens = json.loads(res.get_data(as_text=True))
+    login_url = url_for("auth.user_login")
+    res = client.post(login_url, json=data)
+    data = res.get_json()
 
     return {
         "content-type": "application/json",
-        "authorization": "Bearer {}".format(tokens["access_token"]),
+        "authorization": "Bearer {}".format(data["access_token"]),
     }
 
 
@@ -199,18 +203,13 @@ def admin_headers(new_admin, client):
     """ Generate access token authorization headers for admin. """
 
     data = {"username": new_admin.username, "password": "admin"}
-
-    res = client.post(
-        "/auth/login",
-        data=json.dumps(data),
-        headers={"content-type": "application/json"},
-    )
-
-    tokens = json.loads(res.get_data(as_text=True))
+    login_url = url_for("auth.user_login")
+    res = client.post(login_url, json=data)
+    data = res.get_json()
 
     return {
         "content-type": "application/json",
-        "authorization": "Bearer {}".format(tokens["access_token"]),
+        "authorization": "Bearer {}".format(data["access_token"]),
     }
 
 
@@ -219,17 +218,12 @@ def admin_refresh_headers(new_admin, client):
     """ Generate refresh token authorization headers for admin. """
 
     data = {"username": new_admin.username, "password": "admin"}
-
-    res = client.post(
-        "/auth/login",
-        data=json.dumps(data),
-        headers={"content-type": "application/json"},
-    )
-
-    tokens = json.loads(res.get_data(as_text=True))
+    login_url = url_for("auth.user_login")
+    res = client.post(login_url, json=data)
+    data = res.get_json()
 
     return {
         "content-type": "application/json",
-        "authorization": "Bearer {}".format(tokens["refresh_token"]),
+        "authorization": "Bearer {}".format(data["access_token"]),
     }
 

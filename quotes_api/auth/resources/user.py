@@ -63,8 +63,8 @@ class UserSignup(Resource):
         try:
             # Create user schema instance
             user_schema = UserSchema(only=["username", "email", "password"])
-
             data = user_schema.load(request.json)
+            data["password"] = pwd_context.hash(data["password"])
 
             try:
                 user = User(**data)

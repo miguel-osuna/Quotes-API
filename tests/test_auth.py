@@ -24,10 +24,6 @@ def test_get_all_user_tokens(client, user_headers, new_access_token):
         assert any(t["id"] == new_access_token.id)
 
 
-def test_generate_new_access_token(client, admin_refresh_headers):
-    pass
-
-
 def test_revoke_access_token(client, admin_headers):
     # Revoke access token
     revoke_access_token_url = url_for("auth.revoke_access_token")
@@ -52,8 +48,36 @@ def test_revoke_refresh_token(client, admin_refresh_headers):
 
 
 def test_create_trial_token(client, admin_headers):
-    pass
+    trial_token_url = url_for("auth.trial_token")
+    res = client.post(trial_token_url, headers=admin_headers)
+    assert res.status_code == HttpStatus.created_201.value
+
+    # Try to access a protected endpoint with the new token
+    token = res.get_json()["permanent_api_key"]
+
+    users_url = url_for("auth.users")
+    query_parameters = {"page": "1", "per_page": "5"}
+    headers = {
+        "content-type": "application/json",
+        "authorization": "Bearer {}".format(token),
+    }
+    res = client.get(users_url, headers=headers, query_string=query_parameters)
+    assert res.status_code == HttpStatus.ok_200.value
 
 
 def test_create_permanent_token(client, admin_headers):
-    pass
+    permanent_token_url = url_for("auth.permanent_token")
+    res = client.post(permanent_token_url, headers=admin_headers)
+    assert res.status_code == HttpStatus.created_201.value
+
+    # Try to access a protected endpoint with the new token
+    token = res.get_json()["trial_api_key"]
+
+    users_url = url_for("auth.users")
+    query_parameters = {"page": "1", "per_page": "5"}
+    headers = {
+        "content-type": "application/json",
+        "authorization": "Bearer {}".format(token),
+    }
+    res = client.get(users_url, headers=headers, query_string=query_parameters)
+    assert res.status_code == HttpStatus.ok_200.value

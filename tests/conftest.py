@@ -37,6 +37,8 @@ def db(app):
     # Clear database before tests, for cases when some test failed before.
     test_db.connection.drop_database(db_name)
 
+    print(db_name)
+
     yield test_db  # This is where testing happens
 
     # Clear database after tests, for graceful exit.
@@ -181,7 +183,7 @@ def user_headers(new_user, client):
     res = client.post(
         "/auth/login",
         data=json.dumps(data),
-        headers={"content-type": "application/json"},
+        headers={"content-type": "applicaiton/json"},
     )
 
     tokens = json.loads(res.get_data(as_text=True))

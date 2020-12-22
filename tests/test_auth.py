@@ -1,8 +1,27 @@
 """ Test authentication. """
+from flask import url_for
+
+from quotes_api.common import HttpStatus
 
 
-def test_get_all_user_tokens(client, admin_headers):
-    pass
+def test_get_all_user_tokens(client, user_headers, new_access_token):
+    user_tokens_url = url_for("auth.tokens")
+    query_parameters = {"page": "1", "per_page": "5"}
+
+    res = client.get(
+        user_tokens_url, headers=user_headers, query_string=query_parameters
+    )
+    assert res.status_code == HttpStatus.ok_200.value
+
+    data = res.get_json()
+    tokens = data["records"]
+    meta = data["meta"]
+
+    assert meta["page_number"] == "1"
+    assert meta["page_size"] == "5"
+
+    for t in tokens:
+        assert any(t["id"] == new_access_token.id)
 
 
 def test_generate_new_access_token(client, admin_refresh_headers):
@@ -10,11 +29,26 @@ def test_generate_new_access_token(client, admin_refresh_headers):
 
 
 def test_revoke_access_token(client, admin_headers):
-    pass
+    # Revoke access token
+    revoke_access_token_url = url_for("auth.revoke_access_token")
+    res = client.delete(revoke_access_token_url, headers=admin_headers)
+    assert res.status_code == HttpStatus.no_content_204.value
+
+    # Try to access a protected endpoint with the same token
+    users_url = url_for("auth.users")
+    res = client.get(users_url, headers=admin_headers)
+    assert res.status_code == HttpStatus.unauthorized_401.value
 
 
 def test_revoke_refresh_token(client, admin_refresh_headers):
-    pass
+    revoke_refresh_token_url = url_for("auth.revoke_refresh_token")
+    res = client.delete(revoke_refresh_token_url, headers=admin_refresh_headers)
+    assert res.status_code == HttpStatus.no_content_204.value
+
+    # Try to access a protected endpoint with the same token
+    refresh_url = url_for("auth.token_refresh")
+    res = client.post(refresh_url, headers=admin_refresh_headers)
+    assert res.status_code == HttpStatus.unauthorized_401.value
 
 
 def test_create_trial_token(client, admin_headers):

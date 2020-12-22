@@ -34,7 +34,7 @@ api.add_resource(UserList, "/users", endpoint="users")
 api.add_resource(UserTokens, "/tokens", endpoint="tokens")
 api.add_resource(TokenRefresh, "/refresh", endpoint="token_refresh")
 api.add_resource(
-    AccessTokenRevoke, "/revoke_access_token", endpoint="revoke_access_revoke"
+    AccessTokenRevoke, "/revoke_access_token", endpoint="revoke_access_token"
 )
 api.add_resource(
     RefreshTokenRevoke, "/revoke_refresh_token", endpoint="revoke_refresh_token"

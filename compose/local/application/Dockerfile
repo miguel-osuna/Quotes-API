@@ -9,10 +9,10 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Set work directory
-WORKDIR /code 
+WORKDIR /app 
 
 # Install dependencies
-COPY Pipfile /code/
+COPY Pipfile /app/
 
 # 'system' flag will avoid pipenv to look for a virtual environment
 RUN pip install pipenv
@@ -26,4 +26,4 @@ RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start 
 
 # COPY project 
-COPY . /code/
+COPY . /app/

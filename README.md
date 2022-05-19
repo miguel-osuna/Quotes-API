@@ -1,7 +1,7 @@
 # Quotes-API
 
 ## :book: Description
-RESTful API that server the most famous quotes from all time. Built with Flask-RESTful.
+RESTful API that serves the most famous quotes from all time. Built with Flask-RESTful.
 
 ### :dart: Features
 - RESTful API created with Flask-RESTful

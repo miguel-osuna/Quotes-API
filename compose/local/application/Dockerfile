@@ -1,5 +1,5 @@
 # Pull base image
-FROM python:3.8
+FROM python:3.8.13-slim-buster
 
 # Set environment variables 
 # Python don't write byte code: it won't write .pyc files 
@@ -8,17 +8,28 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # Python buffered gives familiar output to console
 ENV PYTHONUNBUFFERED 1
 
+# Update container dependencies
+RUN apt-get update \
+    # dependencies for building Python packages
+    && apt-get install -y build-essential \
+    # cleaning up unused files
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/* \ 
+    && rm -rf /usr/share/doc \ 
+    && rm -rf /usr/share/man
+
 # Set work directory
 WORKDIR /app 
 
-# Install dependencies
-COPY Pipfile /app/
+# Copy dependency files
+COPY Pipfile Pipfile.lock /app/
 
-# 'system' flag will avoid pipenv to look for a virtual environment
+# Install Pipenv
+RUN pip install --upgrade pip
 RUN pip install pipenv
 
 # Install dependencies
-RUN pipenv install --skip-lock --system && pipenv install --skip-lock --system --dev
+RUN pipenv install --ignore-pipfile --system && pipenv install --ignore-pipfile --dev --system
 
 # Copy start bash script ahd change permissions
 COPY ./compose/local/application/start /start

@@ -11,6 +11,13 @@ RESTful API that serves the most famous quotes from all time. Built with Flask-R
 ### :high_brightness: Visuals
 ![](img/quotes_api_demo.png)
 
+## Environments
+
+| Environment | Endpoint |
+|:---:|:---:|
+| LOCAL | [Swagger Docs](http://localhost:8000/documentation) |
+| PROD | [Swagger Docs](https://elvxcu055k.execute-api.us-east-1.amazonaws.com/production/documentation) |
+
 ## :bulb: Getting Started
 Follow the instructions below to work on the project on your local environment.
 

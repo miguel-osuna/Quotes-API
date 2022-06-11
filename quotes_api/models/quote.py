@@ -4,7 +4,7 @@ from quotes_api.extensions import odm
 
 
 class QuoteFields(Document):
-    """ Quote Document base class. """
+    """Quote Document base class."""
 
     quote_text = StringField(required=True, null=False, unique=True)
     author_name = StringField(required=True, null=False)
@@ -40,8 +40,7 @@ class QuoteFields(Document):
 
 
 class Quote(odm.Document, QuoteFields):
-    """ Quote Document for mongodb database instance. """
+    """Quote Document for mongodb database instance."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-

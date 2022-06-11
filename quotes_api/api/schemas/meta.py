@@ -13,4 +13,3 @@ class MetadataSchema(ma.Schema):
     total_pages = ma.Integer()
     total_records = ma.Integer()
     links = ma.Nested(LinksSchema)
-

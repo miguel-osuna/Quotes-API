@@ -32,7 +32,7 @@ RUN pip install pipenv
 RUN pipenv install --ignore-pipfile --system && pipenv install --ignore-pipfile --dev --system
 
 # Copy start bash script ahd change permissions
-COPY ./compose/local/application/start /start
+COPY ./docker/production/application/start /start
 RUN sed -i 's/\r$//g' /start 
 RUN chmod +x /start 
 

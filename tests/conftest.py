@@ -20,7 +20,7 @@ def password_hasher():
 
 @pytest.fixture
 def app():
-    """ Create application for testing. """
+    """Create application for testing."""
     app = create_app("testing")
 
     with app.app_context():
@@ -31,7 +31,7 @@ def app():
 
 @pytest.fixture
 def db(app):
-    """ Create database for testing. """
+    """Create database for testing."""
 
     # app.config["MONGODB_HOST"] = "mongo"
     test_db = MongoEngine(app)
@@ -55,7 +55,7 @@ def db(app):
 
 @pytest.fixture
 def user(db):
-    """ Create user model instance for test database. """
+    """Create user model instance for test database."""
 
     class User(db.Document, UserFields):
         def __init__(self, *args, **kwargs):
@@ -66,7 +66,7 @@ def user(db):
 
 @pytest.fixture
 def token_blacklist(db):
-    """ Create token blacklist model instance for test database. """
+    """Create token blacklist model instance for test database."""
 
     class TokenBlacklist(db.Document, TokenBlacklistFields):
         def __init__(self, *args, **kwargs):
@@ -77,7 +77,7 @@ def token_blacklist(db):
 
 @pytest.fixture
 def quote(db):
-    """ Create quote model instance for test database. """
+    """Create quote model instance for test database."""
 
     class Quote(db.Document, QuoteFields):
         def __init__(self, *args, **kwargs):
@@ -88,7 +88,7 @@ def quote(db):
 
 @pytest.fixture
 def new_user(user, password_hasher):
-    """ Create new user for testing. """
+    """Create new user for testing."""
 
     User = user
 
@@ -107,7 +107,7 @@ def new_user(user, password_hasher):
 
 @pytest.fixture
 def new_admin(user, password_hasher):
-    """ Create new admin user for testing. """
+    """Create new admin user for testing."""
     User = user
 
     # Admin user mock data
@@ -125,7 +125,7 @@ def new_admin(user, password_hasher):
 
 @pytest.fixture
 def new_quote(quote):
-    """ Create new quote for testing. """
+    """Create new quote for testing."""
 
     Quote = quote
 
@@ -145,7 +145,7 @@ def new_quote(quote):
 
 @pytest.fixture
 def new_access_token(new_user, token_blacklist):
-    """ Create new access token for testing. """
+    """Create new access token for testing."""
 
     TokenBlacklist = token_blacklist
 
@@ -165,7 +165,7 @@ def new_access_token(new_user, token_blacklist):
 
 @pytest.fixture
 def new_refresh_token(new_user, token_blacklist):
-    """ Create new refresh token for testing. """
+    """Create new refresh token for testing."""
 
     TokenBlacklist = token_blacklist
 
@@ -185,7 +185,7 @@ def new_refresh_token(new_user, token_blacklist):
 
 @pytest.fixture
 def user_headers(new_user, client):
-    """ Generate access token authorization headers for a user. """
+    """Generate access token authorization headers for a user."""
 
     data = {"username": new_user.username, "password": "user"}
     login_url = url_for("auth.user_login")
@@ -200,7 +200,7 @@ def user_headers(new_user, client):
 
 @pytest.fixture
 def admin_headers(new_admin, client):
-    """ Generate access token authorization headers for admin. """
+    """Generate access token authorization headers for admin."""
 
     data = {"username": new_admin.username, "password": "admin"}
     login_url = url_for("auth.user_login")
@@ -215,7 +215,7 @@ def admin_headers(new_admin, client):
 
 @pytest.fixture
 def admin_refresh_headers(new_admin, client):
-    """ Generate refresh token authorization headers for admin. """
+    """Generate refresh token authorization headers for admin."""
 
     data = {"username": new_admin.username, "password": "admin"}
     login_url = url_for("auth.user_login")
@@ -226,4 +226,3 @@ def admin_refresh_headers(new_admin, client):
         "content-type": "application/json",
         "authorization": "Bearer {}".format(data["access_token"]),
     }
-

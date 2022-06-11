@@ -47,6 +47,15 @@ Make sure to create a hidden folder like `envs.example` named `.envs`, with the 
 docker-compose up -f local.yml up -d --build
 ```
 
+## Commands 
+The project supports cli commands for formatting, linting, database initialization and more. 
+
+| **Action** |    **Command**    |
+| :--------: | :---------------: |
+|    Test    |  pipenv run test  |
+|   Format   | pipenv run format |
+|    Lint    |  pipenv run lint  |
+
 ## :rocket: Deployment
 This project includes configuration files for both Heroku and AWS using Zappa.
 

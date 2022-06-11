@@ -34,7 +34,10 @@ apispec-webframeworks = "==0.5.2"
 gunicorn = "==20.0.4"
 zappa = "==0.52.0"
 
-[script]
+[scripts]
+format = "python3 cli/format.py quotes_api tests"
+lint = "python3 cli/lint.py quotes_api"
+test = "python3 cli/test.py tests"
 
 [requires]
 python_version = "3.8"

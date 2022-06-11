@@ -116,4 +116,3 @@ def test_create_quote(client, admin_headers, quote):
     assert quote.quote_text == data["quote_text"]
     assert quote.author_image == data["author_image"]
     assert quote.tags == data["tags"]
-

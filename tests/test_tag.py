@@ -9,4 +9,3 @@ def test_get_all_tags(client, user_headers):
     res = client.get(tags_url, headers=user_headers)
 
     assert res.status_code == HttpStatus.ok_200.value
-

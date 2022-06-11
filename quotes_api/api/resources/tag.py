@@ -8,8 +8,8 @@ from quotes_api.auth.decorators import Role, role_required
 
 
 class TagList(Resource):
-    """ List of tags. 
-    
+    """List of tags.
+
     ---
     get:
       tags:
@@ -17,8 +17,8 @@ class TagList(Resource):
       description: |
         Get list of supported `tags`. Requires a valid `user` `api key` for authentication.
       security:
-        - user_api_key: []          
-        - admin_api_key: [] 
+        - user_api_key: []
+        - admin_api_key: []
       responses:
         200:
           content:
@@ -32,7 +32,7 @@ class TagList(Resource):
                       type: string
         400:
           description: Bad request.
-        401: 
+        401:
           description: Missing authentication header.
     """
 
@@ -41,7 +41,7 @@ class TagList(Resource):
 
     @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
-        """ Get list of all tags. """
+        """Get list of all tags."""
 
         try:
             response_body = {

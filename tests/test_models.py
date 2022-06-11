@@ -4,8 +4,8 @@ from quotes_api.models import Quote, User, TokenBlacklist
 
 
 def test_new_quote(new_quote):
-    """ Test the creation of a new quote. 
-    
+    """Test the creation of a new quote.
+
     GIVEN a Quote model
     WHEN a new Quote is created
     THEN check the quote_text, author_name, author_image and tags fields are defined correctly
@@ -18,8 +18,8 @@ def test_new_quote(new_quote):
 
 
 def test_new_user(new_user):
-    """ Test the creation of a new user. 
-    
+    """Test the creation of a new user.
+
     GIVEN a User model
     WHEN a new User is created
     THEN check the username, email, password, active and roles fields are defined correctly
@@ -33,10 +33,10 @@ def test_new_user(new_user):
 
 
 def test_new_token(new_user, new_access_token):
-    """ Test the creation of a new token. 
-    
+    """Test the creation of a new token.
+
     GIVEN a TokenBlacklist model
-    WHEN a new access token is created 
+    WHEN a new access token is created
     THEN check the jti, token_type, user, revoked and expires fields are defined correctly
     """
 

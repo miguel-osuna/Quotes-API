@@ -1,6 +1,7 @@
-"""CLI Command - Formatter (Black) """
-import click
+"""Formating CLI Command"""
 import subprocess
+
+import click
 
 
 @click.command()
@@ -17,4 +18,4 @@ def formatter(path):
 
 
 if __name__ == "__main__":
-    formatter(".")
+    formatter()

@@ -1,4 +1,4 @@
-"""CLI Command - Linter (Pylint) """
+"""Linting CLI Command"""
 import subprocess
 
 import click
@@ -18,4 +18,4 @@ def linter(path):
 
 
 if __name__ == "__main__":
-    linter("quotes_api")
+    linter()

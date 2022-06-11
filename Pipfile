@@ -35,8 +35,8 @@ gunicorn = "==20.0.4"
 zappa = "==0.52.0"
 
 [scripts]
-format = "python3 cli/formatter.py"
-lint = "python3 cli/linter.py"
+format = "python3 cli/formatter.py quotes_api"
+lint = "python3 cli/linter.py quotes_api"
 
 [requires]
 python_version = "3.8"

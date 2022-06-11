@@ -10,14 +10,17 @@ def register_cli_commands(app):
     :return: None
     """
     for file in os.listdir(os.path.dirname(__file__)):
-        if file.startswith("cmd_") and filename.endswith(".py"):
+        if file.startswith("flask_") and file.endswith(".py"):
             # Get the file name
             filename = file[:-3]
+            command_name = file[4:-3]
 
-            # Import the cli command
-            cmd = importlib.import_module(f"cli.{filename}")
+            # Import the cli command module
+            module = importlib.import_module(f"cli.{filename}")
+
+            command = getattr(module, command_name)
 
             # Register the cli command under the Flask app
-            app.cli.add_command(cmd)
+            app.cli.add_command(command)
 
     return None

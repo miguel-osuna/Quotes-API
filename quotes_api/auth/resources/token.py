@@ -21,24 +21,24 @@ from quotes_api.auth.schemas import TokenBlacklistSchema
 
 
 class UserTokens(Resource):
-    """ 
-    User tokens list resource. 
-    
+    """
+    User tokens list resource.
+
     Provides a way for a user to look at their tokens
 
     ---
     get:
-      tags: 
+      tags:
         - User
       description: |
         Get list of `token` resources. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []
-        - admin_api_key: []        
+        - admin_api_key: []
       parameters:
         - in: query
           name: page
-          schema: 
+          schema:
             type: integer
             default: 1
           description: Page number for pagination.
@@ -54,13 +54,13 @@ class UserTokens(Resource):
             application/json:
               schema:
                 allOf:
-                  - type: object 
+                  - type: object
                     properties:
-                      meta: 
+                      meta:
                         $ref: '#/components/schemas/MetadataSchema'
-                  - type: object 
+                  - type: object
                     properties:
-                      records: 
+                      records:
                         type: array
                         items:
                           $ref: '#/components/schemas/TokenBlacklistSchema'
@@ -73,7 +73,7 @@ class UserTokens(Resource):
 
     @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
-        """ Gets all the revoked and unrevoked tokens from a user. """
+        """Gets all the revoked and unrevoked tokens from a user."""
 
         args = request.args
 
@@ -99,8 +99,8 @@ class UserTokens(Resource):
 
 
 class TokenRefresh(Resource):
-    """ Token refresh. 
-    
+    """Token refresh.
+
     ---
     post:
       tags:
@@ -108,9 +108,9 @@ class TokenRefresh(Resource):
       description: |
         Create an `access token` from a `refresh token`. Requires valid `admin` `access token`.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       responses:
-        200: 
+        200:
           content:
             application/json:
               schema:
@@ -127,7 +127,7 @@ class TokenRefresh(Resource):
 
     @role_required([Role.ADMIN])
     def post(self):
-        """ Get an access token from a refresh token. """
+        """Get an access token from a refresh token."""
 
         try:
             # Get the current user id from the access token to retrieve
@@ -153,8 +153,8 @@ class TokenRefresh(Resource):
 
 
 class AccessTokenRevoke(Resource):
-    """ Access Token Revoke resource. 
-    
+    """Access Token Revoke resource.
+
     ---
     delete:
       tags:
@@ -162,16 +162,16 @@ class AccessTokenRevoke(Resource):
       description: |
         Revoke an `access token`. Requires a valid `admin` `access token`.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       responses:
         200:
           content:
             application/json:
               schema:
-                type: object 
+                type: object
                 properties:
-                  message: 
-                    type: string 
+                  message:
+                    type: string
                     example: token revoked
         400:
           description: Bad request.
@@ -181,8 +181,8 @@ class AccessTokenRevoke(Resource):
 
     @jwt_required
     def delete(self):
-        """ Revokes an access token from the database. 
-        
+        """Revokes an access token from the database.
+
         Used mainly for logout
         """
         try:
@@ -201,8 +201,8 @@ class AccessTokenRevoke(Resource):
 
 
 class RefreshTokenRevoke(Resource):
-    """ Refresh Token Revoked resource. 
-    
+    """Refresh Token Revoked resource.
+
     ---
     delete:
       tags:
@@ -210,13 +210,13 @@ class RefreshTokenRevoke(Resource):
       description: |
         Revokes a `refresh token`. Requires a valid `admin` `refresh token`.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       responses:
         200:
           content:
             application/json:
               schema:
-                type: object 
+                type: object
                 properties:
                   message:
                     type: string
@@ -229,8 +229,8 @@ class RefreshTokenRevoke(Resource):
 
     @jwt_refresh_token_required
     def delete(self):
-        """ Revokes a refresh token from the database.
-        
+        """Revokes a refresh token from the database.
+
         Used mainly for logout.
         """
 
@@ -250,8 +250,8 @@ class RefreshTokenRevoke(Resource):
 
 
 class TrialToken(Resource):
-    """ Trial api key creation resource. 
-    
+    """Trial api key creation resource.
+
     ---
     post:
       tags:
@@ -259,10 +259,10 @@ class TrialToken(Resource):
       description: |
         Create a `trial` `api key`. Requires a valid `admin` `api key` for authentication. This trial api key lasts for `30 days`.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       responses:
         200:
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -278,7 +278,7 @@ class TrialToken(Resource):
 
     @role_required([Role.ADMIN])
     def post(self):
-        """ Creates a trial api key. """
+        """Creates a trial api key."""
 
         try:
 
@@ -308,8 +308,8 @@ class TrialToken(Resource):
 
 
 class PermanentToken(Resource):
-    """ Permanent api key creation resource. 
-    
+    """Permanent api key creation resource.
+
     ---
     post:
       tags:
@@ -317,10 +317,10 @@ class PermanentToken(Resource):
       description: |
         Create a `permanent` `api key`. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: []         
+        - admin_api_key: []
       responses:
         200:
-          content: 
+          content:
             application/json:
               schema:
                 type: object
@@ -336,7 +336,7 @@ class PermanentToken(Resource):
 
     @role_required([Role.ADMIN])
     def post(self):
-        """ Creates a permanent api key. """
+        """Creates a permanent api key."""
 
         try:
             # Get the current user id from the access token to retrieve
@@ -362,4 +362,3 @@ class PermanentToken(Resource):
                 {"error": "Missing valid refresh token"},
                 HttpStatus.bad_request_400.value,
             )
-

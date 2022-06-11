@@ -39,7 +39,7 @@ def generate_links(pagination, endpoint, **kwargs):
 
 
 def paginator(pagination, endpoint, schema, **kwargs):
-    """ Paginator for supported models. """
+    """Paginator for supported models."""
 
     # Create schemas
     schema = schema(many=True)
@@ -63,7 +63,7 @@ def paginator(pagination, endpoint, schema, **kwargs):
 
 
 def author_paginator(pagination, endpoint, schema, **kwargs):
-    """ Paginator for list of authors. """
+    """Paginator for list of authors."""
 
     authors = []
     for item in pagination.items:

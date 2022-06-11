@@ -6,7 +6,7 @@ import os
 
 
 class Config(object):
-    """ Configuration base class. """
+    """Configuration base class."""
 
     # Quotes API Variables
     SERVER = os.getenv("SERVER")
@@ -26,7 +26,7 @@ class Config(object):
 
 
 class ProductionConfig(Config):
-    """ Production environment configuration class. """
+    """Production environment configuration class."""
 
     # Flask Configuration
     ENV = "production"
@@ -37,7 +37,7 @@ class ProductionConfig(Config):
 
 
 class StagingConfig(Config):
-    """ Staging environment configuration class. """
+    """Staging environment configuration class."""
 
     # Flask Configuration
     ENV = "production"
@@ -48,7 +48,7 @@ class StagingConfig(Config):
 
 
 class DevelopmentConfig(Config):
-    """ Development environment configuration class. """
+    """Development environment configuration class."""
 
     # Flask Configuration
     ENV = "development"
@@ -60,7 +60,7 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
-    """ Testing environment configuration class. """
+    """Testing environment configuration class."""
 
     # Flask Configuration
     ENV = "development"

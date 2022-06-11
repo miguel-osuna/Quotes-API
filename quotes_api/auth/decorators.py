@@ -20,8 +20,8 @@ class Role(Enum):
 
 
 def role_required(role_list):
-    """ Custom decorator that verefies a list of possible roles for a user. 
-    
+    """Custom decorator that verefies a list of possible roles for a user.
+
     It also verifies that the JWT is present in the request.
     """
 
@@ -49,4 +49,3 @@ def role_required(role_list):
         return wrapper
 
     return decorator
-

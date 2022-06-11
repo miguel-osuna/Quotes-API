@@ -19,7 +19,7 @@ from quotes_api.auth.schemas import UserSchema, TokenBlacklistSchema
 
 
 class UserSignup(Resource):
-    """ User sign up resource. 
+    """User sign up resource.
     ---
     post:
       tags:
@@ -30,36 +30,36 @@ class UserSignup(Resource):
         content:
           application/json:
             schema:
-              type: object 
+              type: object
               properties:
                 username:
                   type: string
-                  required: true 
+                  required: true
                 email:
                   type: string
                   required: true
                 password:
-                  type: string 
-                  required: true 
+                  type: string
+                  required: true
       responses:
         201:
           content:
             application/json:
               schema:
-                type: object 
+                type: object
                 properties:
                   message:
                     type: string
                     example: Successful sign up.
         400:
-          description: Could not sign up user.  
+          description: Could not sign up user.
     """
 
     # Decorators applied to all class methods
     method_decorators = []
 
     def post(self):
-        """ User registration to the database. """
+        """User registration to the database."""
         try:
             # Create user schema instance
             user_schema = UserSchema(only=["username", "email", "password"])
@@ -86,8 +86,8 @@ class UserSignup(Resource):
 
 
 class UserLogin(Resource):
-    """ User login resource. 
-    
+    """User login resource.
+
     ---
     post:
       tags:
@@ -98,23 +98,23 @@ class UserLogin(Resource):
         content:
           application/json:
             schema:
-              type: object 
+              type: object
               properties:
                 username:
                   type: string
-                  required: true 
+                  required: true
                 password:
-                  type: string 
-                  required: true 
+                  type: string
+                  required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                type: object 
+                type: object
                 properties:
                   access_token:
-                    type: string 
+                    type: string
                   refresh_token:
                     type: string
         400:
@@ -125,7 +125,7 @@ class UserLogin(Resource):
     method_decorators = []
 
     def post(self):
-        """ Authenticate a user and return tokens. """
+        """Authenticate a user and return tokens."""
 
         try:
             # Create user schema instance
@@ -177,7 +177,7 @@ class UserLogin(Resource):
 
 
 class UserLogout(Resource):
-    """ User logout resource. """
+    """User logout resource."""
 
     # Decorators applied to all class methods
     method_decorators = []
@@ -188,7 +188,7 @@ class UserLogout(Resource):
 
 
 class UserResource(Resource):
-    """ Single user resource. 
+    """Single user resource.
     ---
     get:
       tags:
@@ -196,7 +196,7 @@ class UserResource(Resource):
       description: |
         Get `user` resource by id. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       parameters:
         - in: path
           name: user_id
@@ -223,7 +223,7 @@ class UserResource(Resource):
       description: |
         Update `user` resource by id. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       parameters:
         - in: path
           name: user_id
@@ -232,7 +232,7 @@ class UserResource(Resource):
             type: string
           description: User ID.
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               UserSchema
@@ -244,13 +244,13 @@ class UserResource(Resource):
         404:
           description: User does not exist.
 
-    patch: 
+    patch:
       tags:
         - User
       description: |
         Patch `user` resource by id. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       parameters:
         - in: path
           name: user_id
@@ -259,7 +259,7 @@ class UserResource(Resource):
             type: string
           description: User ID.
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               UserSchema
@@ -277,7 +277,7 @@ class UserResource(Resource):
       description: |
         Delete a `user` resource by id. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       parameters:
         - in: path
           name: user_id
@@ -290,7 +290,7 @@ class UserResource(Resource):
           description: User resources were successfully deleted.
         401:
           description: Missing authentication header.
-        404: 
+        404:
           description: User does not exist.
     """
 
@@ -299,7 +299,7 @@ class UserResource(Resource):
 
     @role_required([Role.ADMIN])
     def get(self, user_id):
-        """ Get user by id. """
+        """Get user by id."""
         try:
             user = User.objects.get_or_404(id=user_id)
         except:
@@ -314,7 +314,7 @@ class UserResource(Resource):
 
     @role_required([Role.ADMIN])
     def put(self, user_id):
-        """ Replace entire user. """
+        """Replace entire user."""
         try:
             user = User.objects.get_or_404(id=user_id)
         except:
@@ -334,7 +334,7 @@ class UserResource(Resource):
 
     @role_required([Role.ADMIN])
     def patch(self, user_id):
-        """ Update user fields. """
+        """Update user fields."""
         try:
             user = User.objects.get_or_404(id=user_id)
         except:
@@ -357,7 +357,7 @@ class UserResource(Resource):
 
     @role_required([Role.ADMIN])
     def delete(self, user_id):
-        """ Delete user from the database. """
+        """Delete user from the database."""
 
         try:
             user = User.objects.get_or_404(id=user_id)
@@ -377,8 +377,8 @@ class UserResource(Resource):
 
 
 class UserList(Resource):
-    """ User list resource. 
-    
+    """User list resource.
+
     ---
     get:
       tags:
@@ -386,7 +386,7 @@ class UserList(Resource):
       description:
         Get list of `user` resources. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: []           
+        - admin_api_key: []
       parameters:
         - in: query
           name: page
@@ -426,7 +426,7 @@ class UserList(Resource):
 
     @role_required([Role.ADMIN])
     def get(self):
-        """ Get list of users. """
+        """Get list of users."""
         args = request.args
 
         page = int(args.get("page", 1))
@@ -444,4 +444,3 @@ class UserList(Resource):
                 {"error": "Could not retrieve quotes"},
                 HttpStatus.internal_server_error_500.value,
             )
-

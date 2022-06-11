@@ -12,7 +12,7 @@ from quotes_api.models import UserFields
 
 
 class TokenBlacklistFields(Document):
-    """ Token blacklist base class representation. """
+    """Token blacklist base class representation."""
 
     jti = StringField(max_length=36, null=False, unique=True)
     token_type = StringField(max_length=10, null=False)
@@ -36,8 +36,7 @@ class TokenBlacklistFields(Document):
 
 
 class TokenBlacklist(odm.Document, TokenBlacklistFields):
-    """ Token blacklist Document for mongodb database instance. """
+    """Token blacklist Document for mongodb database instance."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-

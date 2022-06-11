@@ -4,7 +4,7 @@ from quotes_api.extensions import odm, pwd_context
 
 
 class UserFields(Document):
-    """ User Document base class. """
+    """User Document base class."""
 
     username = StringField(max_lenght=80, unique=True, null=False)
     email = StringField(max_lenght=80, unique=True, null=False)
@@ -33,8 +33,7 @@ class UserFields(Document):
 
 
 class User(odm.Document, UserFields):
-    """ User Document for mongodb database instance. """
+    """User Document for mongodb database instance."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-

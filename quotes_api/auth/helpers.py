@@ -6,7 +6,7 @@ from quotes_api.models import TokenBlacklist, User
 
 
 def add_token_to_database(encoded_token, identity_claim):
-    """ Adds a new token to the database. It is not revoked when it's added. """
+    """Adds a new token to the database. It is not revoked when it's added."""
 
     # Decode token to get its contents
     decoded_token = decode_token(encoded_token)
@@ -32,7 +32,7 @@ def add_token_to_database(encoded_token, identity_claim):
 
 
 def is_token_revoked(decoded_token):
-    """ Checks if the given token is revoked or not. 
+    """Checks if the given token is revoked or not.
 
     Because we are adding all the tokens (access and refresh), if the token is not present
     in the database, automatically it's going to be considered as "revoked", as we don't know
@@ -49,7 +49,7 @@ def is_token_revoked(decoded_token):
 
 
 def get_user_tokens(user_identity):
-    """ Gets all the revoked and unrevoked tokens from a user. """
+    """Gets all the revoked and unrevoked tokens from a user."""
     try:
         # Get user by its username
         user = User.objects.get(username=user_identity)
@@ -62,7 +62,7 @@ def get_user_tokens(user_identity):
 
 
 def revoke_token(token_jti, user_identity):
-    """ Revokes the given token.
+    """Revokes the given token.
 
     If no token is found we raise an exception.
     """
@@ -83,7 +83,7 @@ def revoke_token(token_jti, user_identity):
 
 
 def unrevoke_token(token_jti, user_identity):
-    """ Unrevokes the given token. 
+    """Unrevokes the given token.
 
     If no token is found, we raise an exception.
     """
@@ -105,11 +105,11 @@ def unrevoke_token(token_jti, user_identity):
 
 def prune_database():
     """
-    Delete tokens that have expired from the database. 
+    Delete tokens that have expired from the database.
 
     How (and if) you call this function is entirely up to you. You could expose it to
     an endpoint that only administrators could call, you could run it as a cron, set it up with
-    flask cli, etc. 
+    flask cli, etc.
     """
 
     now = datetime.now()
@@ -117,4 +117,3 @@ def prune_database():
 
     for token in expired:
         token.delete()
-

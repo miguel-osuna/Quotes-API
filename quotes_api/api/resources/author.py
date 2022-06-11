@@ -8,8 +8,8 @@ from quotes_api.auth.decorators import Role, role_required
 
 
 class AuthorList(Resource):
-    """ List of quote authors. 
-    
+    """List of quote authors.
+
     ---
     get:
       tags:
@@ -22,7 +22,7 @@ class AuthorList(Resource):
       parameters:
         - in: query
           name: page
-          schema: 
+          schema:
             type: integer
             default: 1
           description: Page number of the pagination.
@@ -38,7 +38,7 @@ class AuthorList(Resource):
             type: string
             enum: [asc, desc]
             default: asc
-          description: Author's name sort order. 
+          description: Author's name sort order.
       responses:
         200:
           content:
@@ -64,7 +64,7 @@ class AuthorList(Resource):
 
     @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
-        """ Get quote authors by alphabetical order. """
+        """Get quote authors by alphabetical order."""
 
         args = request.args
         page = int(args.get("page", 1))
@@ -94,7 +94,7 @@ class AuthorList(Resource):
             )
 
     def sort_order_parser(self, input):
-        """ 
+        """
         Parses a user query input for the sort_order parameter.
 
         Checks if the sorting is ascending or descending.

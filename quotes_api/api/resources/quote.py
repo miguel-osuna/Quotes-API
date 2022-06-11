@@ -8,8 +8,8 @@ from quotes_api.auth.decorators import Role, role_required
 
 
 class QuoteResource(Resource):
-    """ Single quote object resource. 
-    
+    """Single quote object resource.
+
     ---
     get:
       tags:
@@ -17,13 +17,13 @@ class QuoteResource(Resource):
       description: |
         Get `quote` resource by id. Requires a valid `user` `api key` for authentication.
       security:
-        - user_api_key: []      
+        - user_api_key: []
         - admin_api_key: []
       parameters:
         - in: path
           name: quote_id
           required: true
-          schema: 
+          schema:
             type: string
           description: Quote id.
       responses:
@@ -31,7 +31,7 @@ class QuoteResource(Resource):
           content:
             application/json:
               schema:
-                type: object 
+                type: object
                 properties:
                   quote: QuoteSchema
         401:
@@ -54,14 +54,14 @@ class QuoteResource(Resource):
             type: string
           description: Quote id.
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               QuoteSchema
       responses:
         204:
           description: The quote resource was successfully updated.
-        401: 
+        401:
           description: Missing authentication header.
         404:
           description: Quote does not exist.
@@ -72,7 +72,7 @@ class QuoteResource(Resource):
       description: |
         Patch `quote` resource by id. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: [] 
+        - admin_api_key: []
       parameters:
         - in: path
           name: quote_id
@@ -81,7 +81,7 @@ class QuoteResource(Resource):
             type: string
           description: Quote id.
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               QuoteSchema
@@ -99,7 +99,7 @@ class QuoteResource(Resource):
       description: |
         Delete `quote` resource by id. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: []          
+        - admin_api_key: []
       parameters:
         - in: path
           name: quote_id
@@ -121,7 +121,7 @@ class QuoteResource(Resource):
 
     @role_required([Role.BASIC, Role.ADMIN])
     def get(self, quote_id):
-        """ Get quote by id. """
+        """Get quote by id."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
@@ -134,7 +134,7 @@ class QuoteResource(Resource):
 
     @role_required([Role.ADMIN])
     def put(self, quote_id):
-        """ Replace entire quote. """
+        """Replace entire quote."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
@@ -156,7 +156,7 @@ class QuoteResource(Resource):
 
     @role_required([Role.ADMIN])
     def patch(self, quote_id):
-        """ Update quote fields. """
+        """Update quote fields."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
@@ -178,7 +178,7 @@ class QuoteResource(Resource):
 
     @role_required([Role.ADMIN])
     def delete(self, quote_id):
-        """ Delete quote. """
+        """Delete quote."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
@@ -198,8 +198,8 @@ class QuoteResource(Resource):
 
 
 class QuoteList(Resource):
-    """ Quote object list. 
-    
+    """Quote object list.
+
     ---
     get:
       tags:
@@ -208,7 +208,7 @@ class QuoteList(Resource):
         Get a list of `quote` resources. Optional `tags`, `author` and `query` parameters filter the results. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []
-        - admin_api_key: []        
+        - admin_api_key: []
       parameters:
         - in: query
           name: page
@@ -219,12 +219,12 @@ class QuoteList(Resource):
         - in: query
           name: per_page
           schema:
-            type: integer 
+            type: integer
             default: 5
           description: Number of results per page.
         - in: query
           name: tags
-          schema: 
+          schema:
             type: string
           description: Quote tags for filtering.
         - in: query
@@ -262,7 +262,7 @@ class QuoteList(Resource):
       description: |
         Create a `quote` resource. Requires a valid `admin` `api key` for authentication.
       security:
-        - admin_api_key: []        
+        - admin_api_key: []
       requestBody:
         content:
           application/json:
@@ -287,7 +287,7 @@ class QuoteList(Resource):
 
     @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
-        """ Get list of quotes. """
+        """Get list of quotes."""
 
         args = request.args
 
@@ -324,7 +324,7 @@ class QuoteList(Resource):
 
     @role_required([Role.ADMIN])
     def post(self):
-        """ Create new quote. """
+        """Create new quote."""
         try:
             # Create quote schema instace
             quote_schema = QuoteSchema()
@@ -348,7 +348,7 @@ class QuoteList(Resource):
             )
 
     def build_quote_list_filters(self, tags, author):
-        """ Filter generation for quote list match. """
+        """Filter generation for quote list match."""
 
         filters = {}
 
@@ -377,8 +377,8 @@ class QuoteList(Resource):
 
 
 class QuoteRandom(Resource):
-    """ Random quote object. 
-    
+    """Random quote object.
+
     ---
     get:
       tags:
@@ -386,8 +386,8 @@ class QuoteRandom(Resource):
       description: |
         Get a random `quote` resource. Optional `tags` and `author` parameters filter the result. Requires a valid `user` `api key` for authentication.
       security:
-        - user_api_key: []    
-        - admin_api_key: []        
+        - user_api_key: []
+        - admin_api_key: []
       parameters:
         - in: query
           name: tags
@@ -416,7 +416,7 @@ class QuoteRandom(Resource):
 
     @role_required([Role.BASIC, Role.ADMIN])
     def get(self):
-        """ Get random quote filtered by tags and author. """
+        """Get random quote filtered by tags and author."""
         args = request.args
 
         tags = args.get("tags", None)
@@ -462,7 +462,7 @@ class QuoteRandom(Resource):
             )
 
     def build_random_quote_filters(self, tags, author):
-        """ Filter generation for random quote match. """
+        """Filter generation for random quote match."""
 
         filters = {}
 
@@ -487,4 +487,3 @@ class QuoteRandom(Resource):
             filters["author_name"] = author
 
         return filters
-

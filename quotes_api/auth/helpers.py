@@ -16,7 +16,7 @@ def add_token_to_database(encoded_token, identity_claim):
     token_type = decoded_token.get("token_type")
     user_identity = decoded_token.get(identity_claim)
     exp = decoded_token.get("exp", None)
-    if exp != None:
+    if exp is not None:
         expires = datetime.fromtimestamp(exp)
     else:
         expires = None
@@ -44,7 +44,7 @@ def is_token_revoked(decoded_token):
     try:
         token = TokenBlacklist.objects.get(jti=jti)
         return token.revoked
-    except:
+    except Exception:
         return True
 
 

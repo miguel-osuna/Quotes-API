@@ -1,19 +1,21 @@
-import click
+"""CLI Command - Linter (Pylint) """
 import subprocess
+
+import click
 
 
 @click.command()
 @click.argument("path", default=".")
-def format(path):
+def linter(path):
     """
-    Run black code formatter on the codebase.
+    Run pylint linter to analyze the codebase.
 
     :param path: Execution path
     :return: Subprocess call result
     """
-    command = f"black {path}"
+    command = f"pylint {path}"
     return subprocess.call(command, shell=True)
 
 
 if __name__ == "__main__":
-    format()
+    linter("quotes_api")

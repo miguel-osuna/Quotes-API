@@ -1,4 +1,4 @@
-"""Linting CLI Command"""
+"""Formating (Black) CLI Command"""
 import subprocess
 
 import click
@@ -6,16 +6,16 @@ import click
 
 @click.command()
 @click.argument("path", default=".")
-def linter(path):
+def format(path):
     """
-    Run pylint linter to analyze the codebase.
+    Run black code formatter on the codebase.
 
     :param path: Execution path
     :return: Subprocess call result
     """
-    command = f"pylint {path}"
+    command = f"black {path}"
     return subprocess.call(command, shell=True)
 
 
 if __name__ == "__main__":
-    linter()
+    format()

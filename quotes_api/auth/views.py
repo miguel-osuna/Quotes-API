@@ -44,7 +44,7 @@ api.add_resource(PermanentToken, "/generate_permanent_key", endpoint="permanent_
 
 
 # Callback functions
-@jwt.token_in_blacklist_loader
+@jwt.token_in_blocklist_loader
 def check_if_token_revoked(decoded_token):
     """
     Callback function that is called when a protected endpoint is accessed,
@@ -54,7 +54,7 @@ def check_if_token_revoked(decoded_token):
 
 
 # It might be unnecessary
-@jwt.user_loader_callback_loader
+@jwt.user_lookup_loader
 def user_loader_callback(identity):
     """
     Callback function that will be called to automatically load an object when a protected endpoint
@@ -66,7 +66,7 @@ def user_loader_callback(identity):
         return None
 
 
-@jwt.user_claims_loader
+@jwt.additional_claims_loader
 def add_claims_to_access_token(user):
     """
     Callback function that is called whenever "create_access_token" is used.
@@ -75,7 +75,7 @@ def add_claims_to_access_token(user):
     Because we have a "User" instance, and not just an ID, it's not necessary to query the database.
     """
 
-    # Dictionary accessible with function "get_jwt_claims"
+    # Dictionary accessible with function "get_jwt"
     return {"roles": user.roles}
 
 
@@ -97,8 +97,11 @@ def user_identity_lookup(user):
 def register_views():
     """Register views for API documentation."""
 
-    # Adding User views
+    # Adding Resource Schemas
     apispec.spec.components.schema("UserSchema", schema=UserSchema)
+    apispec.spec.components.schema("TokenBlacklistSchema", schema=TokenBlacklistSchema)
+
+    # Adding User views
     apispec.spec.path(view=UserResource, app=current_app)
     apispec.spec.path(view=UserList, app=current_app)
     apispec.spec.path(view=UserTokens, app=current_app)
@@ -108,7 +111,6 @@ def register_views():
     apispec.spec.path(view=UserLogin, app=current_app)
     apispec.spec.path(view=UserLogout, app=current_app)
 
-    apispec.spec.components.schema("TokenBlacklistSchema", schema=TokenBlacklistSchema)
     apispec.spec.path(view=TokenRefresh, app=current_app)
     apispec.spec.path(view=AccessTokenRevoke, app=current_app)
     apispec.spec.path(view=RefreshTokenRevoke, app=current_app)

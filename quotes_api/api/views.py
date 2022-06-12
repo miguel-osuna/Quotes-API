@@ -29,19 +29,19 @@ api.add_resource(TagList, "/tags", endpoint="tags")
 def register_views():
     """Register views for API documentation."""
 
-    # Adding Quote views
+    # Adding Resource Schemas
     apispec.spec.components.schema("QuoteSchema", schema=QuoteSchema)
+    apispec.spec.components.schema("AuthorSchema", schema=AuthorSchema)
+    apispec.spec.components.schema("TagSchema", schema=TagSchema)
+    apispec.spec.components.schema("MetadataSchema", schema=MetadataSchema)
+
+    # Adding Quote views
     apispec.spec.path(view=QuoteResource, app=current_app)
     apispec.spec.path(view=QuoteList, app=current_app)
     apispec.spec.path(view=QuoteRandom, app=current_app)
 
     # Adding Author views
-    apispec.spec.components.schema("AuthorSchema", schema=AuthorSchema)
     apispec.spec.path(view=AuthorList, app=current_app)
 
     # Adding Tag views
-    apispec.spec.components.schema("TagSchema", schema=TagSchema)
     apispec.spec.path(view=TagList, app=current_app)
-
-    # Adding Meta data schema
-    apispec.spec.components.schema("MetadataSchema", schema=MetadataSchema)

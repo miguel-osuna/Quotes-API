@@ -8,7 +8,8 @@ from quotes_api.auth.decorators import Role, role_required
 
 
 class TagList(Resource):
-    """List of tags.
+    """
+    List of tags.
 
     ---
     get:

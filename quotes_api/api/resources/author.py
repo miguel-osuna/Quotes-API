@@ -8,7 +8,8 @@ from quotes_api.auth.decorators import Role, role_required
 
 
 class AuthorList(Resource):
-    """List of quote authors.
+    """
+    List of quote authors.
 
     ---
     get:
@@ -72,7 +73,7 @@ class AuthorList(Resource):
         sort_order = str(args.get("sort_order", "asc"))
 
         try:
-            sort = self.sort_order_parser(sort_order)
+            sort = self._sort_order_parser(sort_order)
 
             # Generating pagination of quotes
             pagination = (
@@ -93,7 +94,7 @@ class AuthorList(Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
-    def sort_order_parser(self, input):
+    def _sort_order_parser(self, input):
         """
         Parses a user query input for the sort_order parameter.
 

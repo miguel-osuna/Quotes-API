@@ -154,11 +154,14 @@ class UserLogin(Resource):
                 # We pass the user instance as the "identity" for the tokens.  With this,
                 # callback function have access to the complete object, avoiding
                 # queries to the database.
-                access_token = create_access_token(identity=user, fresh=True)
+                access_token = create_access_token(
+                    identity=user,
+                    fresh=True,
+                )
                 refresh_token = create_refresh_token(identity=user)
 
                 # Add new tokens to the database
-                # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
+                # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "sub"
                 add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
                 add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 

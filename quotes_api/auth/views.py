@@ -45,22 +45,24 @@ api.add_resource(PermanentToken, "/generate_permanent_key", endpoint="permanent_
 
 # Callback functions
 @jwt.token_in_blocklist_loader
-def check_if_token_revoked(decoded_token):
+def check_if_token_revoked(_, jwt_payload):
     """
     Callback function that is called when a protected endpoint is accessed,
     and checks if the JWT has been revoked.
     """
+    decoded_token = jwt_payload
     return is_token_revoked(decoded_token)
 
 
 # It might be unnecessary
 @jwt.user_lookup_loader
-def user_loader_callback(identity):
+def user_loader_callback(_, jwt_payload):
     """
-    Callback function that will be called to automatically load an object when a protected endpoint
-    is accessed.
+    Callback function that will be called to automatically load an object from the database
+    when a protected endpoint is accessed.
     """
     try:
+        identity = jwt_payload["sub"]
         return User.objects.get(username=identity)
     except:
         return None

@@ -34,17 +34,6 @@ class ProductionConfig(Config):
     MONGODB_HOST = os.getenv("MONGODB_HOST")
 
 
-class StagingConfig(Config):
-    """Staging environment configuration class."""
-
-    # Flask Configuration
-    ENV = "production"
-
-    # Mongoengine Configuration
-    MONGODB_DB = os.getenv("MONGODB_DB")
-    MONGODB_HOST = os.getenv("MONGODB_HOST")
-
-
 class DevelopmentConfig(Config):
     """Development environment configuration class."""
 
@@ -75,6 +64,5 @@ class TestingConfig(Config):
 app_config = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,
-    "staging": StagingConfig,
     "production": ProductionConfig,
 }

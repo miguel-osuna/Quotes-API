@@ -1,6 +1,5 @@
 from flask import Blueprint, current_app, jsonify
 from flask_restful import Api
-from marshmallow import ValidationError
 
 from quotes_api.api.resources import (
     QuoteResource,
@@ -9,7 +8,6 @@ from quotes_api.api.resources import (
     AuthorList,
     TagList,
 )
-from quotes_api.common import HttpStatus
 from quotes_api.extensions import apispec
 from quotes_api.api.schemas import QuoteSchema, AuthorSchema, TagSchema, MetadataSchema
 

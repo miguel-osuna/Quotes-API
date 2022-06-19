@@ -139,7 +139,7 @@ class QuoteResource(Resource):
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
-            return {"error": "Qutoe does not exist."}
+            return {"error": "Quote does not exist."}
         try:
             # Create quote schema instance
             quote_schema = QuoteSchema()

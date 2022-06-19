@@ -45,8 +45,6 @@ def db(app):
     # Clear database before tests, for cases when some test failed before.
     test_db.connection.drop_database(db_name)
 
-    print(db_name)
-
     yield test_db  # This is where testing happens
 
     # Clear database after tests, for graceful exit.

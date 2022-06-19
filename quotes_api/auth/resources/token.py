@@ -84,11 +84,10 @@ class UserTokens(Resource):
             # Generating pagination of tokens
             user_identity = get_jwt_identity()
             user = User.objects.get(username=user_identity)
-            pagination = TokenBlacklist.objects(user=user).paginate(
-                page=page, per_page=per_page
-            )
+            tokens = TokenBlacklist.objects(user=user)
+            paginated_tokens = tokens.paginate(page=page, per_page=per_page)
 
-            response_body = paginator(pagination, "auth.tokens", TokenBlacklistSchema)
+            response_body = paginator(paginated_tokens, "auth.tokens", TokenBlacklistSchema)
             return make_response(response_body, HttpStatus.ok_200.value)
 
         except Exception as e:
@@ -181,7 +180,7 @@ class AccessTokenRevoke(Resource):
           description: Missing authentication header.
     """
 
-    @jwt_required
+    @jwt_required()
     def delete(self):
         """Revokes an access token from the database.
 

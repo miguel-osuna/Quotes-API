@@ -1,5 +1,5 @@
 # Pull base image
-FROM python:3.8.13-slim-buster
+FROM python:3.10.5-slim-buster
 
 # Set environment variables 
 # Python don't write byte code: it won't write .pyc files 

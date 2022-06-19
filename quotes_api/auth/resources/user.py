@@ -3,8 +3,7 @@ from flask_restful import Resource
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
-    fresh_jwt_required,
-    get_jwt_identity,
+    jwt_required,
 )
 
 from quotes_api.models import User, TokenBlacklist
@@ -19,7 +18,9 @@ from quotes_api.auth.schemas import UserSchema, TokenBlacklistSchema
 
 
 class UserSignup(Resource):
-    """User sign up resource.
+    """
+    User sign up resource.
+
     ---
     post:
       tags:
@@ -86,7 +87,8 @@ class UserSignup(Resource):
 
 
 class UserLogin(Resource):
-    """User login resource.
+    """
+    User login resource.
 
     ---
     post:
@@ -152,11 +154,14 @@ class UserLogin(Resource):
                 # We pass the user instance as the "identity" for the tokens.  With this,
                 # callback function have access to the complete object, avoiding
                 # queries to the database.
-                access_token = create_access_token(identity=user, fresh=True)
+                access_token = create_access_token(
+                    identity=user,
+                    fresh=True,
+                )
                 refresh_token = create_refresh_token(identity=user)
 
                 # Add new tokens to the database
-                # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "identity"
+                # JWT_IDENTITY_CLAIM is an identity claim and it defaults to "sub"
                 add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
                 add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 
@@ -182,13 +187,15 @@ class UserLogout(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @fresh_jwt_required
+    @jwt_required(fresh=True)
     def post(self):
         pass
 
 
 class UserResource(Resource):
-    """Single user resource.
+    """
+    Single user resource.
+
     ---
     get:
       tags:
@@ -377,7 +384,8 @@ class UserResource(Resource):
 
 
 class UserList(Resource):
-    """User list resource.
+    """
+    User list resource.
 
     ---
     get:

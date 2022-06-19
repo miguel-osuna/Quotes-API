@@ -8,7 +8,8 @@ from quotes_api.auth.decorators import Role, role_required
 
 
 class QuoteResource(Resource):
-    """Single quote object resource.
+    """
+    Single quote object resource.
 
     ---
     get:
@@ -138,7 +139,7 @@ class QuoteResource(Resource):
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
         except:
-            return {"error": "Qutoe does not exist."}
+            return {"error": "Quote does not exist."}
         try:
             # Create quote schema instance
             quote_schema = QuoteSchema()
@@ -198,7 +199,8 @@ class QuoteResource(Resource):
 
 
 class QuoteList(Resource):
-    """Quote object list.
+    """
+    Quote object list.
 
     ---
     get:
@@ -299,7 +301,7 @@ class QuoteList(Resource):
 
         try:
             # Build the filters for the database query
-            filters = self.build_quote_list_filters(tags, author)
+            filters = self._build_quote_list_filters(tags, author)
 
             # Do a search query if the user provided a query
             if query is not None:
@@ -347,7 +349,7 @@ class QuoteList(Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
-    def build_quote_list_filters(self, tags, author):
+    def _build_quote_list_filters(self, tags, author):
         """Filter generation for quote list match."""
 
         filters = {}
@@ -377,7 +379,8 @@ class QuoteList(Resource):
 
 
 class QuoteRandom(Resource):
-    """Random quote object.
+    """
+    Random quote object.
 
     ---
     get:
@@ -424,7 +427,7 @@ class QuoteRandom(Resource):
 
         try:
             # Build the filters for the database query
-            filters = self.build_random_quote_filters(tags, author)
+            filters = self._build_random_quote_filters(tags, author)
 
             # Baypassing mongoengine to use pymongo (driver)
             quote_collection = Quote._get_collection()
@@ -461,7 +464,7 @@ class QuoteRandom(Resource):
                 HttpStatus.internal_server_error_500.value,
             )
 
-    def build_random_quote_filters(self, tags, author):
+    def _build_random_quote_filters(self, tags, author):
         """Filter generation for random quote match."""
 
         filters = {}

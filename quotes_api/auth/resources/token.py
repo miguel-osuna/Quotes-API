@@ -5,9 +5,9 @@ from flask_restful import Resource
 from flask_jwt_extended import (
     create_access_token,
     jwt_required,
-    jwt_refresh_token_required,
+    jwt_required,
     get_jwt_identity,
-    get_raw_jwt,
+    get_jwt,
 )
 
 from quotes_api.models import User, TokenBlacklist
@@ -84,11 +84,10 @@ class UserTokens(Resource):
             # Generating pagination of tokens
             user_identity = get_jwt_identity()
             user = User.objects.get(username=user_identity)
-            pagination = TokenBlacklist.objects(user=user).paginate(
-                page=page, per_page=per_page
-            )
+            tokens = TokenBlacklist.objects(user=user)
+            paginated_tokens = tokens.paginate(page=page, per_page=per_page)
 
-            response_body = paginator(pagination, "auth.tokens", TokenBlacklistSchema)
+            response_body = paginator(paginated_tokens, "auth.tokens", TokenBlacklistSchema)
             return make_response(response_body, HttpStatus.ok_200.value)
 
         except Exception as e:
@@ -99,7 +98,8 @@ class UserTokens(Resource):
 
 
 class TokenRefresh(Resource):
-    """Token refresh.
+    """
+    Token refresh.
 
     ---
     post:
@@ -153,7 +153,8 @@ class TokenRefresh(Resource):
 
 
 class AccessTokenRevoke(Resource):
-    """Access Token Revoke resource.
+    """
+    Access Token Revoke resource.
 
     ---
     delete:
@@ -179,7 +180,7 @@ class AccessTokenRevoke(Resource):
           description: Missing authentication header.
     """
 
-    @jwt_required
+    @jwt_required()
     def delete(self):
         """Revokes an access token from the database.
 
@@ -187,7 +188,7 @@ class AccessTokenRevoke(Resource):
         """
         try:
             # Get the JWT ID and the user identity respectively
-            jti = get_raw_jwt()["jti"]
+            jti = get_jwt()["jti"]
             user_identity = get_jwt_identity()
 
             revoke_token(jti, user_identity)
@@ -201,7 +202,8 @@ class AccessTokenRevoke(Resource):
 
 
 class RefreshTokenRevoke(Resource):
-    """Refresh Token Revoked resource.
+    """
+    Refresh Token Revoked resource.
 
     ---
     delete:
@@ -227,7 +229,7 @@ class RefreshTokenRevoke(Resource):
           description: Missing authentication header.
     """
 
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def delete(self):
         """Revokes a refresh token from the database.
 
@@ -236,7 +238,7 @@ class RefreshTokenRevoke(Resource):
 
         try:
             # Get the JWT ID and the user identity respectively
-            jti = get_raw_jwt()["jti"]
+            jti = get_jwt()["jti"]
             user_identity = get_jwt_identity()
 
             revoke_token(jti, user_identity)
@@ -250,7 +252,8 @@ class RefreshTokenRevoke(Resource):
 
 
 class TrialToken(Resource):
-    """Trial api key creation resource.
+    """
+    Trial api key creation resource.
 
     ---
     post:
@@ -308,7 +311,8 @@ class TrialToken(Resource):
 
 
 class PermanentToken(Resource):
-    """Permanent api key creation resource.
+    """
+    Permanent api key creation resource.
 
     ---
     post:

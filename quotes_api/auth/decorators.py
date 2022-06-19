@@ -1,12 +1,12 @@
 """ Various custom decorators for role access. """
 
+import pdb
 from functools import wraps
 from enum import Enum
 from flask import request, jsonify
 from flask_jwt_extended import (
     verify_jwt_in_request,
-    create_access_token,
-    get_jwt_claims,
+    get_jwt,
 )
 
 from quotes_api.extensions import jwt
@@ -31,8 +31,8 @@ def role_required(role_list):
             # First verify a valid access token was sent
             verify_jwt_in_request()
 
-            # Get the user claims defined in decorator "user_claims_loader"
-            claims = get_jwt_claims()
+            # Get the user claims defined in decorator "additional_claims_loader"
+            claims = get_jwt()
             roles = claims["roles"]
 
             denied = False

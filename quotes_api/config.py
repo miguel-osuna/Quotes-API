@@ -21,23 +21,10 @@ class Config(object):
     JWT_ACCESS_TOKEN_EXPIRES = 15 * 60  # 15 minutes in seconds
     JWT_REFRESH_TOKEN_EXPIRES = 30 * 24 * 60 * 60  # 30 days in seconds
     JWT_ERROR_MESSAGE_KEY = "message"
-    JWT_BLACKLIST_ENABLED = True
-    JWT_BLACKLIST_TOKEN_CHECKS = ("access", "refresh")
 
 
 class ProductionConfig(Config):
     """Production environment configuration class."""
-
-    # Flask Configuration
-    ENV = "production"
-
-    # Mongoengine Configuration
-    MONGODB_DB = os.getenv("MONGODB_DB")
-    MONGODB_HOST = os.getenv("MONGODB_HOST")
-
-
-class StagingConfig(Config):
-    """Staging environment configuration class."""
 
     # Flask Configuration
     ENV = "production"
@@ -77,6 +64,5 @@ class TestingConfig(Config):
 app_config = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,
-    "staging": StagingConfig,
     "production": ProductionConfig,
 }

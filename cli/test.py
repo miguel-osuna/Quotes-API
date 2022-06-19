@@ -8,10 +8,10 @@ import click
 @click.argument("path", default="tests")
 def test(path):
     """
-    Run tests with Pytest.
+    Run tests with Pytest (pytest-sugar).
 
     :param path: Test path
     :return: Subprocess call result
     """
-    command = f"pytest -s {path}"
+    command = f"py.test -s {path}"
     return subprocess.call(command, shell=True)

@@ -1,5 +1,6 @@
-from datetime import timedelta
-from flask import Blueprint, current_app, jsonify, current_app as app
+"""API authentication views."""
+
+from flask import Blueprint, current_app
 from flask_restful import Api
 
 from quotes_api.auth.resources import (
@@ -17,8 +18,7 @@ from quotes_api.auth.resources import (
 )
 from quotes_api.models import User
 from quotes_api.auth.schemas import UserSchema, TokenBlacklistSchema
-from quotes_api.extensions import pwd_context, jwt, apispec
-from quotes_api.common import HttpStatus
+from quotes_api.extensions import jwt, apispec
 from quotes_api.auth.helpers import is_token_revoked
 
 blueprint = Blueprint("auth", __name__, url_prefix="/auth")
@@ -64,7 +64,7 @@ def user_loader_callback(_, jwt_payload):
     try:
         identity = jwt_payload["sub"]
         return User.objects.get(username=identity)
-    except:
+    except Exception:
         return None
 
 
@@ -87,8 +87,8 @@ def user_identity_lookup(user):
     Callback function for getting a JSON serializable identity out of a "User" object passed into
     "create_access_token" or "create_refresh_token".
 
-    We can define what the identity of the token will be like. We want it to be a string representing
-    the username.
+    We can define what the identity of the token will be like. We want it to be
+    a string representing the username.
     """
 
     return user.username

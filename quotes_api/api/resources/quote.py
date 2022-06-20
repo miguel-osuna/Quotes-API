@@ -1,4 +1,6 @@
-from flask import request, jsonify, make_response, url_for
+"""Quote resource file."""
+
+from flask import request, make_response
 from flask_restful import Resource
 
 from quotes_api.models import Quote
@@ -125,20 +127,20 @@ class QuoteResource(Resource):
         """Get quote by id."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
-        except:
+        except Exception:
             return (
                 {"error": "Quote does not exist."},
-                HttpStatus.not_found_404.value,
+                HttpStatus.NOT_FOUND_404.value,
             )
         quote_schema = QuoteSchema()
-        return make_response(quote_schema.dump(quote), HttpStatus.ok_200.value)
+        return make_response(quote_schema.dump(quote), HttpStatus.OK_200.value)
 
     @role_required([Role.ADMIN])
     def put(self, quote_id):
         """Replace entire quote."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
-        except:
+        except Exception:
             return {"error": "Quote does not exist."}
         try:
             # Create quote schema instance
@@ -148,11 +150,11 @@ class QuoteResource(Resource):
             quote.update(**data)
             quote.save()
 
-            return "", HttpStatus.no_content_204.value
-        except:
+            return "", HttpStatus.NO_CONTENT_204.value
+        except Exception:
             return (
                 {"error": "Missing data."},
-                HttpStatus.bad_request_400.value,
+                HttpStatus.BAD_REQUEST_400.value,
             )
 
     @role_required([Role.ADMIN])
@@ -160,10 +162,10 @@ class QuoteResource(Resource):
         """Update quote fields."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
-        except:
+        except Exception:
             return (
                 {"error": "Quote does not exist."},
-                HttpStatus.not_found_404.value,
+                HttpStatus.NOT_FOUND_404.value,
             )
         try:
             # Check quote schema instance
@@ -173,28 +175,28 @@ class QuoteResource(Resource):
             quote.update(**data)
             quote.save()
 
-            return "", HttpStatus.no_content_204.value
-        except:
-            return {"error": "Missing data."}, HttpStatus.bad_request_400.value
+            return "", HttpStatus.NO_CONTENT_204.value
+        except Exception:
+            return {"error": "Missing data."}, HttpStatus.BAD_REQUEST_400.value
 
     @role_required([Role.ADMIN])
     def delete(self, quote_id):
         """Delete quote."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
-        except:
+        except Exception:
             return (
                 {"error": "Quote does not exist."},
-                HttpStatus.not_found_404.value,
+                HttpStatus.NOT_FOUND_404.value,
             )
 
         try:
             quote.delete()
-            return "", HttpStatus.no_content_204.value
-        except:
+            return "", HttpStatus.NO_CONTENT_204.value
+        except Exception:
             return (
                 {"error": "Could not delete quote."},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
 
@@ -207,7 +209,8 @@ class QuoteList(Resource):
       tags:
         - Quote
       description: |
-        Get a list of `quote` resources. Optional `tags`, `author` and `query` parameters filter the results. Requires a valid `user` `api key` for authentication.
+        Get a list of `quote` resources. Optional `tags`, `author` and `query` parameters
+        filter the results. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []
         - admin_api_key: []
@@ -316,12 +319,12 @@ class QuoteList(Resource):
                     page=page, per_page=per_page
                 )
             response_body = paginator(pagination, "api.quotes", QuoteSchema)
-            return make_response(response_body, HttpStatus.ok_200.value)
+            return make_response(response_body, HttpStatus.OK_200.value)
 
-        except:
+        except Exception:
             return (
                 {"error": "Could not retrieve quotes."},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
     @role_required([Role.ADMIN])
@@ -331,8 +334,8 @@ class QuoteList(Resource):
             # Create quote schema instace
             quote_schema = QuoteSchema()
             data = quote_schema.load(request.json)
-        except:
-            return {"error": "Missing data."}, HttpStatus.bad_request_400.value
+        except Exception:
+            return {"error": "Missing data."}, HttpStatus.BAD_REQUEST_400.value
         try:
             # Create new database entry
             quote = Quote(**data)
@@ -340,13 +343,13 @@ class QuoteList(Resource):
 
             # Create new quote schema instance that only dumps the id
             quote_schema = QuoteSchema(only=["id"])
-            return make_response(quote_schema.dump(quote), HttpStatus.created_201.value)
+            return make_response(quote_schema.dump(quote), HttpStatus.CREATED_201.value)
 
-        except:
+        except Exception:
             # Error creating quote entry
             return (
                 {"error": "Could not create quote entry."},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
     def _build_quote_list_filters(self, tags, author):
@@ -387,7 +390,8 @@ class QuoteRandom(Resource):
       tags:
         - Quote
       description: |
-        Get a random `quote` resource. Optional `tags` and `author` parameters filter the result. Requires a valid `user` `api key` for authentication.
+        Get a random `quote` resource. Optional `tags` and `author` parameters filter the result.
+        Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []
         - admin_api_key: []
@@ -447,21 +451,22 @@ class QuoteRandom(Resource):
                 {"$sample": {"size": 1}},
             ]
 
-            # Converting CommandCursor class iterator into a list and then getting the only item in it
-            random_quote = [quote for quote in quote_collection.aggregate(pipeline)][0]
+            # Converting CommandCursor class iterator into a list and
+            # then getting the only item in it
+            random_quote = list(quote_collection.aggregate(pipeline))
             random_quote["id"] = random_quote["_id"]
 
             # Create quote schema instance
             quote_schema = QuoteSchema()
 
             return make_response(
-                quote_schema.dump(random_quote), HttpStatus.ok_200.value
+                quote_schema.dump(random_quote), HttpStatus.OK_200.value
             )
 
-        except:
+        except Exception:
             return (
                 {"error": "Could not retrieve quote."},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
     def _build_random_quote_filters(self, tags, author):

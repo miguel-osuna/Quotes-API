@@ -1,20 +1,19 @@
-""" Various custom decorators for role access. """
+"""Various custom decorators for role access."""
 
-import pdb
 from functools import wraps
 from enum import Enum
-from flask import request, jsonify
+
 from flask_jwt_extended import (
     verify_jwt_in_request,
     get_jwt,
 )
 
-from quotes_api.extensions import jwt
-from quotes_api.models import TokenBlacklist, User
 from quotes_api.common import HttpStatus
 
 
 class Role(Enum):
+    """Role Enum Class"""
+
     ADMIN = "admin"
     BASIC = "basic"
 
@@ -42,9 +41,9 @@ def role_required(role_list):
                     break
 
             if denied:
-                return {"error": "Access denied."}, HttpStatus.forbidden_403.value
-            else:
-                return fn(*args, **kwargs)
+                return {"error": "Access denied."}, HttpStatus.FORBIDDEN_403.value
+
+            return fn(*args, **kwargs)
 
         return wrapper
 

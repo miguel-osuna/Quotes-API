@@ -1,9 +1,9 @@
-from flask import request, jsonify, make_response, url_for
+"""Author resource file."""
+
+from flask import jsonify, make_response
 from flask_restful import Resource
 
-from quotes_api.models import Quote
 from quotes_api.common import HttpStatus
-from quotes_api.api.schemas import TagSchema
 from quotes_api.auth.decorators import Role, role_required
 
 
@@ -75,10 +75,10 @@ class TagList(Resource):
                 ]
             }
 
-            return make_response(jsonify(response_body), HttpStatus.ok_200.value)
+            return make_response(jsonify(response_body), HttpStatus.OK_200.value)
 
-        except:
+        except Exception:
             return (
                 {"error": "Could not retrieve list of tags"},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )

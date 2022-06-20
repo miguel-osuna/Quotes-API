@@ -22,12 +22,12 @@ def test_get_user(client, admin_headers, new_user):
     # Test 404 error
     user_url = url_for("auth.user_by_id", user_id="1000000")
     res = client.get(user_url, headers=admin_headers)
-    assert res.status_code == HttpStatus.not_found_404.value
+    assert res.status_code == HttpStatus.NOT_FOUND_404.value
 
     # Test get user
     user_url = url_for("auth.user_by_id", user_id=new_user.id)
     res = client.get(user_url, headers=admin_headers)
-    assert res.status_code == HttpStatus.ok_200.value
+    assert res.status_code == HttpStatus.OK_200.value
 
     data = res.get_json()
     assert data["id"] == new_user.id
@@ -41,38 +41,38 @@ def test_put_user(client, admin_headers, new_user):
     # Test 404 error
     user_url = url_for("auth.user_by_id", user_id="1000000")
     res = client.put(user_url, headers=admin_headers)
-    assert res.status_code == HttpStatus.not_found_404.value
+    assert res.status_code == HttpStatus.NOT_FOUND_404.value
 
     # Test put user
     data = {"username": "test", "email": "test@email.com", "password": "test"}
     user_url = url_for("auth.user_by_id", user_id=new_user.id)
     res = client.put(user_url, headers=admin_headers, json=data)
-    assert res.status_code == HttpStatus.no_content_204.value
+    assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
 
 def test_patch_user(client, admin_headers, new_user):
     # Test 404 error
     user_url = url_for("auth.user_by_id", user_id="1000000")
     res = client.patch(user_url, headers=admin_headers)
-    assert res.status_code == HttpStatus.not_found_404.value
+    assert res.status_code == HttpStatus.NOT_FOUND_404.value
 
     # Tets patch user
     data = {"username": "test"}
     user_url = url_for("auth.user_by_id", user_id=new_user.id)
     res = client.patch(user_url, headers=admin_headers, json=data)
-    assert res.status_code == HttpStatus.no_content_204.value
+    assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
 
 def test_delete_user(client, admin_headers, new_user, user):
     # Test 404 error
     user_url = url_for("auth.user_by_id", user_id="1000000")
     res = client.delete(user_url, headers=admin_headers)
-    assert res.status_code == HttpStatus.not_found_404.value
+    assert res.status_code == HttpStatus.NOT_FOUND_404.value
 
     # Test delete user
     user_url = url_for("auth.user_by_id", user_id=new_user.id)
     res = client.delete(user_url, headers=admin_headers)
-    assert res.status_code == HttpStatus.no_content_204.value
+    assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
     # Test user is deleted from the database
     User = user
@@ -86,7 +86,7 @@ def test_get_all_user(client, admin_headers, new_user):
     query_parameters = {"page": "1", "per_page": "5"}
 
     res = client.get(users_url, headers=admin_headers, query_string=query_parameters)
-    assert res.status_code == HttpStatus.ok_200.value
+    assert res.status_code == HttpStatus.OK_200.value
 
     data = res.get_json()
     users = data["records"]

@@ -1,5 +1,6 @@
-import os
-from flask import Flask, render_template
+"""Flask application factory file. Includes all configuration functions."""
+
+from flask import Flask
 
 from cli import register_cli_commands
 from quotes_api import api, auth
@@ -66,7 +67,5 @@ def register_commands(app):
     Register commands for the Flask application.
 
     :param app: Flask application instance
-    :return: None
     """
     register_cli_commands(app)
-    return None

@@ -1,70 +1,79 @@
+"""Custom Http Status Codes."""
+
 from enum import Enum
 
 
 class HttpStatus(Enum):
-    continue_100 = 100
-    switching_protocols_101 = 101
-    ok_200 = 200
-    created_201 = 201
-    accepted_202 = 202
-    non_authoritative_information_203 = 203
-    no_content_204 = 204
-    reset_content_205 = 205
-    partial_content_206 = 206
-    multiple_choices_300 = 300
-    moved_permanently_301 = 301
-    found_302 = 302
-    see_other_303 = 303
-    not_modified_304 = 304
-    use_proxy_305 = 305
-    reserved_306 = 306
-    temporary_redirect_307 = 307
-    bad_request_400 = 400
-    unauthorized_401 = 401
-    payment_required_402 = 402
-    forbidden_403 = 403
-    not_found_404 = 404
-    method_not_allowed_405 = 405
-    not_acceptable_406 = 406
-    proxy_authentication_required_407 = 407
-    request_timetout_408 = 408
-    conflict_409 = 409
-    gone_410 = 410
-    length_required_411 = 411
-    precondition_failed_412 = 412
-    request_entity_too_large_413 = 413
-    request_uri_too_long_414 = 414
-    unsupported_media_type_415 = 415
-    requested_range_not_satisfiable_416 = 416
-    expectation_failed_417 = 417
-    precondition_required_428 = 428
-    too_many_requests_429 = 429
-    request_header_fields_too_large_431 = 431
-    unavailable_for_legal_reasons_451 = 451
-    internal_server_error_500 = 500
-    not_implemented_501 = 501
-    bad_gateway_502 = 502
-    service_unavailable_503 = 503
-    gateway_timeout_504 = 504
-    http_version_not_supported_505 = 505
-    network_authentication_required_511 = 511
+    """HttpStatus Mapper Enum."""
+
+    CONTINUE_100 = 100
+    SWITCHING_PROTOCOLS_101 = 101
+    OK_200 = 200
+    CREATED_201 = 201
+    ACCEPTED_202 = 202
+    NON_AUTHORITATIVE_INFORMATION_203 = 203
+    NO_CONTENT_204 = 204
+    RESET_CONTENT_205 = 205
+    PARTIAL_CONTENT_206 = 206
+    MULTIPLE_CHOICES_300 = 300
+    MOVED_PERMANENTLY_301 = 301
+    FOUND_302 = 302
+    SEE_OTHER_303 = 303
+    NOT_MODIFIED_304 = 304
+    USE_PROXY_305 = 305
+    RESERVED_306 = 306
+    TEMPORARY_REDIRECT_307 = 307
+    BAD_REQUEST_400 = 400
+    UNAUTHORIZED_401 = 401
+    PAYMENT_REQUIRED_402 = 402
+    FORBIDDEN_403 = 403
+    NOT_FOUND_404 = 404
+    METHOD_NOT_ALLOWED_405 = 405
+    NOT_ACCEPTABLE_406 = 406
+    PROXY_AUTHENTICATION_REQUIRED_407 = 407
+    REQUEST_TIMEOUT_408 = 408
+    CONFLICT_409 = 409
+    GONE_410 = 410
+    LENGTH_REQUIRED_411 = 411
+    PRECONDITION_FAILED_412 = 412
+    REQUEST_ENTITY_TOO_LARGE_413 = 413
+    REQUEST_URI_TOO_LONG_414 = 414
+    UNSUPPORTED_MEDIA_TYPE_415 = 415
+    REQUESTED_RANGE_NOT_SATISFIABLE_416 = 416
+    EXPECTATION_FAILED_417 = 417
+    PRECONDITION_REQUIRED_428 = 428
+    TOO_MANY_REQUESTS_429 = 429
+    REQUEST_HEADER_FIELDS_TOO_LARGE_431 = 431
+    UNAVAILABLE_FOR_LEGAL_REASONS_451 = 451
+    INTERNAL_SERVER_ERROR_500 = 500
+    NOT_IMPLEMENTED_501 = 501
+    BAD_GATEWAY_502 = 502
+    SERVICE_UNAVAILABLE_503 = 503
+    GATEWAY_TIMEOUT_504 = 504
+    HTTP_VERSION_NOT_SUPPORTED_505 = 505
+    NETWORK_AUTHENTICATION_REQUIRED_511 = 511
 
     @staticmethod
-    def is_informational(cls, status_code):
+    def is_informational(status_code):
+        """Checks if status code is of type informational."""
         return 100 <= status_code.value <= 199
 
     @staticmethod
-    def is_success(cls, status_code):
+    def is_success(status_code):
+        """Checks if status code is of type successful."""
         return 200 <= status_code.value <= 299
 
     @staticmethod
-    def is_redirect(cls, status_code):
+    def is_redirect(status_code):
+        """Checks if status code is of redirection type."""
         return 300 <= status_code.value <= 399
 
     @staticmethod
-    def is_client_error(cls, status_code):
+    def is_client_error(status_code):
+        """Checks if status code is of client error type."""
         return 400 <= status_code.value <= 499
 
     @staticmethod
-    def is_server_error(cls, status_code):
+    def is_server_error(status_code):
+        """Checks if status code is of server error type."""
         return 500 <= status_code.value <= 599

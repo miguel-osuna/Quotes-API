@@ -1,3 +1,5 @@
+"""Token Blocklist schema representation."""
+
 from quotes_api.extensions import ma
 from quotes_api.auth.schemas import UserSchema
 

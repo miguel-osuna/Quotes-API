@@ -1,3 +1,5 @@
+"""Black list model file"""
+
 from mongoengine import (
     Document,
     StringField,

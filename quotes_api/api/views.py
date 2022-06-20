@@ -1,4 +1,6 @@
-from flask import Blueprint, current_app, jsonify
+"""API quotes views."""
+
+from flask import Blueprint, current_app
 from flask_restful import Api
 
 from quotes_api.api.resources import (

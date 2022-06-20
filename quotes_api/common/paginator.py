@@ -1,7 +1,10 @@
+"""Common pagination utilities file."""
+
 from flask import url_for
 
 
 def generate_links(pagination, endpoint, **kwargs):
+    """Generates an object of links."""
 
     self_link = url_for(
         endpoint=endpoint,
@@ -45,7 +48,7 @@ def paginator(pagination, endpoint, schema, **kwargs):
     schema = schema(many=True)
 
     # Creating list of items
-    items = [item for item in pagination.items]
+    items = list(pagination.items)
     links = generate_links(pagination, endpoint, **kwargs)
 
     response_body = {

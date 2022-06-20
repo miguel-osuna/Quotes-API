@@ -1,3 +1,5 @@
+"""Auth resources initialization file."""
+
 from quotes_api.auth.resources.user import (
     UserSignup,
     UserLogin,

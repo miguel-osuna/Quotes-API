@@ -1,4 +1,4 @@
-""" Various helpers for auth. Maily for token blacklisting. """
+"""Various helpers for auth. Maily for token blacklisting."""
 
 from datetime import datetime
 from flask_jwt_extended import decode_token

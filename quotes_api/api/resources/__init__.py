@@ -1,3 +1,5 @@
+"""Quote resources initialization file."""
+
 from quotes_api.api.resources.quote import (
     QuoteResource,
     QuoteList,

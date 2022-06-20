@@ -1,3 +1,5 @@
+"""Quote model file."""
+
 from mongoengine import Document, StringField, ListField
 
 from quotes_api.extensions import odm

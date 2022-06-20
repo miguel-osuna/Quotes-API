@@ -1,3 +1,5 @@
+"""Apispec common configuration file."""
+
 from flask import jsonify, render_template, Blueprint
 from apispec import APISpec
 from apispec.exceptions import APISpecError
@@ -21,7 +23,7 @@ class FlaskRestfulPlugin(FlaskPlugin):
                 endpoint = ept
 
         if not endpoint:
-            raise APISpecError("Could not find endpoint for view {0}".format(view))
+            raise APISpecError(f"Could not find endpoint for view {view}")
 
         # WARNING: Assume 1 rule per view function for now
         rule = app.url_map._rules_by_endpoint[endpoint][0]
@@ -75,7 +77,7 @@ class APISpecExt:
             **kwargs,
             info=info_object,
             tags=tag_object,
-            servers=server_object
+            servers=server_object,
         )
 
         blueprint = Blueprint(

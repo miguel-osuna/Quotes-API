@@ -1,10 +1,11 @@
+"""Token resource file."""
+
 from datetime import timedelta
-from flask import request, jsonify, make_response, current_app as app
+from flask import request, make_response, current_app as app
 from flask_restful import Resource
 
 from flask_jwt_extended import (
     create_access_token,
-    jwt_required,
     jwt_required,
     get_jwt_identity,
     get_jwt,
@@ -87,13 +88,15 @@ class UserTokens(Resource):
             tokens = TokenBlacklist.objects(user=user)
             paginated_tokens = tokens.paginate(page=page, per_page=per_page)
 
-            response_body = paginator(paginated_tokens, "auth.tokens", TokenBlacklistSchema)
-            return make_response(response_body, HttpStatus.ok_200.value)
+            response_body = paginator(
+                paginated_tokens, "auth.tokens", TokenBlacklistSchema
+            )
+            return make_response(response_body, HttpStatus.OK_200.value)
 
-        except Exception as e:
+        except Exception as exc:
             return (
-                {"error": "Could not retrieve tokens.", "detail": str(e)},
-                HttpStatus.internal_server_error_500.value,
+                {"error": "Could not retrieve tokens.", "detail": str(exc)},
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
 
@@ -143,12 +146,12 @@ class TokenRefresh(Resource):
             add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
 
             response_body = {"access_token": access_token}
-            return make_response(response_body, HttpStatus.ok_200.value)
+            return make_response(response_body, HttpStatus.OK_200.value)
 
-        except:
+        except Exception:
             return (
                 {"error": "Missing valid refresh token"},
-                HttpStatus.bad_request_400.value,
+                HttpStatus.BAD_REQUEST_400.value,
             )
 
 
@@ -192,12 +195,12 @@ class AccessTokenRevoke(Resource):
             user_identity = get_jwt_identity()
 
             revoke_token(jti, user_identity)
-            return "", HttpStatus.no_content_204.value
+            return "", HttpStatus.NO_CONTENT_204.value
 
-        except:
+        except Exception:
             return (
                 {"error": "Could not revoke access token."},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
 
@@ -242,12 +245,12 @@ class RefreshTokenRevoke(Resource):
             user_identity = get_jwt_identity()
 
             revoke_token(jti, user_identity)
-            return "", HttpStatus.no_content_204.value
+            return "", HttpStatus.NO_CONTENT_204.value
 
-        except:
+        except Exception:
             return (
                 {"error": "Could not revoke refresh token."},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
 
@@ -260,7 +263,8 @@ class TrialToken(Resource):
       tags:
         - Authentication
       description: |
-        Create a `trial` `api key`. Requires a valid `admin` `api key` for authentication. This trial api key lasts for `30 days`.
+        Create a `trial` `api key`. Requires a valid `admin` `api key` for authentication.
+        This trial api key lasts for `30 days`.
       security:
         - admin_api_key: []
       responses:
@@ -301,12 +305,12 @@ class TrialToken(Resource):
             add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
 
             response_body = {"trial_api_key": token}
-            return make_response(response_body, HttpStatus.created_201.value)
+            return make_response(response_body, HttpStatus.CREATED_201.value)
 
-        except:
+        except Exception:
             return (
                 {"error": "Missing valid refresh token"},
-                HttpStatus.bad_request_400.value,
+                HttpStatus.BAD_REQUEST_400.value,
             )
 
 
@@ -359,10 +363,10 @@ class PermanentToken(Resource):
             add_token_to_database(token, app.config["JWT_IDENTITY_CLAIM"])
 
             response_body = {"permanent_api_key": token}
-            return make_response(response_body, HttpStatus.created_201.value)
+            return make_response(response_body, HttpStatus.CREATED_201.value)
 
-        except:
+        except Exception:
             return (
                 {"error": "Missing valid refresh token"},
-                HttpStatus.bad_request_400.value,
+                HttpStatus.BAD_REQUEST_400.value,
             )

@@ -1,8 +1,10 @@
-from flask import request, jsonify, make_response, url_for
+"""Author resource file."""
+
+from flask import request, make_response
 from flask_restful import Resource
 
 from quotes_api.models import Quote
-from quotes_api.common import HttpStatus, paginator, author_paginator
+from quotes_api.common import HttpStatus, author_paginator
 from quotes_api.api.schemas import AuthorSchema
 from quotes_api.auth.decorators import Role, role_required
 
@@ -16,7 +18,8 @@ class AuthorList(Resource):
       tags:
         - Author
       description: |
-        Get list of available `authors`. Optional `sort_order` parameter determines the order in which the authors are displayed. Requires a valid `user` `api key` for authentication.
+        Get list of available `authors`. Optional `sort_order` parameter determines the order in which the
+        authors are displayed. Requires a valid `user` `api key` for authentication.
       security:
         - user_api_key: []
         - admin_api_key: []
@@ -86,12 +89,12 @@ class AuthorList(Resource):
                 pagination, "api.authors", AuthorSchema, sort_order=sort_order
             )
 
-            return make_response(response_body, HttpStatus.ok_200.value)
+            return make_response(response_body, HttpStatus.OK_200.value)
 
-        except:
+        except Exception:
             return (
                 {"error": "Could not retrieve authors"},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
     def _sort_order_parser(self, input):
@@ -100,11 +103,11 @@ class AuthorList(Resource):
 
         Checks if the sorting is ascending or descending.
         """
-        if input == "ascending" or input == "asc" or input == "1":
+
+        if input in ("ascending", "asc", "1"):
             return "+"
 
-        elif input == "descending" or input == "desc" or input == "-1":
+        if input in ("descending", "desc", "-1"):
             return "-"
 
-        else:
-            return "+"
+        return "+"

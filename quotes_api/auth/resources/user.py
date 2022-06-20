@@ -1,4 +1,6 @@
-from flask import request, jsonify, make_response, current_app as app
+"""User resource file."""
+
+from flask import request, make_response, current_app as app
 from flask_restful import Resource
 from flask_jwt_extended import (
     create_access_token,
@@ -6,15 +8,14 @@ from flask_jwt_extended import (
     jwt_required,
 )
 
-from quotes_api.models import User, TokenBlacklist
-from quotes_api.extensions import pwd_context, jwt
+from quotes_api.models import User
+from quotes_api.extensions import pwd_context
 from quotes_api.auth.helpers import (
-    get_user_tokens,
     add_token_to_database,
 )
 from quotes_api.auth.decorators import Role, role_required
 from quotes_api.common import HttpStatus, paginator
-from quotes_api.auth.schemas import UserSchema, TokenBlacklistSchema
+from quotes_api.auth.schemas import UserSchema
 
 
 class UserSignup(Resource):
@@ -71,18 +72,18 @@ class UserSignup(Resource):
                 user = User(**data)
                 user.save()
 
-                return {"message": "Successful sign up."}, HttpStatus.created_201.value
+                return {"message": "Successful sign up."}, HttpStatus.CREATED_201.value
 
-            except:
+            except Exception:
                 return (
                     {"error": "Could not sign up user."},
-                    HttpStatus.internal_server_error_500.value,
+                    HttpStatus.INTERNAL_SERVER_ERROR_500.value,
                 )
 
-        except:
+        except Exception:
             return (
                 {"error": "Missing data."},
-                HttpStatus.bad_request_400.value,
+                HttpStatus.BAD_REQUEST_400.value,
             )
 
 
@@ -169,16 +170,16 @@ class UserLogin(Resource):
                     "access_token": access_token,
                     "refresh_token": refresh_token,
                 }
-                return make_response(response_body, HttpStatus.ok_200.value)
+                return make_response(response_body, HttpStatus.OK_200.value)
 
-            except:
+            except Exception:
                 return (
                     {"error": "Wrong credentials."},
-                    HttpStatus.unauthorized_401.value,
+                    HttpStatus.UNAUTHORIZED_401.value,
                 )
 
-        except:
-            return {"error": "Missing data."}, HttpStatus.bad_request_400.value
+        except Exception:
+            return {"error": "Missing data."}, HttpStatus.BAD_REQUEST_400.value
 
 
 class UserLogout(Resource):
@@ -189,7 +190,7 @@ class UserLogout(Resource):
 
     @jwt_required(fresh=True)
     def post(self):
-        pass
+        """Logout a user."""
 
 
 class UserResource(Resource):
@@ -309,22 +310,22 @@ class UserResource(Resource):
         """Get user by id."""
         try:
             user = User.objects.get_or_404(id=user_id)
-        except:
+        except Exception:
             return (
                 {"error": "User does not exist."},
-                HttpStatus.not_found_404.value,
+                HttpStatus.NOT_FOUND_404.value,
             )
 
         # Create user schema instance
         user_schema = UserSchema()
-        return make_response(user_schema.dump(user), HttpStatus.ok_200.value)
+        return make_response(user_schema.dump(user), HttpStatus.OK_200.value)
 
     @role_required([Role.ADMIN])
     def put(self, user_id):
         """Replace entire user."""
         try:
             user = User.objects.get_or_404(id=user_id)
-        except:
+        except Exception:
             return {"error": "User does not exist."}
         try:
             # Create user schema instance
@@ -334,20 +335,20 @@ class UserResource(Resource):
             user.update(**data)
             user.save()
 
-            return "", HttpStatus.no_content_204.value
+            return "", HttpStatus.NO_CONTENT_204.value
 
-        except:
-            return {"error": "Missing data."}, HttpStatus.bad_request_400.value
+        except Exception:
+            return {"error": "Missing data."}, HttpStatus.BAD_REQUEST_400.value
 
     @role_required([Role.ADMIN])
     def patch(self, user_id):
         """Update user fields."""
         try:
             user = User.objects.get_or_404(id=user_id)
-        except:
+        except Exception:
             return (
                 {"error": "User does not exist."},
-                HttpStatus.not_found_404.value,
+                HttpStatus.NOT_FOUND_404.value,
             )
         try:
             # Create user schema instance and ignore any missing fields
@@ -357,10 +358,10 @@ class UserResource(Resource):
             user.update(**data)
             user.save()
 
-            return "", HttpStatus.no_content_204.value
+            return "", HttpStatus.NO_CONTENT_204.value
 
-        except:
-            return {"error": "Missing data."}, HttpStatus.bad_request_400.value
+        except Exception:
+            return {"error": "Missing data."}, HttpStatus.BAD_REQUEST_400.value
 
     @role_required([Role.ADMIN])
     def delete(self, user_id):
@@ -368,18 +369,18 @@ class UserResource(Resource):
 
         try:
             user = User.objects.get_or_404(id=user_id)
-        except:
+        except Exception:
             return (
                 {"error": "User does not exist."},
-                HttpStatus.not_found_404.value,
+                HttpStatus.NOT_FOUND_404.value,
             )
         try:
             user.delete()
-            return "", HttpStatus.no_content_204.value
-        except:
+            return "", HttpStatus.NO_CONTENT_204.value
+        except Exception:
             return (
                 {"error": "Could not delete user"},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
 
@@ -445,10 +446,10 @@ class UserList(Resource):
             pagination = User.objects.paginate(page=page, per_page=per_page)
             response_body = paginator(pagination, "auth.users", UserSchema)
 
-            return make_response(response_body, HttpStatus.ok_200.value)
+            return make_response(response_body, HttpStatus.OK_200.value)
 
-        except:
+        except Exception:
             return (
                 {"error": "Could not retrieve quotes"},
-                HttpStatus.internal_server_error_500.value,
+                HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )

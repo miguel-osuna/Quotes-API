@@ -1,6 +1,8 @@
+"""User model file."""
+
 from mongoengine import Document, StringField, BooleanField, ListField
 
-from quotes_api.extensions import odm, pwd_context
+from quotes_api.extensions import odm
 
 
 class UserFields(Document):

@@ -1,6 +1,4 @@
-""" 
-Environment configuration
-"""
+""" Environment configuration file."""
 
 import os
 

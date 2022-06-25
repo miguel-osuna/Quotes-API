@@ -18,9 +18,10 @@ def fixture_password_hasher():
     return pwd_context
 
 
-@pytest.fixture(name="app)")
+@pytest.fixture(name="app")
 def fixture_app():
     """Create application for testing."""
+    # breakpoint()
     app = create_app("testing")
 
     with app.app_context():

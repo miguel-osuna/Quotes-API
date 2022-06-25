@@ -12,14 +12,14 @@ from quotes_api.app import create_app
 from quotes_api.models import QuoteFields, UserFields, TokenBlacklistFields
 
 
-@pytest.fixture
-def password_hasher():
+@pytest.fixture(name="password_hasher")
+def fixture_password_hasher():
     pwd_context = CryptContext(schemes=["sha256_crypt"])
     return pwd_context
 
 
-@pytest.fixture
-def app():
+@pytest.fixture(name="app)")
+def fixture_app():
     """Create application for testing."""
     app = create_app("testing")
 
@@ -29,8 +29,8 @@ def app():
     mongoengine.connection.disconnect_all()
 
 
-@pytest.fixture
-def db(app):
+@pytest.fixture(name="db")
+def fixture_db(app):
     """Create database for testing."""
 
     # app.config["MONGODB_HOST"] = "mongo"
@@ -51,8 +51,8 @@ def db(app):
     test_db.connection.drop_database(db_name)
 
 
-@pytest.fixture
-def user(db):
+@pytest.fixture(name="user")
+def fixture_user(db):
     """Create user model instance for test database."""
 
     class User(db.Document, UserFields):
@@ -62,8 +62,8 @@ def user(db):
     return User
 
 
-@pytest.fixture
-def token_blacklist(db):
+@pytest.fixture(name="token_blacklist")
+def fixture_token_blacklist(db):
     """Create token blacklist model instance for test database."""
 
     class TokenBlacklist(db.Document, TokenBlacklistFields):
@@ -73,8 +73,8 @@ def token_blacklist(db):
     return TokenBlacklist
 
 
-@pytest.fixture
-def quote(db):
+@pytest.fixture(name="quote")
+def fixture_quote(db):
     """Create quote model instance for test database."""
 
     class Quote(db.Document, QuoteFields):
@@ -84,8 +84,8 @@ def quote(db):
     return Quote
 
 
-@pytest.fixture
-def new_user(user, password_hasher):
+@pytest.fixture(name="new_user")
+def fixture_new_user(user, password_hasher):
     """Create new user for testing."""
 
     User = user
@@ -103,8 +103,8 @@ def new_user(user, password_hasher):
     return new_user
 
 
-@pytest.fixture
-def new_admin(user, password_hasher):
+@pytest.fixture(name="new_admin")
+def fixture_new_admin(user, password_hasher):
     """Create new admin user for testing."""
     User = user
 
@@ -121,8 +121,8 @@ def new_admin(user, password_hasher):
     return new_admin
 
 
-@pytest.fixture
-def new_quote(quote):
+@pytest.fixture(name="new_quote")
+def fixture_new_quote(quote):
     """Create new quote for testing."""
 
     Quote = quote
@@ -141,8 +141,8 @@ def new_quote(quote):
     return new_quote
 
 
-@pytest.fixture
-def new_access_token(new_user, token_blacklist):
+@pytest.fixture(name="new_access_token")
+def fixture_new_access_token(new_user, token_blacklist):
     """Create new access token for testing."""
 
     TokenBlacklist = token_blacklist
@@ -161,8 +161,8 @@ def new_access_token(new_user, token_blacklist):
     return token
 
 
-@pytest.fixture
-def new_refresh_token(new_user, token_blacklist):
+@pytest.fixture(name="new_refresh_token")
+def fixture_new_refresh_token(new_user, token_blacklist):
     """Create new refresh token for testing."""
 
     TokenBlacklist = token_blacklist
@@ -181,8 +181,8 @@ def new_refresh_token(new_user, token_blacklist):
     return token
 
 
-@pytest.fixture
-def user_headers(new_user, client):
+@pytest.fixture(name="user_headers")
+def fixture_user_headers(new_user, client):
     """Generate access token authorization headers for a user."""
 
     data = {"username": new_user.username, "password": "user"}
@@ -196,8 +196,8 @@ def user_headers(new_user, client):
     }
 
 
-@pytest.fixture
-def admin_headers(new_admin, client):
+@pytest.fixture(name="admin_headers")
+def fixture_admin_headers(new_admin, client):
     """Generate access token authorization headers for admin."""
 
     data = {"username": new_admin.username, "password": "admin"}
@@ -211,8 +211,8 @@ def admin_headers(new_admin, client):
     }
 
 
-@pytest.fixture
-def admin_refresh_headers(new_admin, client):
+@pytest.fixture(name="admin_refresh_headers")
+def fixture_admin_refresh_headers(new_admin, client):
     """Generate refresh token authorization headers for admin."""
 
     data = {"username": new_admin.username, "password": "admin"}

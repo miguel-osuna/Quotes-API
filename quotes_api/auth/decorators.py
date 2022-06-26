@@ -38,6 +38,9 @@ def role_required(role_list):
             for role in roles:
                 if Role(role) not in role_list:
                     denied = True
+
+                if Role(role) in role_list:
+                    denied = False
                     break
 
             if denied:

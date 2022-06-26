@@ -1,6 +1,8 @@
-from datetime import datetime
+"""
+Tests for the database models.
+"""
 
-from quotes_api.models import Quote, User, TokenBlacklist
+from datetime import datetime
 
 
 def test_new_quote(new_quote):
@@ -28,7 +30,7 @@ def test_new_user(new_user):
     assert new_user.username == "user"
     assert new_user.email == "user@email.com"
     assert new_user.password != "user"
-    assert new_user.active == True
+    assert new_user.active is True
     assert "basic" in new_user.roles
 
 
@@ -43,5 +45,5 @@ def test_new_token(new_user, new_access_token):
     assert new_access_token.jti == "jti_example"
     assert new_access_token.token_type == "access"
     assert new_access_token.user.id == new_user.id
-    assert new_access_token.revoked == False
+    assert new_access_token.revoked is False
     assert new_access_token.expires == datetime.fromtimestamp(1608057500)

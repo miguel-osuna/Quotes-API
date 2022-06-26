@@ -1,10 +1,15 @@
-""" Test authentication. """
+"""
+Tests for the authentication resource.
+"""
+
 from flask import url_for
 
 from quotes_api.common import HttpStatus
 
 
 def test_get_all_user_tokens(client, user_headers, new_access_token):
+    """Tests the get all user tokens operation."""
+
     user_tokens_url = url_for("auth.tokens")
     query_parameters = {"page": "1", "per_page": "5"}
 
@@ -20,11 +25,13 @@ def test_get_all_user_tokens(client, user_headers, new_access_token):
     assert meta["page_number"] == "1"
     assert meta["page_size"] == "5"
 
-    for t in tokens:
-        assert any(t["id"] == new_access_token.id)
+    for token in tokens:
+        assert any(token["id"] == new_access_token.id)
 
 
 def test_revoke_access_token(client, admin_headers):
+    """Tests the revoke access token operation."""
+
     # Revoke access token
     revoke_access_token_url = url_for("auth.revoke_access_token")
     res = client.delete(revoke_access_token_url, headers=admin_headers)
@@ -37,6 +44,8 @@ def test_revoke_access_token(client, admin_headers):
 
 
 def test_revoke_refresh_token(client, admin_refresh_headers):
+    """Tests the revoke refresh token operation."""
+
     revoke_refresh_token_url = url_for("auth.revoke_refresh_token")
     res = client.delete(revoke_refresh_token_url, headers=admin_refresh_headers)
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
@@ -48,6 +57,8 @@ def test_revoke_refresh_token(client, admin_refresh_headers):
 
 
 def test_create_trial_token(client, admin_headers):
+    """Tests the create trial token operation."""
+
     trial_token_url = url_for("auth.trial_token")
     res = client.post(trial_token_url, headers=admin_headers)
     assert res.status_code == HttpStatus.CREATED_201.value
@@ -59,13 +70,15 @@ def test_create_trial_token(client, admin_headers):
     query_parameters = {"page": "1", "per_page": "5"}
     headers = {
         "content-type": "application/json",
-        "authorization": "Bearer {}".format(token),
+        "authorization": f"Bearer {token}",
     }
     res = client.get(users_url, headers=headers, query_string=query_parameters)
     assert res.status_code == HttpStatus.OK_200.value
 
 
 def test_create_permanent_token(client, admin_headers):
+    """Tests the create permanent token operation."""
+
     permanent_token_url = url_for("auth.permanent_token")
     res = client.post(permanent_token_url, headers=admin_headers)
     assert res.status_code == HttpStatus.CREATED_201.value
@@ -77,7 +90,7 @@ def test_create_permanent_token(client, admin_headers):
     query_parameters = {"page": "1", "per_page": "5"}
     headers = {
         "content-type": "application/json",
-        "authorization": "Bearer {}".format(token),
+        "authorization": f"Bearer {token}",
     }
     res = client.get(users_url, headers=headers, query_string=query_parameters)
     assert res.status_code == HttpStatus.OK_200.value

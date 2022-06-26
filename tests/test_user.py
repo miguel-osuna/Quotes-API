@@ -1,23 +1,15 @@
-""" Test user. """
+"""
+Tests for the user resource.
+"""
+
 import pytest
 from flask import url_for
 
 from quotes_api.common import HttpStatus
 
 
-# def test_user_signup(client):
-#     pass
-
-
-# def test_user_login(client):
-#     pass
-
-
-# def test_user_logout(client):
-#     pass
-
-
 def test_get_user(client, admin_headers, new_user):
+    """Test the get user operation."""
 
     # Test 404 error
     user_url = url_for("auth.user_by_id", user_id="1000000")
@@ -38,6 +30,8 @@ def test_get_user(client, admin_headers, new_user):
 
 
 def test_put_user(client, admin_headers, new_user):
+    """Tests the put user operation."""
+
     # Test 404 error
     user_url = url_for("auth.user_by_id", user_id="1000000")
     res = client.put(user_url, headers=admin_headers)
@@ -51,6 +45,8 @@ def test_put_user(client, admin_headers, new_user):
 
 
 def test_patch_user(client, admin_headers, new_user):
+    """Tests the patch user operation."""
+
     # Test 404 error
     user_url = url_for("auth.user_by_id", user_id="1000000")
     res = client.patch(user_url, headers=admin_headers)
@@ -64,6 +60,8 @@ def test_patch_user(client, admin_headers, new_user):
 
 
 def test_delete_user(client, admin_headers, new_user, user):
+    """Tests the delete user operation."""
+
     # Test 404 error
     user_url = url_for("auth.user_by_id", user_id="1000000")
     res = client.delete(user_url, headers=admin_headers)
@@ -75,12 +73,14 @@ def test_delete_user(client, admin_headers, new_user, user):
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
     # Test user is deleted from the database
-    User = user
-    with pytest.raises(Exception) as e_info:
+    User = user  # pylint: disable=invalid-name
+    with pytest.raises(Exception):
         user = User.objects.get(id=new_user.id)
 
 
-def test_get_all_user(client, admin_headers, new_user):
+def test_get_all_users(client, admin_headers, new_user):
+    """Tests the get all users operation."""
+
     # Test get all users
     users_url = url_for("auth.users")
     query_parameters = {"page": "1", "per_page": "5"}
@@ -97,5 +97,5 @@ def test_get_all_user(client, admin_headers, new_user):
     assert meta["total_pages"] == "1"
     assert meta["total_records"] == "1"
 
-    for u in users:
-        assert any(u["id"] == new_user.id)
+    for user in users:
+        assert any(user["id"] == new_user.id)

@@ -1,9 +1,11 @@
-""" Defines fixtures available to all tests. """
+"""
+Defines fixtures available to all tests.
+"""
+
+from datetime import datetime
 
 import pytest
-import json
 import mongoengine
-from datetime import datetime
 from flask import url_for
 from flask_mongoengine import MongoEngine
 from passlib.context import CryptContext
@@ -14,6 +16,8 @@ from quotes_api.models import QuoteFields, UserFields, TokenBlacklistFields
 
 @pytest.fixture(name="password_hasher")
 def fixture_password_hasher():
+    """Hashes a password using sha256 encryption."""
+
     pwd_context = CryptContext(schemes=["sha256_crypt"])
     return pwd_context
 
@@ -21,6 +25,7 @@ def fixture_password_hasher():
 @pytest.fixture(name="app")
 def fixture_app():
     """Create application for testing."""
+
     # breakpoint()
     app = create_app("testing")
 
@@ -30,8 +35,8 @@ def fixture_app():
     mongoengine.connection.disconnect_all()
 
 
-@pytest.fixture(name="db")
-def fixture_db(app):
+@pytest.fixture(name="database")
+def fixture_database(app):
     """Create database for testing."""
 
     # app.config["MONGODB_HOST"] = "mongo"
@@ -40,7 +45,7 @@ def fixture_db(app):
 
     if not db_name.endswith("_quotes_database"):
         raise RuntimeError(
-            f"DATABASE_URL must point to testing db, not to master db ({db_name})"
+            f"DATABASE_URL must point to testing database, not to master database ({db_name})"
         )
 
     # Clear database before tests, for cases when some test failed before.
@@ -53,33 +58,39 @@ def fixture_db(app):
 
 
 @pytest.fixture(name="user")
-def fixture_user(db):
+def fixture_user(database):
     """Create user model instance for test database."""
 
-    class User(db.Document, UserFields):
-        def __init__(self, *args, **kwargs):
+    class User(database.Document, UserFields):
+        """Test user database model."""
+
+        def __init__(self, *args, **kwargs):  # pylint: disable=useless-super-delegation
             super().__init__(*args, **kwargs)
 
     return User
 
 
 @pytest.fixture(name="token_blacklist")
-def fixture_token_blacklist(db):
+def fixture_token_blacklist(database):
     """Create token blacklist model instance for test database."""
 
-    class TokenBlacklist(db.Document, TokenBlacklistFields):
-        def __init__(self, *args, **kwargs):
+    class TokenBlacklist(database.Document, TokenBlacklistFields):
+        """Test token blacklist database model."""
+
+        def __init__(self, *args, **kwargs):  # pylint: disable=useless-super-delegation
             super().__init__(*args, **kwargs)
 
     return TokenBlacklist
 
 
 @pytest.fixture(name="quote")
-def fixture_quote(db):
+def fixture_quote(database):
     """Create quote model instance for test database."""
 
-    class Quote(db.Document, QuoteFields):
-        def __init__(self, *args, **kwargs):
+    class Quote(database.Document, QuoteFields):
+        """Test quote database model."""
+
+        def __init__(self, *args, **kwargs):  # pylint: disable=useless-super-delegation
             super().__init__(*args, **kwargs)
 
     return Quote
@@ -89,7 +100,7 @@ def fixture_quote(db):
 def fixture_new_user(user, password_hasher):
     """Create new user for testing."""
 
-    User = user
+    User = user  # pylint: disable=invalid-name
 
     # User mock data
     user_data = {
@@ -107,7 +118,7 @@ def fixture_new_user(user, password_hasher):
 @pytest.fixture(name="new_admin")
 def fixture_new_admin(user, password_hasher):
     """Create new admin user for testing."""
-    User = user
+    User = user  # pylint: disable=invalid-name
 
     # Admin user mock data
     admin_user_data = {
@@ -126,7 +137,7 @@ def fixture_new_admin(user, password_hasher):
 def fixture_new_quote(quote):
     """Create new quote for testing."""
 
-    Quote = quote
+    Quote = quote  # pylint: disable=invalid-name
 
     # Quote mock data
     quote_data = {
@@ -146,7 +157,7 @@ def fixture_new_quote(quote):
 def fixture_new_access_token(new_user, token_blacklist):
     """Create new access token for testing."""
 
-    TokenBlacklist = token_blacklist
+    TokenBlacklist = token_blacklist  # pylint: disable=invalid-name
 
     access_token_data = {
         "jti": "jti_example",
@@ -166,7 +177,7 @@ def fixture_new_access_token(new_user, token_blacklist):
 def fixture_new_refresh_token(new_user, token_blacklist):
     """Create new refresh token for testing."""
 
-    TokenBlacklist = token_blacklist
+    TokenBlacklist = token_blacklist  # pylint: disable=invalid-name
 
     refresh_token_data = {
         "jti": "jti_example",
@@ -190,10 +201,11 @@ def fixture_user_headers(new_user, client):
     login_url = url_for("auth.user_login")
     res = client.post(login_url, json=data)
     data = res.get_json()
+    access_token = data["access_token"]
 
     return {
         "content-type": "application/json",
-        "authorization": "Bearer {}".format(data["access_token"]),
+        "authorization": f"Bearer {access_token}",
     }
 
 
@@ -205,10 +217,11 @@ def fixture_admin_headers(new_admin, client):
     login_url = url_for("auth.user_login")
     res = client.post(login_url, json=data)
     data = res.get_json()
+    access_token = data["access_token"]
 
     return {
         "content-type": "application/json",
-        "authorization": "Bearer {}".format(data["access_token"]),
+        "authorization": f"Bearer {access_token}",
     }
 
 
@@ -220,8 +233,9 @@ def fixture_admin_refresh_headers(new_admin, client):
     login_url = url_for("auth.user_login")
     res = client.post(login_url, json=data)
     data = res.get_json()
+    access_token = data["access_token"]
 
     return {
         "content-type": "application/json",
-        "authorization": "Bearer {}".format(data["access_token"]),
+        "authorization": f"Bearer {access_token}",
     }

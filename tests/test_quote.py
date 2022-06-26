@@ -1,10 +1,14 @@
-""" Test quote. """
+"""
+Tests for the quote resource.
+"""
+
 import pytest
 from flask import url_for
 from quotes_api.common import HttpStatus
 
 
 def test_get_quote(client, user_headers, new_quote):
+    """Tests the get quote operation."""
 
     # Test 404 error
     quote_url = url_for("api.quote", quote_id="1000000")
@@ -24,6 +28,8 @@ def test_get_quote(client, user_headers, new_quote):
 
 
 def test_put_quote(client, admin_headers, new_quote):
+    """Tests the put quote operation."""
+
     # Test 404 error
     quote_url = url_for("api.quote", quote_id="1000000")
     res = client.put(quote_url, headers=admin_headers)
@@ -42,6 +48,8 @@ def test_put_quote(client, admin_headers, new_quote):
 
 
 def test_patch_quote(client, admin_headers, new_quote):
+    """Tests the patch quote operation."""
+
     # Test 404 error
     quote_url = url_for("api.quote", quote_id="1000000")
     res = client.patch(quote_url, headers=admin_headers)
@@ -55,6 +63,8 @@ def test_patch_quote(client, admin_headers, new_quote):
 
 
 def test_delete_quote(client, admin_headers, new_quote, quote):
+    """Tests the delete quote operation."""
+
     # Test 404 error
     quote_url = url_for("api.quote", quote_id="1000000")
     res = client.delete(quote_url, headers=admin_headers)
@@ -66,12 +76,14 @@ def test_delete_quote(client, admin_headers, new_quote, quote):
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
     # Test quote is deleted from the database
-    Quote = quote
-    with pytest.raises(Exception) as e_info:
+    Quote = quote  # pylint: disable=invalid-name
+    with pytest.raises(Exception):
         quote = Quote.objects.get(id=new_quote.id)
 
 
 def test_get_all_quote(client, user_headers, new_quote):
+    """Tests the get all quotes operation."""
+
     # Test get all quotes
     quotes_url = url_for("api.quotes")
     query_parameters = {"page": "1", "per_page": "5"}
@@ -88,11 +100,13 @@ def test_get_all_quote(client, user_headers, new_quote):
     assert meta["total_pages"] == "1"
     assert meta["total_records"] == "1"
 
-    for q in quotes:
-        assert any(q["id"] == new_quote.id)
+    for quote in quotes:
+        assert any(quote["id"] == new_quote.id)
 
 
 def test_create_quote(client, admin_headers, quote):
+    """Tests the create quote operation."""
+
     # Test 400 (Bad request)
     quotes_url = url_for("api.quotes")
     data = {"quote_text": "Post quote."}
@@ -109,7 +123,7 @@ def test_create_quote(client, admin_headers, quote):
 
     # Test quote is on the database
     data = res.get_json()
-    Quote = quote
+    Quote = quote  # pylint: disable=invalid-name
     quote = Quote.objects.get(id=data["id"])
 
     assert quote.id == data["id"]

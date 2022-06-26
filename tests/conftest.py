@@ -26,11 +26,10 @@ def fixture_password_hasher():
 def fixture_app():
     """Create application for testing."""
 
-    # breakpoint()
     app = create_app("testing")
 
     with app.app_context():
-        yield app  # This is where testing happens
+        yield app
 
     mongoengine.connection.disconnect_all()
 
@@ -39,7 +38,6 @@ def fixture_app():
 def fixture_database(app):
     """Create database for testing."""
 
-    # app.config["MONGODB_HOST"] = "mongo"
     test_db = MongoEngine(app)
     db_name = test_db.connection.get_database("test_quotes_database").name
 
@@ -125,6 +123,7 @@ def fixture_new_admin(user, password_hasher):
         "username": "admin",
         "email": "admin@email.com",
         "password": password_hasher.hash("admin"),
+        "roles": ["basic", "admin"],
     }
 
     new_admin = User(**admin_user_data)
@@ -143,7 +142,7 @@ def fixture_new_quote(quote):
     quote_data = {
         "quote_text": "Quote.",
         "author_name": "Author",
-        "author_image": "URL",
+        "author_image": "https://www.goodreads.com/quotes/tag/books",
         "tags": ["test-tag"],
     }
 

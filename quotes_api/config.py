@@ -54,7 +54,7 @@ class TestingConfig(Config):
     SECRET_KEY = "testing"
 
     # Mongoengine Configuration
-    MONGODB_DB = "quotes_test_database"
+    MONGODB_DB = "test_quotes_database"
     MONGODB_HOST = "mongo"
 
 

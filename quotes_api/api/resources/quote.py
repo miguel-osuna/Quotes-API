@@ -140,8 +140,13 @@ class QuoteResource(Resource):
         """Replace entire quote."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
+
         except Exception:
-            return {"error": "Quote does not exist."}
+            return (
+                {"error": "Quote does not exist."},
+                HttpStatus.NOT_FOUND_404.value,
+            )
+
         try:
             # Create quote schema instance
             quote_schema = QuoteSchema()
@@ -151,6 +156,7 @@ class QuoteResource(Resource):
             quote.save()
 
             return "", HttpStatus.NO_CONTENT_204.value
+
         except Exception:
             return (
                 {"error": "Missing data."},
@@ -162,11 +168,13 @@ class QuoteResource(Resource):
         """Update quote fields."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
+
         except Exception:
             return (
                 {"error": "Quote does not exist."},
                 HttpStatus.NOT_FOUND_404.value,
             )
+
         try:
             # Check quote schema instance
             quote_schema = QuoteSchema(partial=True)
@@ -176,6 +184,7 @@ class QuoteResource(Resource):
             quote.save()
 
             return "", HttpStatus.NO_CONTENT_204.value
+
         except Exception:
             return {"error": "Missing data."}, HttpStatus.BAD_REQUEST_400.value
 
@@ -184,6 +193,7 @@ class QuoteResource(Resource):
         """Delete quote."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
+
         except Exception:
             return (
                 {"error": "Quote does not exist."},
@@ -193,6 +203,7 @@ class QuoteResource(Resource):
         try:
             quote.delete()
             return "", HttpStatus.NO_CONTENT_204.value
+
         except Exception:
             return (
                 {"error": "Could not delete quote."},
@@ -334,8 +345,10 @@ class QuoteList(Resource):
             # Create quote schema instace
             quote_schema = QuoteSchema()
             data = quote_schema.load(request.json)
+
         except Exception:
             return {"error": "Missing data."}, HttpStatus.BAD_REQUEST_400.value
+
         try:
             # Create new database entry
             quote = Quote(**data)

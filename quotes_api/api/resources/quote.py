@@ -466,8 +466,8 @@ class QuoteRandom(Resource):
 
             # Converting CommandCursor class iterator into a list and
             # then getting the only item in it
-            random_quote = list(quote_collection.aggregate(pipeline))
-            random_quote["id"] = random_quote["_id"]
+            random_quote = list(quote_collection.aggregate(pipeline))[0]
+            random_quote["id"] = random_quote.pop("_id")
 
             # Create quote schema instance
             quote_schema = QuoteSchema()

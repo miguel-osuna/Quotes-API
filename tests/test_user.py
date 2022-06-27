@@ -1,6 +1,7 @@
 """
 Tests for the user resource.
 """
+import secrets
 
 import pytest
 from flask import url_for
@@ -10,9 +11,10 @@ from quotes_api.common import HttpStatus
 
 def test_get_user(client, admin_headers, new_user):
     """Test the get user operation."""
+    random_id = secrets.token_hex(12)
 
     # Test 404 error
-    user_url = url_for("auth.user_by_id", user_id="1000000")
+    user_url = url_for("auth.user_by_id", user_id=random_id)
     res = client.get(user_url, headers=admin_headers)
     assert res.status_code == HttpStatus.NOT_FOUND_404.value
 
@@ -22,7 +24,7 @@ def test_get_user(client, admin_headers, new_user):
     assert res.status_code == HttpStatus.OK_200.value
 
     data = res.get_json()
-    assert data["id"] == new_user.id
+    assert data["id"] == str(new_user.id)
     assert data["username"] == new_user.username
     assert data["email"] == new_user.email
     assert data["active"] == new_user.active
@@ -32,8 +34,10 @@ def test_get_user(client, admin_headers, new_user):
 def test_put_user(client, admin_headers, new_user):
     """Tests the put user operation."""
 
+    random_id = secrets.token_hex(12)
+
     # Test 404 error
-    user_url = url_for("auth.user_by_id", user_id="1000000")
+    user_url = url_for("auth.user_by_id", user_id=random_id)
     res = client.put(user_url, headers=admin_headers)
     assert res.status_code == HttpStatus.NOT_FOUND_404.value
 
@@ -47,8 +51,10 @@ def test_put_user(client, admin_headers, new_user):
 def test_patch_user(client, admin_headers, new_user):
     """Tests the patch user operation."""
 
+    random_id = secrets.token_hex(12)
+
     # Test 404 error
-    user_url = url_for("auth.user_by_id", user_id="1000000")
+    user_url = url_for("auth.user_by_id", user_id=random_id)
     res = client.patch(user_url, headers=admin_headers)
     assert res.status_code == HttpStatus.NOT_FOUND_404.value
 
@@ -62,8 +68,10 @@ def test_patch_user(client, admin_headers, new_user):
 def test_delete_user(client, admin_headers, new_user, user):
     """Tests the delete user operation."""
 
+    random_id = secrets.token_hex(12)
+
     # Test 404 error
-    user_url = url_for("auth.user_by_id", user_id="1000000")
+    user_url = url_for("auth.user_by_id", user_id=random_id)
     res = client.delete(user_url, headers=admin_headers)
     assert res.status_code == HttpStatus.NOT_FOUND_404.value
 
@@ -92,10 +100,13 @@ def test_get_all_users(client, admin_headers, new_user):
     users = data["records"]
     meta = data["meta"]
 
-    assert meta["page_number"] == "1"
-    assert meta["page_size"] == "5"
-    assert meta["total_pages"] == "1"
-    assert meta["total_records"] == "1"
+    assert meta["page_number"] == 1
+    assert meta["page_size"] == 5
+    assert meta["total_pages"] == 1
+    assert meta["total_records"] == 2
 
+    user_found = []
     for user in users:
-        assert any(user["id"] == new_user.id)
+        user_found.append(user["id"] == str(new_user.id))
+
+    assert any(user_found)

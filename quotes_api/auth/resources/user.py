@@ -310,6 +310,7 @@ class UserResource(Resource):
         """Get user by id."""
         try:
             user = User.objects.get_or_404(id=user_id)
+
         except Exception:
             return (
                 {"error": "User does not exist."},
@@ -325,8 +326,13 @@ class UserResource(Resource):
         """Replace entire user."""
         try:
             user = User.objects.get_or_404(id=user_id)
+
         except Exception:
-            return {"error": "User does not exist."}
+            return (
+                {"error": "User does not exist."},
+                HttpStatus.NOT_FOUND_404.value,
+            )
+
         try:
             # Create user schema instance
             user_schema = UserSchema()
@@ -345,11 +351,13 @@ class UserResource(Resource):
         """Update user fields."""
         try:
             user = User.objects.get_or_404(id=user_id)
+
         except Exception:
             return (
                 {"error": "User does not exist."},
                 HttpStatus.NOT_FOUND_404.value,
             )
+
         try:
             # Create user schema instance and ignore any missing fields
             user_schema = UserSchema(partial=True)
@@ -369,14 +377,17 @@ class UserResource(Resource):
 
         try:
             user = User.objects.get_or_404(id=user_id)
+
         except Exception:
             return (
                 {"error": "User does not exist."},
                 HttpStatus.NOT_FOUND_404.value,
             )
+
         try:
             user.delete()
             return "", HttpStatus.NO_CONTENT_204.value
+
         except Exception:
             return (
                 {"error": "Could not delete user"},

@@ -2,8 +2,9 @@
 Tests for the quote resource.
 """
 
-import pytest
 import secrets
+
+import pytest
 
 from flask import url_for
 from quotes_api.common import HttpStatus

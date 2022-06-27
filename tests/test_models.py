@@ -15,7 +15,7 @@ def test_new_quote(new_quote):
 
     assert new_quote.quote_text == "Quote."
     assert new_quote.author_name == "Author"
-    assert new_quote.author_image == "URL"
+    assert new_quote.author_image == "https://www.goodreads.com/quotes/tag/books"
     assert "test-tag" in new_quote.tags
 
 

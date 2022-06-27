@@ -232,9 +232,9 @@ def fixture_admin_refresh_headers(new_admin, client):
     login_url = url_for("auth.user_login")
     res = client.post(login_url, json=data)
     data = res.get_json()
-    access_token = data["access_token"]
+    refresh_token = data["refresh_token"]
 
     return {
         "content-type": "application/json",
-        "authorization": f"Bearer {access_token}",
+        "authorization": f"Bearer {refresh_token}",
     }

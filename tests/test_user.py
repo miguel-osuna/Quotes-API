@@ -65,7 +65,7 @@ def test_patch_user(client, admin_headers, new_user):
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
 
-def test_delete_user(client, admin_headers, new_user, user):
+def test_delete_user(client, admin_headers, new_user, user_model):
     """Tests the delete user operation."""
 
     random_id = secrets.token_hex(12)
@@ -81,9 +81,8 @@ def test_delete_user(client, admin_headers, new_user, user):
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
     # Test user is deleted from the database
-    User = user  # pylint: disable=invalid-name
     with pytest.raises(Exception):
-        user = User.objects.get(id=new_user.id)
+        user = user_model.objects.get(id=new_user.id)
 
 
 def test_get_all_users(client, admin_headers, new_user):

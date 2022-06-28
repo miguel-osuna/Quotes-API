@@ -55,8 +55,8 @@ def fixture_database(app):
     test_db.connection.drop_database(db_name)
 
 
-@pytest.fixture(name="user")
-def fixture_user(database):
+@pytest.fixture(name="user_model")
+def fixture_user_model(database):
     """Create user model instance for test database."""
 
     class User(database.Document, UserFields):
@@ -68,8 +68,8 @@ def fixture_user(database):
     return User
 
 
-@pytest.fixture(name="token_blacklist")
-def fixture_token_blacklist(database):
+@pytest.fixture(name="token_blacklist_model")
+def fixture_token_blacklist_model(database):
     """Create token blacklist model instance for test database."""
 
     class TokenBlacklist(database.Document, TokenBlacklistFields):
@@ -81,8 +81,8 @@ def fixture_token_blacklist(database):
     return TokenBlacklist
 
 
-@pytest.fixture(name="quote")
-def fixture_quote(database):
+@pytest.fixture(name="quote_model")
+def fixture_quote_model(database):
     """Create quote model instance for test database."""
 
     class Quote(database.Document, QuoteFields):
@@ -95,10 +95,8 @@ def fixture_quote(database):
 
 
 @pytest.fixture(name="new_user")
-def fixture_new_user(user, password_hasher):
+def fixture_new_user(user_model, password_hasher):
     """Create new user for testing."""
-
-    User = user  # pylint: disable=invalid-name
 
     # User mock data
     user_data = {
@@ -107,16 +105,15 @@ def fixture_new_user(user, password_hasher):
         "password": password_hasher.hash("user"),
     }
 
-    new_user = User(**user_data)
+    new_user = user_model(**user_data)
     new_user.save()
 
     return new_user
 
 
 @pytest.fixture(name="new_admin")
-def fixture_new_admin(user, password_hasher):
+def fixture_new_admin(user_model, password_hasher):
     """Create new admin user for testing."""
-    User = user  # pylint: disable=invalid-name
 
     # Admin user mock data
     admin_user_data = {
@@ -126,17 +123,15 @@ def fixture_new_admin(user, password_hasher):
         "roles": ["basic", "admin"],
     }
 
-    new_admin = User(**admin_user_data)
+    new_admin = user_model(**admin_user_data)
     new_admin.save()
 
     return new_admin
 
 
 @pytest.fixture(name="new_quote")
-def fixture_new_quote(quote):
+def fixture_new_quote(quote_model):
     """Create new quote for testing."""
-
-    Quote = quote  # pylint: disable=invalid-name
 
     # Quote mock data
     quote_data = {
@@ -146,17 +141,15 @@ def fixture_new_quote(quote):
         "tags": ["test-tag"],
     }
 
-    new_quote = Quote(**quote_data)
+    new_quote = quote_model(**quote_data)
     new_quote.save()
 
     return new_quote
 
 
 @pytest.fixture(name="new_access_token")
-def fixture_new_access_token(new_user, token_blacklist):
+def fixture_new_access_token(new_user, token_blacklist_model):
     """Create new access token for testing."""
-
-    TokenBlacklist = token_blacklist  # pylint: disable=invalid-name
 
     access_token_data = {
         "jti": "jti_example",
@@ -166,17 +159,15 @@ def fixture_new_access_token(new_user, token_blacklist):
         "expires": datetime.fromtimestamp(1608057500),
     }
 
-    token = TokenBlacklist(**access_token_data)
+    token = token_blacklist_model(**access_token_data)
     token.save()
 
     return token
 
 
 @pytest.fixture(name="new_refresh_token")
-def fixture_new_refresh_token(new_user, token_blacklist):
+def fixture_new_refresh_token(new_user, token_blacklist_model):
     """Create new refresh token for testing."""
-
-    TokenBlacklist = token_blacklist  # pylint: disable=invalid-name
 
     refresh_token_data = {
         "jti": "jti_example",
@@ -186,7 +177,7 @@ def fixture_new_refresh_token(new_user, token_blacklist):
         "expires": datetime.fromtimestamp(1608057500),
     }
 
-    token = TokenBlacklist(**refresh_token_data)
+    token = token_blacklist_model(**refresh_token_data)
     token.save()
 
     return token

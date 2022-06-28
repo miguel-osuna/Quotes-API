@@ -68,7 +68,7 @@ def test_patch_quote(client, admin_headers, new_quote):
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
 
-def test_delete_quote(client, admin_headers, new_quote, quote):
+def test_delete_quote(client, admin_headers, new_quote, quote_model):
     """Tests the delete quote operation."""
     random_id = secrets.token_hex(12)
 
@@ -83,9 +83,8 @@ def test_delete_quote(client, admin_headers, new_quote, quote):
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
     # Test quote is deleted from the database
-    Quote = quote  # pylint: disable=invalid-name
     with pytest.raises(Exception):
-        quote = Quote.objects.get(id=new_quote.id)
+        quote = quote_model.objects.get(id=new_quote.id)
 
 
 def test_get_all_quotes(client, user_headers, new_quote):
@@ -110,7 +109,7 @@ def test_get_all_quotes(client, user_headers, new_quote):
         assert quote["id"] == str(new_quote.id)
 
 
-def test_create_quote(client, admin_headers, quote):
+def test_create_quote(client, admin_headers, quote_model):
     """Tests the create quote operation."""
 
     # Test 400 (Bad request)
@@ -129,8 +128,7 @@ def test_create_quote(client, admin_headers, quote):
 
     # Test quote is on the database
     response_body = res.get_json()
-    Quote = quote  # pylint: disable=invalid-name
-    quote = Quote.objects.get(id=response_body["id"])
+    quote = quote_model.objects.get(id=response_body["id"])
 
     assert str(quote.id) == response_body["id"]
     assert quote.quote_text == data["quote_text"]

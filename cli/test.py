@@ -5,13 +5,12 @@ import click
 
 
 @click.command()
-@click.argument("path", default="tests")
-def test(path):
+def test():
     """
     Run tests with Pytest (pytest-sugar).
 
     :param path: Test path
     :return: Subprocess call result
     """
-    command = f"py.test -s {path}"
+    command = "py.test --capture=no"
     return subprocess.call(command, shell=True)

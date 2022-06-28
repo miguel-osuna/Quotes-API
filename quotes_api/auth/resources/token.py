@@ -234,7 +234,8 @@ class RefreshTokenRevoke(Resource):
 
     @jwt_required(refresh=True)
     def delete(self):
-        """Revokes a refresh token from the database.
+        """
+        Revokes a refresh token from the database.
 
         Used mainly for logout.
         """

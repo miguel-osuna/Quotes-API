@@ -15,6 +15,7 @@ services:
       - ./.envs/.local/.application
       - ./.envs/.local/.mongo
     ports:
+      - "5678:5678"
       - "8000:8000"
     command: /start
 

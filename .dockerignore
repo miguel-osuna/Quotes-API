@@ -9,3 +9,4 @@ README.rst
 README.md
 *.pyc
 __pycache__
+logs/*

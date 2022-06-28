@@ -17,14 +17,16 @@ def test_get_quote(client, user_headers, new_quote):
     # Test 404 error
     quote_url = url_for("api.quote", quote_id=random_id)
     res = client.get(quote_url, headers=user_headers)
+
     assert res.status_code == HttpStatus.NOT_FOUND_404.value
+    assert res.get_json() == {"error": "Quote does not exist."}
 
     # Test get quote
     quote_url = url_for("api.quote", quote_id=new_quote.id)
     res = client.get(quote_url, headers=user_headers)
-    assert res.status_code == HttpStatus.OK_200.value
-
     data = res.get_json()
+
+    assert res.status_code == HttpStatus.OK_200.value
     assert data["id"] == str(new_quote.id)
     assert data["author_name"] == new_quote.author_name
     assert data["author_image"] == new_quote.author_image
@@ -38,7 +40,9 @@ def test_put_quote(client, admin_headers, new_quote):
     # Test 404 error
     quote_url = url_for("api.quote", quote_id=random_id)
     res = client.put(quote_url, headers=admin_headers)
+
     assert res.status_code == HttpStatus.NOT_FOUND_404.value
+    assert res.get_json() == {"error": "Quote does not exist."}
 
     # Test put quote
     data = {
@@ -49,6 +53,7 @@ def test_put_quote(client, admin_headers, new_quote):
     }
     quote_url = url_for("api.quote", quote_id=new_quote.id)
     res = client.put(quote_url, headers=admin_headers, json=data)
+
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
 
@@ -59,12 +64,15 @@ def test_patch_quote(client, admin_headers, new_quote):
     # Test 404 error
     quote_url = url_for("api.quote", quote_id=random_id)
     res = client.patch(quote_url, headers=admin_headers)
+
     assert res.status_code == HttpStatus.NOT_FOUND_404.value
+    assert res.get_json() == {"error": "Quote does not exist."}
 
     # Test patch quote
     data = {"quote_text": "Patch quote."}
     quote_url = url_for("api.quote", quote_id=new_quote.id)
     res = client.patch(quote_url, headers=admin_headers, json=data)
+
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
 
@@ -75,11 +83,14 @@ def test_delete_quote(client, admin_headers, new_quote, quote_model):
     # Test 404 error
     quote_url = url_for("api.quote", quote_id=random_id)
     res = client.delete(quote_url, headers=admin_headers)
+
     assert res.status_code == HttpStatus.NOT_FOUND_404.value
+    assert res.get_json() == {"error": "Quote does not exist."}
 
     # Test delete user
     quote_url = url_for("api.quote", quote_id=new_quote.id)
     res = client.delete(quote_url, headers=admin_headers)
+
     assert res.status_code == HttpStatus.NO_CONTENT_204.value
 
     # Test quote is deleted from the database
@@ -94,6 +105,7 @@ def test_get_all_quotes(client, user_headers, new_quote):
     query_parameters = {"page": "1", "per_page": "5"}
 
     res = client.get(quotes_url, headers=user_headers, query_string=query_parameters)
+
     assert res.status_code == HttpStatus.OK_200.value
 
     data = res.get_json()

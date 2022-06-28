@@ -127,6 +127,7 @@ class QuoteResource(Resource):
         """Get quote by id."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
+            
         except Exception:
             return (
                 {"error": "Quote does not exist."},

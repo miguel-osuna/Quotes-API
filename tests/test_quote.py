@@ -119,7 +119,7 @@ def test_create_quote(client, admin_headers, quote):
     res = client.post(quotes_url, headers=admin_headers, json=data)
     assert res.status_code == HttpStatus.BAD_REQUEST_400.value
 
-    # Tetst create quote
+    # Tests create quote
     data["author_name"] = "Post Author"
     data["author_image"] = "https://www.goodreads.com/quotes/tag/books"
     data["tags"] = ["post-test-tag"]
@@ -136,3 +136,17 @@ def test_create_quote(client, admin_headers, quote):
     assert quote.quote_text == data["quote_text"]
     assert quote.author_image == data["author_image"]
     assert quote.tags == data["tags"]
+
+
+def test_get_random_quote(client, user_headers, new_quote):
+    """Tests the get random quote operation."""
+
+    random_quote_url = url_for("api.random_quote")
+    res = client.get(random_quote_url, headers=user_headers)
+    data = res.get_json()
+
+    assert res.status_code == HttpStatus.OK_200.value
+    assert data["id"] == str(new_quote.id)
+    assert data["quote_text"] == new_quote.quote_text
+    assert data["author_name"] == new_quote.author_name
+    assert data["tags"] == new_quote.tags

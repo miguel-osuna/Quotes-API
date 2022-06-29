@@ -56,6 +56,10 @@ class UserTokens(Resource):
                           $ref: '#/components/schemas/TokenBlacklistSchema'
         401:
           description: Missing authentication header.
+        404:
+          description: User does not exist.
+        500:
+          description: Could not retrieve tokens.
     """
 
     # Decorators applied to all class methods
@@ -113,7 +117,7 @@ class TokenRefresh(Resource):
                     type: string
                     example: myaccesstoken
         400:
-          description: Bad request.
+          description: Missing valid refresh token.
         401:
           description: Missing authentication header.
     """
@@ -158,7 +162,7 @@ class AccessTokenRevoke(Resource):
       security:
         - admin_api_key: []
       responses:
-        200:
+        204:
           content:
             application/json:
               schema:
@@ -167,15 +171,16 @@ class AccessTokenRevoke(Resource):
                   message:
                     type: string
                     example: token revoked
-        400:
-          description: Bad request.
         401:
           description: Missing authentication header.
+        500:
+          description: Could not revoke access token.
     """
 
     @jwt_required()
     def delete(self):
-        """Revokes an access token from the database.
+        """
+        Revokes an access token from the database.
 
         Used mainly for logout
         """
@@ -207,7 +212,7 @@ class RefreshTokenRevoke(Resource):
       security:
         - admin_api_key: []
       responses:
-        200:
+        204:
           content:
             application/json:
               schema:
@@ -216,10 +221,10 @@ class RefreshTokenRevoke(Resource):
                   message:
                     type: string
                     example: token revoked
-        400:
-          description: Bad request.
         401:
           description: Missing authentication header.
+        500:
+          description: Could not revoke refresh token.
     """
 
     @jwt_required(refresh=True)
@@ -259,7 +264,7 @@ class TrialToken(Resource):
       security:
         - admin_api_key: []
       responses:
-        200:
+        201:
           content:
             application/json:
               schema:
@@ -269,7 +274,7 @@ class TrialToken(Resource):
                     type: string
                     example: myapikey
         400:
-          description: Bad request.
+          description: Missing valid access token.
         401:
           description: Missing authentication header.
     """
@@ -300,7 +305,7 @@ class TrialToken(Resource):
 
         except Exception:
             return (
-                {"error": "Missing valid refresh token"},
+                {"error": "Missing valid access token"},
                 HttpStatus.BAD_REQUEST_400.value,
             )
 
@@ -318,7 +323,7 @@ class PermanentToken(Resource):
       security:
         - admin_api_key: []
       responses:
-        200:
+        201:
           content:
             application/json:
               schema:
@@ -328,7 +333,7 @@ class PermanentToken(Resource):
                     type: string
                     example: myapikey
         400:
-          description: Bad request.
+          description: Missing valid access token.
         401:
           description: Missing authentication header.
     """
@@ -358,6 +363,6 @@ class PermanentToken(Resource):
 
         except Exception:
             return (
-                {"error": "Missing valid refresh token"},
+                {"error": "Missing valid access token"},
                 HttpStatus.BAD_REQUEST_400.value,
             )

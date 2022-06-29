@@ -32,33 +32,22 @@ class UserTokens(Resource):
       tags:
         - User
       description: |
-        Get list of `token` resources. Requires a valid `user` `api key` for authentication.
+        Get list of `token` resources. Requires a valid `admin` `api key` for authentication.
       security:
-        - user_api_key: []
         - admin_api_key: []
       parameters:
-        - in: query
-          name: page
+        - in: path
+          name: user_id
+          required: true
           schema:
-            type: integer
-            default: 1
-          description: Page number for pagination.
-        - in: query
-          name: per_page
-          schema:
-            type: integer
-            default: 5
-          description: Number of results per page.
+            type: string
+          description: User ID.
       responses:
         200:
           content:
             application/json:
               schema:
                 allOf:
-                  - type: object
-                    properties:
-                      meta:
-                        $ref: '#/components/schemas/MetadataSchema'
                   - type: object
                     properties:
                       records:
@@ -72,30 +61,31 @@ class UserTokens(Resource):
     # Decorators applied to all class methods
     method_decorators = []
 
-    @role_required([Role.BASIC, Role.ADMIN])
-    def get(self):
+    @role_required([Role.ADMIN])
+    def get(self, user_id):
         """Gets all the revoked and unrevoked tokens from a user."""
 
-        args = request.args
+        try:
+            user = User.objects.get_or_404(id=user_id)
 
-        page = int(args.get("page", 1))
-        per_page = int(args.get("per_page", 5))
+        except Exception:
+            return (
+                {"error": "User does not exist."},
+                HttpStatus.NOT_FOUND_404.value,
+            )
 
         try:
             # Generating pagination of tokens
-            user_identity = get_jwt_identity()
-            user = User.objects.get(username=user_identity)
             tokens = TokenBlacklist.objects(user=user)
-            paginated_tokens = tokens.paginate(page=page, per_page=per_page)
 
-            response_body = paginator(
-                paginated_tokens, "auth.tokens", TokenBlacklistSchema
-            )
+            token_blacklist_schema = TokenBlacklistSchema(many=True, exclude=["user"])
+            response_body = {"records": token_blacklist_schema.dump(tokens)}
+
             return make_response(response_body, HttpStatus.OK_200.value)
 
-        except Exception as exc:
+        except Exception:
             return (
-                {"error": "Could not retrieve tokens.", "detail": str(exc)},
+                {"error": "Could not retrieve tokens."},
                 HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 

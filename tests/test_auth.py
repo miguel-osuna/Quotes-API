@@ -2,34 +2,31 @@
 Tests for the authentication resource.
 """
 
+import secrets
 from flask import url_for
 
 from quotes_api.common import HttpStatus
 
-# TODO: Fix get all user tokens endpoint and update test accordingly
-# def test_get_all_user_tokens(client, user_headers, new_access_token):
-#     """Tests the get all user tokens operation."""
 
-#     user_tokens_url = url_for("auth.tokens")
-#     query_parameters = {"page": "1", "per_page": "5"}
+def test_get_user_tokens(client, admin_headers, new_admin):
+    """Tests the get user tokens operation."""
 
-#     res = client.get(
-#         user_tokens_url, headers=user_headers, query_string=query_parameters
-#     )
-#     assert res.status_code == HttpStatus.OK_200.value
+    random_id = secrets.token_hex(12)
 
-#     data = res.get_json()
-#     tokens = data["records"]
-#     meta = data["meta"]
+    # Test 404 error
+    user_tokens_url = url_for("auth.tokens", user_id=random_id)
+    res = client.get(user_tokens_url, headers=admin_headers)
 
-#     assert meta["page_number"] == 1
-#     assert meta["page_size"] == 5
+    assert res.status_code == HttpStatus.NOT_FOUND_404.value
+    assert res.get_json() == {"error": "User does not exist."}
 
-#     found_tokens = []
-#     for token in tokens:
-#         found_tokens.append(token["id"] == new_access_token.id)
+    # Test get all admin tokens
+    user_tokens_url = url_for("auth.tokens", user_id=new_admin.id)
+    res = client.get(user_tokens_url, headers=admin_headers)
+    data = res.get_json()
 
-#     assert any(found_tokens)
+    assert res.status_code == HttpStatus.OK_200.value
+    assert len(data["records"]) > 0
 
 
 def test_revoke_access_token(client, admin_headers):

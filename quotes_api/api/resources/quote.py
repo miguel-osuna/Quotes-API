@@ -127,7 +127,7 @@ class QuoteResource(Resource):
         """Get quote by id."""
         try:
             quote = Quote.objects.get_or_404(id=quote_id)
-            
+
         except Exception:
             return (
                 {"error": "Quote does not exist."},
@@ -243,7 +243,10 @@ class QuoteList(Resource):
           name: tags
           schema:
             type: string
-          description: Quote tags for filtering.
+          description:
+              Quote tags for filtering.
+              Separate by `,` to look for quotes that include every tag (`AND`).
+              Separate by `|` to look for quotes that include at least 1 tag (`OR`).
         - in: query
           name: author
           schema:
@@ -295,6 +298,8 @@ class QuoteList(Resource):
                   id:
                     type: string
                     example: quoteid
+        400:
+          description: Missing data.
         401:
           description: Missing authentication header.
     """

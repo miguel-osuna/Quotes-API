@@ -31,8 +31,6 @@ class TagList(Resource):
                     type: array
                     items:
                       type: string
-        400:
-          description: Bad request.
         401:
           description: Missing authentication header.
     """

@@ -54,6 +54,8 @@ class UserSignup(Resource):
                     type: string
                     example: Successful sign up.
         400:
+          description: Missing data.
+        500:
           description: Could not sign up user.
     """
 
@@ -121,7 +123,9 @@ class UserLogin(Resource):
                   refresh_token:
                     type: string
         400:
-          description: Could not login user.
+          description: Missing data.
+        401:
+          description: Wrong credentials.
     """
 
     # Decorators applied to all class methods
@@ -179,7 +183,9 @@ class UserLogin(Resource):
                 )
 
         except Exception:
-            return {"error": "Missing data."}, HttpStatus.BAD_REQUEST_400.value
+            return {
+                "error": "Missing data, could not login user."
+            }, HttpStatus.BAD_REQUEST_400.value
 
 
 class UserLogout(Resource):
@@ -247,6 +253,8 @@ class UserResource(Resource):
       responses:
         204:
           description: The user resource was successfully updated.
+        400:
+          description: Missing data.
         401:
           description: Missing authentication header.
         404:
@@ -274,6 +282,8 @@ class UserResource(Resource):
       responses:
         204:
           description: The user resource was successfully patched.
+        400:
+          description: Missing data.
         401:
           description: Missing authentication header.
         404:
@@ -300,6 +310,8 @@ class UserResource(Resource):
           description: Missing authentication header.
         404:
           description: User does not exist.
+        500:
+          description: Could not delete user.
     """
 
     # Decorators applied to all class methods
@@ -439,6 +451,8 @@ class UserList(Resource):
 
         401:
           description: Missing authentication header.
+        500:
+          description: Could not retrieve users.
     """
 
     # Decorators applied to all class methods
@@ -461,6 +475,6 @@ class UserList(Resource):
 
         except Exception:
             return (
-                {"error": "Could not retrieve quotes"},
+                {"error": "Could not retrieve users."},
                 HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )

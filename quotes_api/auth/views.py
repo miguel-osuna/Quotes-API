@@ -31,7 +31,7 @@ api.add_resource(UserLogin, "/login", endpoint="user_login")
 api.add_resource(UserLogout, "/logout", endpoint="user_logout")
 api.add_resource(UserResource, "/users/<user_id>", endpoint="user_by_id")
 api.add_resource(UserList, "/users", endpoint="users")
-api.add_resource(UserTokens, "/tokens", endpoint="tokens")
+api.add_resource(UserTokens, "/tokens/<user_id>", endpoint="tokens")
 api.add_resource(TokenRefresh, "/refresh", endpoint="token_refresh")
 api.add_resource(
     AccessTokenRevoke, "/revoke_access_token", endpoint="revoke_access_token"

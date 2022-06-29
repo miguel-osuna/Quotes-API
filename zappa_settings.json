@@ -4,7 +4,8 @@
         "aws_region": "us-east-1",
         "profile_name": "zappa",
         "project_name": "quotes-api",
-        "runtime": "python3.8",
-        "s3_bucket": "zappa-qik7ef1fs"
+        "runtime": "python3.9",
+        "s3_bucket": "zappa-qik7ef1fs",
+        "slim_handler": true
     }
 }

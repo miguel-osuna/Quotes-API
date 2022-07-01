@@ -3,7 +3,7 @@
 from flask import request, make_response
 from flask_restful import Resource
 
-from quotes_api.models import Quote
+from quotes_api.api.models import Quote
 from quotes_api.common import HttpStatus, paginator
 from quotes_api.api.schemas import QuoteSchema
 from quotes_api.auth.decorators import Role, role_required

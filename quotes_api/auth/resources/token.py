@@ -1,7 +1,7 @@
 """Token resource file."""
 
 from datetime import timedelta
-from flask import request, make_response, current_app as app
+from flask import make_response, current_app as app
 from flask_restful import Resource
 
 from flask_jwt_extended import (
@@ -11,13 +11,13 @@ from flask_jwt_extended import (
     get_jwt,
 )
 
-from quotes_api.models import User, TokenBlacklist
+from quotes_api.auth.models import User, TokenBlacklist
 from quotes_api.auth.helpers import (
     revoke_token,
     add_token_to_database,
 )
 from quotes_api.auth.decorators import Role, role_required
-from quotes_api.common import HttpStatus, paginator
+from quotes_api.common import HttpStatus
 from quotes_api.auth.schemas import TokenBlacklistSchema
 
 

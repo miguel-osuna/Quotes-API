@@ -10,7 +10,7 @@ from mongoengine import (
 )
 
 from quotes_api.extensions import odm
-from quotes_api.models import UserFields
+from quotes_api.auth.models import UserFields
 
 
 class TokenBlacklistFields(Document):

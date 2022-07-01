@@ -103,7 +103,7 @@ def test_get_all_users(client, admin_headers, new_user):
     users_url = url_for("auth.users")
     query_parameters = {"page": "1", "per_page": "5"}
     res = client.get(users_url, headers=admin_headers, query_string=query_parameters)
-    
+
     assert res.status_code == HttpStatus.OK_200.value
 
     data = res.get_json()

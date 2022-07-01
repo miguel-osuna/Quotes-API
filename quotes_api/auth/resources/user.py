@@ -8,7 +8,7 @@ from flask_jwt_extended import (
     jwt_required,
 )
 
-from quotes_api.models import User
+from quotes_api.auth.models import User
 from quotes_api.extensions import pwd_context
 from quotes_api.auth.helpers import (
     add_token_to_database,

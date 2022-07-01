@@ -16,7 +16,7 @@ from quotes_api.auth.resources import (
     TrialToken,
     PermanentToken,
 )
-from quotes_api.models import User
+from quotes_api.auth.models import User
 from quotes_api.auth.schemas import UserSchema, TokenBlacklistSchema
 from quotes_api.extensions import jwt, apispec
 from quotes_api.auth.helpers import is_token_revoked

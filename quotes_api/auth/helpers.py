@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from flask_jwt_extended import decode_token
-from quotes_api.models import TokenBlacklist, User
+from quotes_api.auth.models import TokenBlacklist, User
 
 
 def add_token_to_database(encoded_token, identity_claim):

@@ -3,7 +3,7 @@
 from flask import request, make_response
 from flask_restful import Resource
 
-from quotes_api.models import Quote
+from quotes_api.api.models import Quote
 from quotes_api.common import HttpStatus, author_paginator
 from quotes_api.api.schemas import AuthorSchema
 from quotes_api.auth.decorators import Role, role_required
@@ -97,17 +97,17 @@ class AuthorList(Resource):
                 HttpStatus.INTERNAL_SERVER_ERROR_500.value,
             )
 
-    def _sort_order_parser(self, input):
+    def _sort_order_parser(self, order):
         """
         Parses a user query input for the sort_order parameter.
 
         Checks if the sorting is ascending or descending.
         """
 
-        if input in ("ascending", "asc", "1"):
+        if order in ("ascending", "asc", "1"):
             return "+"
 
-        if input in ("descending", "desc", "-1"):
+        if order in ("descending", "desc", "-1"):
             return "-"
 
         return "+"

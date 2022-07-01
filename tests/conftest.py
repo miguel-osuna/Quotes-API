@@ -11,7 +11,8 @@ from flask_mongoengine import MongoEngine
 from passlib.context import CryptContext
 
 from quotes_api.app import create_app
-from quotes_api.models import QuoteFields, UserFields, TokenBlacklistFields
+from quotes_api.api.models import QuoteFields
+from quotes_api.auth.models import UserFields, TokenBlacklistFields
 
 
 @pytest.fixture(name="password_hasher")

@@ -24,8 +24,8 @@ def role_required(role_list):
     It also verifies that the JWT is present in the request.
     """
 
-    def decorator(fn):
-        @wraps(fn)
+    def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             # First verify a valid access token was sent
             verify_jwt_in_request()
@@ -46,7 +46,7 @@ def role_required(role_list):
             if denied:
                 return {"error": "Access denied."}, HttpStatus.FORBIDDEN_403.value
 
-            return fn(*args, **kwargs)
+            return func(*args, **kwargs)
 
         return wrapper
 

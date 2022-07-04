@@ -11,7 +11,13 @@ from quotes_api.api.resources import (
     TagList,
 )
 from quotes_api.extensions import apispec
-from quotes_api.api.schemas import QuoteSchema, AuthorSchema, TagSchema, MetadataSchema
+from quotes_api.api.schemas import (
+    QuoteSchema,
+    AuthorSchema,
+    TagSchema,
+    LinksSchema,
+    MetadataSchema,
+)
 
 blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
 
@@ -33,6 +39,7 @@ def register_views():
     apispec.spec.components.schema("QuoteSchema", schema=QuoteSchema)
     apispec.spec.components.schema("AuthorSchema", schema=AuthorSchema)
     apispec.spec.components.schema("TagSchema", schema=TagSchema)
+    apispec.spec.components.schema("LinksSchema", schema=LinksSchema)
     apispec.spec.components.schema("MetadataSchema", schema=MetadataSchema)
 
     # Adding Quote views

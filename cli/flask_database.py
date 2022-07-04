@@ -1,12 +1,13 @@
 from passlib.context import CryptContext
 
 import click
+from faker import Faker
 from flask import current_app
 from flask.cli import with_appcontext
 
 from quotes_api.extensions import odm as database_ext
 from quotes_api.api.models import Quote
-from quotes_api.auth.models import User, TokenBlacklist
+from quotes_api.auth.models import User
 
 
 @click.group()
@@ -42,6 +43,7 @@ def seed():
     pwd_hasher = CryptContext(schemes=["sha256_crypt"])
 
     seed_admin(app_config, User, pwd_hasher)
+    seed_quotes(app_config, Quote)
 
 
 def seed_admin(config, model, pwd_hasher):

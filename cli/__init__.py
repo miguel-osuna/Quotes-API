@@ -14,7 +14,7 @@ def register_cli_commands(app):
         if file.startswith("flask_") and file.endswith(".py"):
             # Get the file name
             file_name = file[:-3]
-            command_name = file[4:-3]
+            command_name = file[6:-3]
 
             # Import the cli command module
             module = importlib.import_module(f"cli.{file_name}")

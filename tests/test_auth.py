@@ -3,9 +3,56 @@ Tests for the authentication resource.
 """
 
 import secrets
+
+from faker import Faker
 from flask import url_for
 
 from quotes_api.common import HttpStatus
+
+fake = Faker()
+
+
+def test_user_login(client, new_admin):
+    """Tests the user login operation."""
+
+    # Create the required data
+    data = {"username": new_admin.username, "password": "admin"}
+
+    # Perform request
+    login_url = url_for("auth.user_login")
+    res = client.post(login_url, json=data)
+
+    # Get response data
+    data = res.get_json()
+    access_token = data["access_token"]
+    refresh_token = data["refresh_token"]
+
+    # Assert on returned data (refresh token and access token)
+    assert res.status_code == HttpStatus.OK_200.value
+    assert isinstance(access_token, str)
+    assert isinstance(refresh_token, str)
+
+
+def test_user_signup(client):
+    """Tests the user signup operation."""
+
+    breakpoint
+    # Signup a user
+    data = {
+        "username": fake.user_name(),
+        "email": fake.email(),
+        "password": "password",
+    }
+
+    signup_url = url_for("auth.user_signup")
+    res = client.post(signup_url, json=data)
+
+    # Get the respones data
+    data = res.get_json()
+    message = data["message"]
+
+    assert res.status_code == HttpStatus.CREATED_201.value
+    assert message == "Successful sign up."
 
 
 def test_get_user_tokens(client, admin_headers, new_admin):

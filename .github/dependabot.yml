@@ -7,23 +7,12 @@ updates:
     # Check for updates once a week
     schedule:
       interval: "weekly"
+    # Raise all pipenv pull requests with a reviewer      
+    reviewers:
+      - "miguel-osuna"
     # Raise all pipenv pull requests with an assignee
     assignees:
       - "miguel-osuna"
     # Raise all pipenv pull requests with custom labels
-    labels:
-      - "chore"
-      
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
-    # Look for a `Dockerfile` in the `root` directory
-    directory: "/docker"
-    # Check for updates once a week
-    schedule:
-      interval: "weekly"
-    # Raise all Docker pull requests with an assignee
-    assignees:
-      - "miguel-osuna"
-    # Raise all Docker pull requests with custom labels
     labels:
       - "chore"

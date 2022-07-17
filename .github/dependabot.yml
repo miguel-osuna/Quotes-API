@@ -7,6 +7,9 @@ updates:
     # Check for updates once a week
     schedule:
       interval: "weekly"
+    # Raise all pipenv pull requests with a reviewer      
+    reviewers:
+      - "miguel-osuna"
     # Raise all pipenv pull requests with an assignee
     assignees:
       - "miguel-osuna"

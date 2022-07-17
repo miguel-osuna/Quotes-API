@@ -1,7 +1,7 @@
 version: 2
 updates:
   # Enable version updates for pipenv
-  - package-ecosystem: "pipenv"
+  - package-ecosystem: "pip"
     # Look for "Pipfile" and "Pipfile.lock" files in the "root" directory
     directory: "/"
     # Check for updates once a week

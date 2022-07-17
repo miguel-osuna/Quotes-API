@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7c13db15e63555e053bb308b5b81ac7f02b9fff1d6eb4edd37fcc8abe0617bfc"
+            "sha256": "772947a85ca70129bb9d6f53fa85ff09c4f72516adfd888d9942d70d294d413e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1348,11 +1348,11 @@
         },
         "pytest-factoryboy": {
             "hashes": [
-                "sha256:1bc04f928487b51263a5b7a7695078b9165fd2d5160d88ea5ce5a797469fe89e",
-                "sha256:afeeaa94d1f6027b1bc59112f55ec918fe1e43859f7765e1188eb36fc1c3b393"
+                "sha256:37c6b3a17689b197025260ad06047d0dd8ec54a70556995b22617e9df1fd8797",
+                "sha256:8abcfe5396a2cadf0b2d6fc1ba607d05f191db915eac95733ab741cb30968a46"
             ],
             "index": "pypi",
-            "version": "==2.4.0"
+            "version": "==2.5.0"
         },
         "pytest-flask": {
             "hashes": [
@@ -1506,7 +1506,7 @@
                 "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02",
                 "sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6"
             ],
-            "markers": "python_version >= '3.7'",
+            "markers": "python_version < '3.10'",
             "version": "==4.3.0"
         },
         "urllib3": {

@@ -1,3 +1,4 @@
+from random import randrange
 from passlib.context import CryptContext
 
 import click
@@ -8,6 +9,8 @@ from flask.cli import with_appcontext
 from quotes_api.extensions import odm as database_ext
 from quotes_api.api.models import Quote
 from quotes_api.auth.models import User
+
+fake = Faker()
 
 
 @click.group()
@@ -43,7 +46,7 @@ def seed():
     pwd_hasher = CryptContext(schemes=["sha256_crypt"])
 
     seed_admin(app_config, User, pwd_hasher)
-    seed_quotes(app_config, Quote)
+    seed_quotes(Quote, 100)
 
 
 def seed_admin(config, model, pwd_hasher):
@@ -61,6 +64,7 @@ def seed_admin(config, model, pwd_hasher):
     admin_email = config["SEED_ADMIN_EMAIL"]
     admin_password = pwd_hasher.hash(config["SEED_ADMIN_PASSWORD"])
 
+    click.secho("Seeding admin user...", bg="magenta", fg="white", bold=True)
     try:
         admin = model.objects.get(username=admin_username)
 
@@ -88,7 +92,7 @@ def seed_admin(config, model, pwd_hasher):
             admin.save()
 
             click.secho("Admin user created.", bg="green", fg="white", bold=True)
-            click.secho(f"\nAdmin User:\n {admin}", bg="black", fg="white", bold=True)
+            click.secho(f"\nAdmin User: {admin}", bg="black", fg="white", bold=True)
 
     except Exception:
         click.secho(
@@ -96,7 +100,7 @@ def seed_admin(config, model, pwd_hasher):
         )
 
 
-def seed_quotes(config, model):
+def seed_quotes(model, quotes_number):
     """
     Seed fake quotes.
 
@@ -104,7 +108,29 @@ def seed_quotes(config, model):
     :param model: Mongoengine document model
     :return: None
     """
-    pass
+    # Create all the quote models
+    quote_instances = []
+
+    for _ in range(0, quotes_number):
+        quote = fake.text()
+        author = fake.name()
+        image = fake.image_url()
+        tags = []
+        for _ in range(randrange(1, 10)):
+            tag = fake.word().lower()
+            tags.append(tag)
+
+        quote_data = {
+            "quote_text": quote,
+            "author_name": author,
+            "author_image": image,
+            "tags": tags,
+        }
+        quote = model(**quote_data)
+        quote_instances.append(quote)
+
+    click.secho("\nSeeding quotes...", bg="magenta", fg="white", bold=True)
+    _bulk_insert(model, quote_instances, "Quote documents")
 
 
 def _bulk_insert(model, data, label):
@@ -120,17 +146,44 @@ def _bulk_insert(model, data, label):
     :type label: str
     :return: None
     """
-    pass
+    # Delete the current data
+    try:
+        click.secho(
+            f"Deleting existing {label} documents...",
+            bg="blue",
+            fg="white",
+            bold=True,
+        )
+        model.objects().delete()
+        click.secho("Documents deleted", bg="green", fg="white", bold=True)
 
+    except Exception:
+        click.secho(
+            f"Could not delete previous documents for {label} collection.",
+            bg="red",
+            fg="white",
+            bold=True,
+            err=True,
+        )
+        return None
 
-def _seed_logs(count, model_label):
-    """
-    Log the output of how many collection documents were created.
+    # Bulk insert documents
+    try:
+        click.secho(
+            f"Creating {len(data)} documents for {label} collection...",
+            bg="blue",
+            fg="white",
+            bold=True,
+        )
+        model.objects.insert(data, load_bulk=False)
+        click.secho(f"Created {len(data)} {label}", bg="green", fg="white", bold=True)
 
-    :param count: Amount of documents
-    :type count: int
-    :param model_label: Name of the model
-    :type model_label: str
-    :return None:
-    """
-    click.secho(f"Created {count} {model_label}", bg="green", fg="white", bold=True)
+    except Exception:
+        click.secho(
+            f"Could not bulk insert documents for {label} collection.",
+            bg="red",
+            fg="white",
+            bold=True,
+            err=True,
+        )
+        return None

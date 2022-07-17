@@ -43,6 +43,10 @@ class DevelopmentConfig(Config):
     MONGODB_DB = os.getenv("MONGODB_DB")
     MONGODB_HOST = os.getenv("MONGODB_HOST")
 
+    SEED_ADMIN_USERNAME = os.getenv("SEED_ADMIN_USERNAME")
+    SEED_ADMIN_EMAIL = os.getenv("SEED_ADMIN_EMAIL")
+    SEED_ADMIN_PASSWORD = os.getenv("SEED_ADMIN_PASSWORD")
+
 
 class TestingConfig(Config):
     """Testing environment configuration class."""

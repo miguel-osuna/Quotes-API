@@ -18,6 +18,7 @@ bpython = "==0.22.1"
 ipdb = "==0.13.9"
 ptvsd = "==4.3.2"
 debugpy = "==1.6.0"
+faker = "==13.14.0"
 
 [packages]
 flask = "==2.1.2"

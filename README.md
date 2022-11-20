@@ -44,7 +44,9 @@ This will run the project on your local environment.
 Make sure to create a hidden folder like `envs.example` named `.envs`, with the same kind of environment variables.
 
 ```
-docker-compose up -f local.yml up -d --build
+docker-compose -f local.yml build
+docker-compose -f local.yml up -d
+docker-compose -f local.yml up -d --build
 ```
 
 ## Commands 

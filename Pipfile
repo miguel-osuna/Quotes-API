@@ -17,7 +17,7 @@ pre-commit = "==2.20.0"
 bpython = "==0.23"
 ipdb = "==0.13.9"
 ptvsd = "==4.3.2"
-debugpy = "==1.6.3"
+debugpy = "==1.6.4"
 faker = "==15.3.4"
 
 [packages]

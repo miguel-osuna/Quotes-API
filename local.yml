@@ -20,7 +20,7 @@ services:
     command: /start
 
   mongo:
-    image: mongo:latest
+    image: mongo:6.0.3
     container_name: mongo
     volumes:
       - local_mongo_data:/data/db

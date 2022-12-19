@@ -40,4 +40,4 @@ lint = "python3 cli/lint.py quotes_api"
 test = "python3 cli/test.py"
 
 [requires]
-python_version = "3.9"
+python_version = "3.11"

@@ -22,7 +22,7 @@ faker = "==18.9.0"
 
 [packages]
 flask = "==2.3.2"
-flask-restful = "==0.3.9"
+flask-restful = "==0.3.10"
 flask-mongoengine = "==1.0.0"
 flask-jwt-extended = "==4.5.2"
 flask-marshmallow = "==0.15.0"

@@ -31,7 +31,7 @@ python-dotenv = "==1.0.0"
 passlib = "==1.7.4"
 apispec = "==6.3.0"
 apispec-webframeworks = "==0.5.2"
-gunicorn = "==21.0.1"
+gunicorn = "==21.2.0"
 zappa = "==0.57.0"
 
 [scripts]

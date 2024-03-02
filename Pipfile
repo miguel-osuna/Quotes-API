@@ -21,7 +21,7 @@ debugpy = "==1.8.0"
 faker = "==23.2.1"
 
 [packages]
-flask = "==2.3.3"
+flask = "==3.0.2"
 flask-restful = "==0.3.10"
 flask-mongoengine = "==1.0.0"
 flask-jwt-extended = "==4.6.0"

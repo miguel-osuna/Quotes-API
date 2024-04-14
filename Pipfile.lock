@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1018471f215fd9bea0bdb58f3309df3456a2cc385b9a273ea5d597e341cd2db9"
+            "sha256": "03e52d2847e1bdd8349a252e0c49fac097d1a70963e160babef6e0a26b845f66"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -244,12 +244,12 @@
         },
         "flask-marshmallow": {
             "hashes": [
-                "sha256:2083ae55bebb5142fff98c6bbd483a2f5dbc531a8bc1be2180ed5f75e7f3fccc",
-                "sha256:ce08a153f74da6ebfffd8065d1687508b0179df37fff7fc0c8f28ccfb64f1b56"
+                "sha256:00ee96399ed664963afff3b5d6ee518640b0f91dbc2aace2b5abcf32f40ef23a",
+                "sha256:10b5048ecfaa26f7c8d0aed7d81083164450e6be8e81c04b3d4a586b3f7b6678"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.7'",
-            "version": "==0.15.0"
+            "markers": "python_version >= '3.8'",
+            "version": "==1.2.1"
         },
         "flask-mongoengine": {
             "hashes": [
@@ -399,11 +399,11 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:5d2371bbe42000f2b3fb5eaa065224df7d8f8597bc19a1bbfa5bfe7fba8da889",
-                "sha256:684939db93e80ad3561392f47be0230743131560a41c5110684c16e21ade0a5c"
+                "sha256:4e65e9e0d80fc9e609574b9983cf32579f305c718afb30d7233ab818571768c3",
+                "sha256:f085493f79efb0644f270a9bf2892843142d80d7174bbbd2f3713f2a589dc633"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==3.20.1"
+            "version": "==3.21.1"
         },
         "mongoengine": {
             "hashes": [

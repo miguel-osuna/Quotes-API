@@ -30,7 +30,7 @@ flask-cors = "==4.0.0"
 python-dotenv = "==1.0.1"
 passlib = "==1.7.4"
 apispec = "==6.6.0"
-apispec-webframeworks = "==0.5.2"
+apispec-webframeworks = "==1.1.0"
 gunicorn = "==21.2.0"
 zappa = "==0.58.0"
 

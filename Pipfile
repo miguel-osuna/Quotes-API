@@ -32,7 +32,7 @@ passlib = "==1.7.4"
 apispec = "==6.6.0"
 apispec-webframeworks = "==0.5.2"
 gunicorn = "==21.2.0"
-zappa = "==0.58.0"
+zappa = "==0.60.0"
 
 [scripts]
 format = "python3 cli/format.py quotes_api"
